@@ -7,7 +7,10 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-//
+//Login
+
+//Register
+
 
 
 app.listen(5000, ()=>{
