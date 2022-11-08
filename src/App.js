@@ -7,4 +7,4 @@ function App() {
 			<Login />
 		</div>
 	);
-
+}
