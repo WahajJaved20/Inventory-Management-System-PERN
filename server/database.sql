@@ -8,3 +8,4 @@ CREATE TABLE ADMIN (
 CREATE TABLE SUPPLIER(
 
 );
+create ksadkasd;
