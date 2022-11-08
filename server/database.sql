@@ -5,3 +5,6 @@ CREATE TABLE ADMIN (
     name VARCHAR(30),
     password_hash VARCHAR (50)
 );
+CREATE TABLE SUPPLIER(
+
+);
