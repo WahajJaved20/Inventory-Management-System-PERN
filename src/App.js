@@ -1,4 +1,3 @@
-
 import "./App.css";
 import Login from "./auth/login";
 function App() {
@@ -7,4 +6,4 @@ function App() {
 			<Login />
 		</div>
 	);
-
+}
