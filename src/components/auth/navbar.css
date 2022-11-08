@@ -1,0 +1,6 @@
+@media screen and (min-width: 480px) {
+	.navbarL {
+		height: 100px;
+		background-color: rgb(51, 54, 69, 0.6);
+	}
+}

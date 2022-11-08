@@ -1,12 +1,16 @@
 html {
 	background-image: url("../assets/loginCover.jpg");
 	background-size: cover;
-	opacity: 0.7;
 }
-@media screen and (min-width: 480px) {
-	.navbarL {
-		height: 100px;
-		background-color: #333645;
-		opacity: 0.7;
-	}
+html::before {
+	opacity: 0.6;
+}
+.Form {
+	height: 600px;
+	width: 43%;
+	background-color: rgba(0, 0, 0, 0.5);
+	margin-top: 50px;
+	margin-left: 110px;
+	border: 1px solid rgba(0, 0, 0, 0.5);
+	border-radius: 20px;
 }
