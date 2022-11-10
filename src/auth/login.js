@@ -15,6 +15,7 @@ import PersonIcon from "@mui/icons-material/Person";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PasswordIcon from "@mui/icons-material/Password";
+import { Link } from "react-router-dom";
 import "./login.css";
 
 function Login() {
@@ -83,10 +84,10 @@ function Login() {
 								}}
 							/>
 							<OutlinedInput
-								InputProps={{
-									disableUnderline: true,
+								inputProps={{
+									disableunderline: "true",
 								}}
-								InputLabelProps={{
+								inputlabelprops={{
 									style: { color: "#fff", fontSize: 20 },
 								}}
 								onChange={(e) => {
@@ -131,7 +132,7 @@ function Login() {
 								}}
 							/>
 							<OutlinedInput
-								InputProps={{
+								inputProps={{
 									color: "#fff",
 								}}
 								type={showPassword ? "text" : "password"}
@@ -176,19 +177,21 @@ function Login() {
 							display: "flex",
 							alignItems: "flex-end",
 						}}>
-						<Button
-							variant="contained"
-							sx={{
-								backgroundColor: "#525461",
-								width: 130,
-								marginLeft: 32,
-								height: 50,
-								borderRadius: 6,
-								fontSize: 20,
-								fontWeight: "bold",
-							}}>
-							Sign Up
-						</Button>
+						<Link to="/register" style={{ textDecoration: "none" }}>
+							<Button
+								variant="contained"
+								sx={{
+									backgroundColor: "#525461",
+									width: 130,
+									marginLeft: 32,
+									height: 50,
+									borderRadius: 6,
+									fontSize: 20,
+									fontWeight: "bold",
+								}}>
+								Sign Up
+							</Button>
+						</Link>
 						<Button
 							variant="contained"
 							sx={{
