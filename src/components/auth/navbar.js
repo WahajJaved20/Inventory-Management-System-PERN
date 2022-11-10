@@ -1,3 +1,5 @@
+import React from "react";
+import { ReactDOM } from "react-dom";
 import { Stack } from "@mui/system";
 import { Grid, Typography } from "@mui/material";
 import InventoryIcon from "@mui/icons-material/Inventory";
