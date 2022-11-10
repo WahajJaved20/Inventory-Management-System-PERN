@@ -1,6 +1,9 @@
 html {
 	background-image: url("../assets/loginCover.jpg");
 	background-size: cover;
+	background-position: 0% 0%;
+	background-repeat: no-repeat;
+	background-attachment: fixed;
 }
 html::before {
 	opacity: 0.6;
