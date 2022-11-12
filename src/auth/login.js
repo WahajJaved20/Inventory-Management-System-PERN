@@ -11,10 +11,10 @@ import {
 	InputAdornment,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import PersonIcon from "@mui/icons-material/Person";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PasswordIcon from "@mui/icons-material/Password";
+import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
 import "./login.css";
 
@@ -59,100 +59,61 @@ function Login() {
 					</Stack>
 					<FormControl
 						variant="standard"
-						sx={{ marginLeft: 10, marginTop: 5 }}>
-						<InputLabel
-							style={{ fontSize: 20 }}
-							sx={{
-								color: "white",
-								fontSize: 20,
-								marginLeft: 8,
-							}}>
-							Username
-						</InputLabel>
-						<Box
-							sx={{
-								marginTop: 6,
-								display: "flex",
-								alignItems: "flex-end",
-							}}>
-							<PersonIcon
-								sx={{
-									color: "white",
-									mr: 1,
-									my: 0.5,
-									fontSize: "50px",
-								}}
-							/>
+						sx={{ marginLeft: 10, marginTop: 10 }}>
+						<Stack direction={"column"}>
 							<OutlinedInput
-								inputProps={{
-									disableunderline: "true",
-								}}
-								inputlabelprops={{
-									style: { color: "#fff", fontSize: 20 },
-								}}
 								onChange={(e) => {
 									setUsername(e.target.value);
 								}}
+								startAdornment={
+									<InputAdornment position="start">
+										<AccountCircle />
+									</InputAdornment>
+								}
+								inputProps={{
+									disableunderline: "true",
+								}}
 								sx={{
-									backgroundColor: "#525461",
+									backgroundColor: "#a6a6a6",
+									width: 550,
 									borderRadius: 4,
-									width: 400,
 									fontSize: 25,
 									height: 60,
-									color: "#FFFFFF",
 								}}
 							/>
-						</Box>
+							<InputLabel
+								style={{ fontSize: 20, marginTop: -30 }}
+								sx={{
+									color: "white",
+									marginLeft: 2,
+								}}>
+								<Typography
+									sx={{ fontSize: 25, fontWeight: "bold" }}>
+									Username
+								</Typography>
+							</InputLabel>
+						</Stack>
 					</FormControl>
 					<FormControl
 						variant="standard"
-						sx={{ marginLeft: 10, marginTop: 5 }}>
-						<InputLabel
-							style={{ fontSize: 20 }}
-							size="normal"
-							sx={{
-								color: "#FFFFFF",
-								fontSize: 20,
-								marginLeft: 8,
-							}}>
-							Password
-						</InputLabel>
-						<Box
-							sx={{
-								marginTop: 6,
-								display: "flex",
-								alignItems: "flex-end",
-							}}>
-							<PasswordIcon
-								sx={{
-									color: "white",
-									mr: 1,
-									my: 0.5,
-									fontSize: "50px",
-								}}
-							/>
+						sx={{ marginLeft: 10, marginTop: 10 }}>
+						<Stack direction={"column"}>
 							<OutlinedInput
-								inputProps={{
-									color: "#fff",
-								}}
-								type={showPassword ? "text" : "password"}
-								value={password}
 								onChange={(e) => {
 									setPassword(e.target.value);
 								}}
-								sx={{
-									backgroundColor: "#525461",
-									borderRadius: 4,
-									width: 400,
-									fontSize: 25,
-									height: 60,
-									color: "#FFFFFF",
-								}}
+								type={showPassword ? "text" : "password"}
+								value={password}
+								startAdornment={
+									<InputAdornment position="start">
+										<PasswordIcon />
+									</InputAdornment>
+								}
 								endAdornment={
 									<InputAdornment position="end">
 										<IconButton
 											sx={{
-												color: "white",
+												color: "black",
 												mr: 1,
 												my: 0.5,
 												fontSize: "50px",
@@ -168,12 +129,34 @@ function Login() {
 										</IconButton>
 									</InputAdornment>
 								}
+								inputProps={{
+									disableunderline: "true",
+								}}
+								sx={{
+									backgroundColor: "#a6a6a6",
+									width: 550,
+									borderRadius: 4,
+									fontSize: 25,
+									height: 60,
+								}}
 							/>
-						</Box>
+							<InputLabel
+								style={{ fontSize: 20, marginTop: -30 }}
+								sx={{
+									color: "white",
+									marginLeft: 2,
+								}}>
+								<Typography
+									sx={{ fontSize: 25, fontWeight: "bold" }}>
+									Password
+								</Typography>
+							</InputLabel>
+						</Stack>
 					</FormControl>
 					<Box
 						sx={{
-							marginTop: 5,
+							marginTop: 10,
+							marginLeft: 10,
 							display: "flex",
 							alignItems: "flex-end",
 						}}>

@@ -1,4 +1,4 @@
-import "./customerRegister.css";
+import "./retailerRegister.css";
 import {
 	Typography,
 	FormControl,
@@ -16,13 +16,15 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import EmailIcon from "@mui/icons-material/Email";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import BusinessIcon from "@mui/icons-material/Business";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import HomeIcon from "@mui/icons-material/Home";
-function CustomerRegister() {
+function RetailerRegister() {
 	const [username, setUsername] = React.useState("");
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [password, setPassword] = React.useState("");
 	const [email, setEmail] = React.useState("");
+	const [companyName, setCompanyName] = React.useState("");
 	const [mobile, setMobile] = React.useState("");
 	const [address, setAddress] = React.useState("");
 	function handleClickShowPassword() {
@@ -33,6 +35,7 @@ function CustomerRegister() {
 		showPassword,
 		password,
 		email,
+		companyName,
 		mobile,
 		address,
 	]);
@@ -40,7 +43,7 @@ function CustomerRegister() {
 		<div className="bg-img">
 			<div className="container">
 				<Typography sx={{ fontSize: 50, textAlign: "center" }}>
-					Customer Registration
+					Retailer Registration
 				</Typography>
 
 				<Stack direction={"column"} className="input-container">
@@ -183,6 +186,43 @@ function CustomerRegister() {
 						<Stack direction={"column"}>
 							<OutlinedInput
 								onChange={(e) => {
+									setCompanyName(e.target.value);
+								}}
+								startAdornment={
+									<InputAdornment position="start">
+										<BusinessIcon />
+									</InputAdornment>
+								}
+								inputProps={{
+									disableunderline: "true",
+								}}
+								sx={{
+									backgroundColor: "#f1f1f1",
+									width: 550,
+									borderRadius: 4,
+									fontSize: 25,
+									height: 60,
+								}}
+							/>
+							<InputLabel
+								style={{ fontSize: 20, marginTop: -30 }}
+								sx={{
+									color: "white",
+									marginLeft: 2,
+								}}>
+								<Typography
+									sx={{ fontSize: 25, fontWeight: "bold" }}>
+									Company Name
+								</Typography>
+							</InputLabel>
+						</Stack>
+					</FormControl>
+					<FormControl
+						variant="standard"
+						sx={{ marginLeft: 3, marginTop: 5 }}>
+						<Stack direction={"column"}>
+							<OutlinedInput
+								onChange={(e) => {
 									setMobile(e.target.value);
 								}}
 								startAdornment={
@@ -281,4 +321,4 @@ function CustomerRegister() {
 		</div>
 	);
 }
-export default CustomerRegister;
+export default RetailerRegister;

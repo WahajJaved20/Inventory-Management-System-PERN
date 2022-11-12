@@ -16,7 +16,7 @@ function RegisterPage() {
 					REGISTER AS:
 				</Typography>
 				<Link
-					to="/register/customer"
+					to="/register/retailer"
 					style={{ textDecoration: "none" }}>
 					<Button
 						variant="contained"
@@ -31,10 +31,12 @@ function RegisterPage() {
 							fontWeight: "bold",
 							fontSize: 20,
 						}}>
-						CUSTOMER
+						RETAILER
 					</Button>
 				</Link>
-				<Link to="/register/company" style={{ textDecoration: "none" }}>
+				<Link
+					to="/register/customer"
+					style={{ textDecoration: "none" }}>
 					<Button
 						sx={{
 							"&:hover": {
@@ -48,7 +50,7 @@ function RegisterPage() {
 							fontWeight: "bold",
 							fontSize: 20,
 						}}>
-						COMPANY
+						CUSTOMER
 					</Button>
 				</Link>
 			</div>
