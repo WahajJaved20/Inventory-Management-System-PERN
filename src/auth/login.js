@@ -175,18 +175,22 @@ function Login() {
 								Sign Up
 							</Button>
 						</Link>
-						<Button
-							variant="contained"
-							sx={{
-								width: 130,
-								marginLeft: 2,
-								height: 50,
-								borderRadius: 6,
-								fontSize: 20,
-								fontWeight: "bold",
-							}}>
-							Sign In
-						</Button>
+						<Link
+							to="/dashboard/admin"
+							style={{ textDecoration: "none" }}>
+							<Button
+								variant="contained"
+								sx={{
+									width: 130,
+									marginLeft: 2,
+									height: 50,
+									borderRadius: 6,
+									fontSize: 20,
+									fontWeight: "bold",
+								}}>
+								Sign In
+							</Button>
+						</Link>
 					</Box>
 				</Stack>
 			</div>

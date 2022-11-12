@@ -5,6 +5,7 @@ import { Routes, Route, BrowserRouter as Router } from "react-router-dom";
 import RegisterPage from "./auth/registerScreen";
 import RetailerRegister from "./auth/retailerRegister";
 import CustomerRegister from "./auth/customerRegister";
+import AdminDashboard from "./dashboards/adminDashboard";
 function App() {
 	return (
 		<div className="App">
@@ -19,6 +20,10 @@ function App() {
 					<Route
 						path="/register/customer"
 						element={<CustomerRegister />}
+					/>
+					<Route
+						path="/dashboard/admin"
+						element={<AdminDashboard />}
 					/>
 				</Routes>
 			</Router>
