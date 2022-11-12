@@ -1,4 +1,3 @@
-import "./customerRegister.css";
 import {
 	Typography,
 	FormControl,
@@ -9,6 +8,7 @@ import {
 	IconButton,
 	Button,
 } from "@mui/material";
+import "./customerRegister.css";
 import { Link } from "react-router-dom";
 import React, { useEffect } from "react";
 import PasswordIcon from "@mui/icons-material/Password";
@@ -37,7 +37,7 @@ function CustomerRegister() {
 		address,
 	]);
 	return (
-		<div className="bg-img">
+		<div className="bg-imgs">
 			<div className="container">
 				<Typography sx={{ fontSize: 50, textAlign: "center" }}>
 					Customer Registration
