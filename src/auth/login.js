@@ -74,7 +74,7 @@ function Login() {
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#a6a6a6",
+									backgroundColor: "white",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
@@ -133,7 +133,7 @@ function Login() {
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#a6a6a6",
+									backgroundColor: "white",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
