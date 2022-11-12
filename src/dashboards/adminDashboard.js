@@ -1,39 +1,29 @@
 import { React } from "react";
-import { Stack, Box, Typography, Button } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import { Link } from "react-router-dom";
+import { Stack } from "@mui/material";
+import AdminSidebar from "../components/sidebars/adminSidebar";
+import NotificationButton from "../components/notificationButton";
+import WelcomeBox from "../components/welcomeBox";
+import AdminOptions from "../components/options/adminOptions";
+import ProfileInformation from "../components/profileInformation";
+import LogoutButton from "../components/logout";
 import "./adminDashboard.css";
 function AdminDashboard() {
 	return (
 		<div className="co">
-			<Stack direction={"row"} sx={{ width: 1, height: "100%" }}>
-				<Box
-					className="sidebar"
-					sx={{
-						width: 0.07,
-						height: "100%",
-						backgroundColor: "#4163CF",
-						borderRadius: 4,
-					}}>
-					<Typography
-						sx={{
-							fontSize: 30,
-							fontWeight: "bold",
-							color: "white",
-						}}>
-						{" "}
-						IVMS{" "}
-					</Typography>
+			<Stack direction={"row"}>
+				<AdminSidebar />
+				<Stack
+					direction={"column"}
+					sx={{ marginLeft: 2, marginTop: 3 }}>
+					<NotificationButton />
+					<WelcomeBox />
+					<AdminOptions />
+				</Stack>
 
-					<Button
-						sx={{
-							backgroundColor: "#738CE4",
-							borderRadius: 4,
-							marginTop: 50,
-						}}>
-						<AccessTimeIcon sx={{ fontSize: 40, color: "black" }} />
-					</Button>
-				</Box>
+				<Stack direction={"column"}>
+					<ProfileInformation />
+					<LogoutButton />
+				</Stack>
 			</Stack>
 		</div>
 	);
