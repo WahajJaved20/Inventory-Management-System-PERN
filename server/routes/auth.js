@@ -4,10 +4,10 @@ const { json } = require("express");
 const pool = require("../db")
 const bcrypt = require("bcrypt")
 const jwtGenerator = require("../utils/jwtGenerator");
-const { isValidDateValue } = require("@testing-library/user-event/dist/utils");
+const validInfo = require("../middleware/validinfo");
 //register 
 
-router.post("/register", async(req,res)=>{
+router.post("/register", validInfo ,async(req,res)=>{
     try {
         //destructuring req.body
         const {username,name,email,password} = req.body;
@@ -35,7 +35,7 @@ router.post("/register", async(req,res)=>{
     }
 })
 //login
-router.post("/login", async(req,res)=>{
+router.post("/login", validInfo,async(req,res)=>{
     try {
         //destructure
         const {email,password} = req.body;
