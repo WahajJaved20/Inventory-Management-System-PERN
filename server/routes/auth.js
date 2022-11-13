@@ -3,6 +3,7 @@ const { Email } = require("@mui/icons-material");
 const { json } = require("express");
 const pool = require("../db")
 const bcrypt = require("bcrypt")
+const jwtGenerator = require("../utils/jwtGenerator")
 //register 
 
 router.post("/register", async(req,res)=>{
@@ -20,13 +21,13 @@ router.post("/register", async(req,res)=>{
         //bcrypt passwords
         const saltRound =10;
         const salt = await bcrypt.genSalt(saltRound);
-        const cryptPassword = bcrypt.hash(password, salt);
+        const cryptPassword = await bcrypt.hash(password, salt);
 
         //enter new user in db
         const newUser = await pool.query
-        ("INSERT INTO ADMIN(ADMIN_USERNAME, ADMIN_NAME, ADMIN_EMAIL,ADMIN_PASSWOR) VALUES ($1,$2,$3) RETURNING *",[username, NAME, email, crypt_password]);
-         
-        res.json(user.rows);
+        ("INSERT INTO ADMIN(ADMIN_USERNAME, ADMIN_NAME, ADMIN_EMAIL,ADMIN_PASSWORD) VALUES ($1,$2,$3,$4) RETURNING *",[username,name, email, cryptPassword]);
+        const token = jwtGenerator(newUser.rows[0].userid);
+        res.json({token});
     } catch (err) {
         console.error(err.message);
         res.status(500).send("server error");
