@@ -7,9 +7,8 @@ const app = express();
 app.use(cors());
 app.use(express.json()); //req.body
 
-//Login
+//Register and login
 app.use("/auth", require("./routes/auth"));
-//Register
 
 
 
