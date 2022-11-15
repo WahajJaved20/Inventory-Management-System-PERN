@@ -43,18 +43,18 @@ router.post("/login", validInfo,async(req,res)=>{
         const {email,password} = req.body;
 
         //check is user exists
-        const users = await pool.query("SELECT * FROM ADMIN WHERE ADMIN_EMAIL = $1",[email])
-        if(users.rows.length === 0){
+        const user = await pool.query("SELECT * FROM ADMIN WHERE ADMIN_EMAIL = $1",[email])
+        if(user.rows.length === 0){
             return res.status(401).json("Password or email is incorrect");
         }
         //check if incoming password
         const validPassword = await bcrypt.compare(
-            password, users.rows[0].admin_password
+            password, user.rows[0].admin_password
         );
         if(!validPassword){
             return res.status.json("Password or Email is incorrect");
         }
-        const token = jwtGenerator(users.rows[0].user_id);
+        const token = jwtGenerator(user.rows[0].user_id);
 
         res.json({token});
     
