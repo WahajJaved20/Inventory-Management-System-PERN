@@ -1,16 +1,21 @@
-const router = require("express").Router()
-const pool = require("../db")
-const authorization = require('../middleware/authorization')
-const { json } = require("express")
+const router = require("express").Router();
+const authorize = require("../middleware/authorize");
+const pool = require("../db");
 
-
-router.get("/", authorization, async(req,res)=>{
-    try {
-        res.json(req.user_id)
-    } catch (err) {
-        console.error(err.message);
-        res.status(500).json("server error");
-    }
-}) 
+router.get("/", authorize, async (req, res) => {
+  try {
+    res.json(req.user.id);
+    // const user = await pool.query(
+    //   "SELECT admin_name FROM admin WHERE admin_id = $1",
+    //   [req.user.id] 
+    // ); 
+    
+    
+    // res.json(user.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server error");
+  }
+});
 
 module.exports = router;
