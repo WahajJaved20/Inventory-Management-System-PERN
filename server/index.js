@@ -9,8 +9,7 @@ app.use(express.json()); //req.body
 
 //Register and login
 app.use("/auth", require("./routes/auth"));
-
-
+//dashboard route
 app.use("/dashboard", require("./routes/dashboard"));
 
 app.listen(5000, ()=>{
