@@ -279,6 +279,7 @@ function CustomerRegister({ setAuth }) {
 					</FormControl>
 				</Stack>
 				<Button
+					onClick={handleSubmit}
 					variant="contained"
 					color="success"
 					sx={{

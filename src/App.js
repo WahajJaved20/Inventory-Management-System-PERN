@@ -11,29 +11,36 @@ import RegisterPage from "./auth/registerScreen";
 import RetailerRegister from "./auth/retailerRegister";
 import CustomerRegister from "./auth/customerRegister";
 import AdminDashboard from "./dashboards/adminDashboard";
+import RetailerDashboard from "./dashboards/retailerDashboard";
+import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [type, setType] = useState(false);
+	const [type, setType] = useState("");
 	const setAuth = (boolean) => {
 		setIsAuthenticated(boolean);
 	};
 	async function isAuth() {
 		const token = localStorage.getItem("token");
-		const response = await fetch(
-			"http://localhost:5000/authentication/verify",
-			{
-				method: "POST",
-				headers: { jwt_token: token },
-			}
-		);
-		const res = await response.json();
-		setIsAuthenticated(res);
+		if (token !== undefined || !token) {
+			console.log("trying...");
+			const response = await fetch(
+				"http://localhost:5000/authentication/verify",
+				{
+					method: "POST",
+					headers: { jwt_token: token },
+				}
+			);
+			const res = await response.json();
+			setIsAuthenticated(res);
+			setType(localStorage.getItem("type"));
+		}
 	}
 	useEffect(() => {
-		setType(localStorage.getItem("type"));
-		isAuth();
-	}, [isAuthenticated]);
+		if (type !== "") {
+			isAuth();
+		}
+	}, []);
 	return (
 		<Fragment>
 			<div className="App">
@@ -46,9 +53,22 @@ function App() {
 								!isAuthenticated ? (
 									<Login setAuth={setAuth} />
 								) : type === "admin" ? (
-									<Navigate to="/dashboard/admin" />
+									<Navigate
+										to="/dashboard/admin"
+										setAuth={setAuth}
+									/>
+								) : type === "retailer" ? (
+									<Navigate
+										to="/dashboard/retailer"
+										setAuth={setAuth}
+									/>
+								) : type === "customer" ? (
+									<Navigate
+										to="/dashboard/customer"
+										setAuth={setAuth}
+									/>
 								) : (
-									<Login />
+									<Navigate to="/" setAuth={setAuth} />
 								)
 							}
 						/>
@@ -71,7 +91,27 @@ function App() {
 								isAuthenticated ? (
 									<AdminDashboard setAuth={setAuth} />
 								) : (
-									<Navigate to="/" />
+									<Navigate to="/" setAuth={setAuth} />
+								)
+							}
+						/>
+						<Route
+							path="/dashboard/retailer"
+							element={
+								isAuthenticated ? (
+									<RetailerDashboard setAuth={setAuth} />
+								) : (
+									<Navigate to="/" setAuth={setAuth} />
+								)
+							}
+						/>
+						<Route
+							path="/dashboard/customer"
+							element={
+								isAuthenticated ? (
+									<CustomerDashboard setAuth={setAuth} />
+								) : (
+									<Navigate to="/" setAuth={setAuth} />
 								)
 							}
 						/>

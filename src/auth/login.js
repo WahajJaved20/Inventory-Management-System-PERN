@@ -97,7 +97,7 @@ function Login({ setAuth }) {
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "white",
+									backgroundColor: "#FFFFFF",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
