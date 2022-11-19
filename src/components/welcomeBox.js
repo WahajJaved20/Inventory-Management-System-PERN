@@ -1,7 +1,30 @@
-import { React } from "react";
+import React, { useState, useEffect } from "react";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import { Stack, Box, Typography } from "@mui/material";
 function WelcomeBox() {
+	const [name, setName] = useState("");
+	const [nameLoaded, setNameLoaded] = useState(false);
+	useEffect(() => {
+		async function getName(type, token) {
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getname",
+				{
+					method: "POST",
+					headers: { jwt_token: token },
+					body: JSON.stringify({ type: type }),
+				}
+			);
+			const res = await response.json();
+
+			setName(res);
+		}
+		if (!nameLoaded) {
+			const type = localStorage.getItem("type");
+			const token = localStorage.getItem("token");
+			getName(type, token);
+			setNameLoaded(true);
+		}
+	}, [nameLoaded]);
 	return (
 		<Box
 			sx={{
@@ -47,7 +70,7 @@ function WelcomeBox() {
 						marginTop: 3,
 						color: "white",
 					}}>
-					Good Day, Admin
+					Good Day, {name}
 				</Typography>
 				<Typography
 					sx={{

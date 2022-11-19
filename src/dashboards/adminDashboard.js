@@ -1,4 +1,4 @@
-import { React } from "react";
+import React from "react";
 import { Stack } from "@mui/material";
 import AdminSidebar from "../components/sidebars/adminSidebar";
 import NotificationButton from "../components/notificationButton";
@@ -7,7 +7,7 @@ import AdminOptions from "../components/options/adminOptions";
 import ProfileInformation from "../components/profileInformation";
 import LogoutButton from "../components/logout";
 import "./adminDashboard.css";
-function AdminDashboard() {
+function AdminDashboard({ setAuth }) {
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
@@ -22,7 +22,7 @@ function AdminDashboard() {
 
 				<Stack direction={"column"}>
 					<ProfileInformation />
-					<LogoutButton />
+					<LogoutButton setAuth={setAuth} />
 				</Stack>
 			</Stack>
 		</div>

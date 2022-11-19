@@ -1,4 +1,4 @@
-import { React } from "react";
+import  React  from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import KeyIcon from "@mui/icons-material/Key";

@@ -1,6 +1,6 @@
-import { React } from "react";
+import  React  from "react";
 import LocationOnIcon from "@mui/icons-material/LocationOn";
-import { Stack, Box, Typography, Button, Avatar } from "@mui/material";
+import { Stack, Box, Typography, Avatar } from "@mui/material";
 function ProfileInformation() {
 	return (
 		<Stack direction={"column"} sx={{ marginLeft: 2 }}>
