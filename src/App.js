@@ -14,6 +14,7 @@ import AdminDashboard from "./dashboards/adminDashboard";
 import RetailerDashboard from "./dashboards/retailerDashboard";
 import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
+import PendingApprovals from "./options/admin/pendingApprovals";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState("");
@@ -33,17 +34,22 @@ function App() {
 				}
 			);
 			const res = await response.json();
-			setVerify(true);
 			setType(localStorage.getItem("type"));
 			setIsAuthenticated(res);
 		}
 	}
 	useEffect(() => {
 		if (!verify) {
-			if (localStorage.getItem("token")) {
+			if (localStorage.getItem("token") !== undefined) {
 				isAuth();
 			}
 		}
+		// if (type === "") {
+		// 	const type = localStorage.getItem("type");
+		// 	if (type) {
+		// 		setType(type);
+		// 	}
+		// }
 	}, [type]);
 	return (
 		<Fragment>
@@ -118,6 +124,10 @@ function App() {
 									<Navigate to="/" setAuth={setAuth} />
 								)
 							}
+						/>
+						<Route
+							path="/dashboard/admin/approval"
+							element={<PendingApprovals />}
 						/>
 					</Routes>
 				</Router>

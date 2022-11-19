@@ -1,4 +1,5 @@
-import  React  from "react";
+import React from "react";
+import { Link } from "react-router-dom";
 import { Box, Typography, Button } from "@mui/material";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import KeyIcon from "@mui/icons-material/Key";
@@ -30,16 +31,19 @@ function AdminSidebar() {
 				{" "}
 				IVMS{" "}
 			</Typography>
-
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 25,
-					padding: 1,
-				}}>
-				<AccessTimeIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
+			<Link
+				to="/dashboard/admin/approval"
+				sx={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 25,
+						padding: 1,
+					}}>
+					<AccessTimeIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
 			<Button
 				sx={{
 					backgroundColor: "#738CE4",
