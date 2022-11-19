@@ -1,7 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack } from "@mui/material";
 import AdminSidebar from "../components/sidebars/adminSidebar";
-import NotificationButton from "../components/notificationButton";
 import WelcomeBox from "../components/welcomeBox";
 import AdminOptions from "../components/options/adminOptions";
 import ProfileInformation from "../components/profileInformation";
@@ -15,7 +14,6 @@ function AdminDashboard({ setAuth }) {
 				<Stack
 					direction={"column"}
 					sx={{ marginLeft: 2, marginTop: 3 }}>
-					<NotificationButton />
 					<WelcomeBox />
 					<AdminOptions />
 				</Stack>

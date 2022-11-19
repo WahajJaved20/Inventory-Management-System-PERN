@@ -65,10 +65,13 @@ router.post("/register/retailer", async (req, res) => {
 		const bcryptPassword = await bcrypt.hash(password, salt);
 
 		let newUser = await pool.query(
-			"INSERT INTO retailer (r_name,r_username, r_password,r_address,r_mobile_num,r_email) VALUES ($1, $2, $3, $4,$5,$6) RETURNING *",
+			"INSERT INTO retailer (r_name,r_username, r_password,r_address,r_mobile_num,r_email) VALUES ($1, $2, $3, $4,$5,$6) RETURNING r_id",
 			[companyName, username, bcryptPassword, address, mobile, email]
 		);
-
+		let notif = await pool.query(
+			"INSERT INTO NOTIFICATIONS(referrer_id,string,type) VALUES ($1,$2,$3)",
+			[newUser.rows[0].r_id, "Approve Retailer", 1]
+		);
 		const jwtToken = jwtGenerator(newUser.rows[0].r_id);
 		return res.json({ jwtToken });
 	} catch (err) {
@@ -92,10 +95,9 @@ router.post("/register/customer", async (req, res) => {
 		const bcryptPassword = await bcrypt.hash(password, salt);
 
 		let newUser = await pool.query(
-			"INSERT INTO customer (c_username,  c_password,c_address,c_mobile_num,c_email) VALUES ($1, $2, $3, $4,$5) RETURNING *",
+			"INSERT INTO customer (c_username, c_password,c_address,c_mobile_num,c_email) VALUES ($1, $2, $3, $4,$5) RETURNING *",
 			[username, bcryptPassword, address, mobile, email]
 		);
-
 		const jwtToken = jwtGenerator(newUser.rows[0].c_id);
 		return res.json({ jwtToken });
 	} catch (err) {

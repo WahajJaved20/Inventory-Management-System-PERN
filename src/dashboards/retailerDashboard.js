@@ -1,5 +1,5 @@
 import "./retailerDashboard.css";
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack } from "@mui/material";
 import RetailerSidebar from "../components/sidebars/retailerSidebar";
 import RetailerOptions from "../components/options/retailerOptions";
