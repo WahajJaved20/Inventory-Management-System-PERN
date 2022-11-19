@@ -18,8 +18,21 @@ function App() {
 	const setAuth = (boolean) => {
 		setIsAuthenticated(boolean);
 	};
+	async function isAuth() {
+		const token = localStorage.getItem("token");
+		const response = await fetch(
+			"http://localhost:5000/authentication/verify",
+			{
+				method: "POST",
+				headers: { jwt_token: token },
+			}
+		);
+		const res = await response.json();
+		setIsAuthenticated(res);
+	}
 	useEffect(() => {
 		setType(localStorage.getItem("type"));
+		isAuth();
 	}, [isAuthenticated]);
 	return (
 		<Fragment>
@@ -46,17 +59,11 @@ function App() {
 						/>
 						<Route
 							path="/register/retailer"
-							element={
-								!isAuthenticated ? (
-									<RetailerRegister setAuth={setAuth} />
-								) : (
-									<Navigate to="/dashboard/admin" />
-								)
-							}
+							element={<RetailerRegister setAuth={setAuth} />}
 						/>
 						<Route
 							path="/register/customer"
-							element={<CustomerRegister />}
+							element={<CustomerRegister setAuth={setAuth} />}
 						/>
 						<Route
 							path="/dashboard/admin"

@@ -6,16 +6,19 @@ function WelcomeBox() {
 	const [nameLoaded, setNameLoaded] = useState(false);
 	useEffect(() => {
 		async function getName(type, token) {
+			const inputs = { type: type };
 			const response = await fetch(
 				"http://localhost:5000/dashboard/getname",
 				{
 					method: "POST",
-					headers: { jwt_token: token },
-					body: JSON.stringify({ type: type }),
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
 				}
 			);
 			const res = await response.json();
-
 			setName(res);
 		}
 		if (!nameLoaded) {

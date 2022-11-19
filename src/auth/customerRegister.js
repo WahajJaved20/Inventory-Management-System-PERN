@@ -18,7 +18,7 @@ import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import HomeIcon from "@mui/icons-material/Home";
-function CustomerRegister() {
+function CustomerRegister({ setAuth }) {
 	const [username, setUsername] = React.useState("");
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [password, setPassword] = React.useState("");
@@ -36,6 +36,32 @@ function CustomerRegister() {
 		mobile,
 		address,
 	]);
+	async function handleSubmit(e) {
+		e.preventDefault();
+		const inputs = {
+			username: username,
+			password: password,
+			email: email,
+			mobile: mobile,
+			address: address,
+		};
+		try {
+			const response = await fetch(
+				"http://localhost:5000/authentication/register/customer",
+				{
+					method: "POST",
+					headers: { "Content-type": "application/json" },
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			localStorage.setItem("token", parseRes.jwtToken);
+			localStorage.setItem("type", "customer");
+			setAuth(true);
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	return (
 		<div className="bg-imgs">
 			<div className="container">

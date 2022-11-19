@@ -44,7 +44,14 @@ router.post("/register", validInfo, async (req, res) => {
 });
 
 router.post("/register/retailer", validInfo, async (req, res) => {
-	const { username, companyName, password, mobile, address } = req.body;
+	const {
+		username,
+		email,
+		companyName,
+		password,
+		mobile,
+		address,
+	} = req.body;
 
 	try {
 		const user = await pool.query(
@@ -59,8 +66,8 @@ router.post("/register/retailer", validInfo, async (req, res) => {
 		const bcryptPassword = await bcrypt.hash(password, salt);
 
 		let newUser = await pool.query(
-			"INSERT INTO retailer (r_username,  r_name, r_password,r_address,r_mobile_num) VALUES ($1, $2, $3, $4,$5) RETURNING *",
-			[username, companyName, bcryptPassword, address, mobile]
+			"INSERT INTO retailer (r_username,  r_name, r_password,r_address,r_mobile_num,r_email) VALUES ($1, $2, $3, $4,$5,$6) RETURNING *",
+			[username, companyName, bcryptPassword, address, mobile, email]
 		);
 
 		const jwtToken = jwtGenerator(newUser.rows[0].r_id);
@@ -70,7 +77,33 @@ router.post("/register/retailer", validInfo, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/register/customer", validInfo, async (req, res) => {
+	const { username, email, password, mobile, address } = req.body;
 
+	try {
+		const user = await pool.query(
+			"SELECT * FROM retailer WHERE r_username = $1",
+			[username]
+		);
+
+		if (user.rows.length > 0) {
+			return res.status(401).json("Company already exists!");
+		}
+		const salt = await bcrypt.genSalt(10);
+		const bcryptPassword = await bcrypt.hash(password, salt);
+
+		let newUser = await pool.query(
+			"INSERT INTO retailer (r_username,  r_password,r_address,r_mobile_num) VALUES ($1, $2, $3, $4,$5) RETURNING *",
+			[username, bcryptPassword, address, mobile, email]
+		);
+
+		const jwtToken = jwtGenerator(newUser.rows[0].r_id);
+		return res.json({ jwtToken });
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 router.post("/login", validInfo, async (req, res) => {
 	const { email, password } = req.body;
 	let type;
