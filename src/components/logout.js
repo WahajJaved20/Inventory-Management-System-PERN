@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { Stack, Typography, Button } from "@mui/material";
 function LogoutButton({ setAuth }) {

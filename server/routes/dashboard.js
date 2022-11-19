@@ -28,5 +28,42 @@ router.post("/getname", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-
+router.post("/getProfile", authorize, async (req, res) => {
+	try {
+		const { type } = req.body;
+		let user;
+		if (type === "admin") {
+			user = await pool.query(
+				"SELECT * FROM admin WHERE admin_id = $1;",
+				[req.user.id]
+			);
+			res.json({
+				name: user.rows[0].admin_name,
+				companyName: "IVMS",
+				address: "Karachi, Pakistan",
+			});
+		} else if (type === "retailer") {
+			user = await pool.query("SELECT * FROM retailer WHERE r_id = $1;", [
+				req.user.id,
+			]);
+			res.json({
+				name: user.rows[0].r_username,
+				companyName: user.rows[0].r_name,
+				address: user.rows[0].r_address,
+			});
+		} else {
+			user = await pool.query("SELECT * FROM customer WHERE c_id = $1;", [
+				req.user.id,
+			]);
+			res.json({
+				name: user.rows[0].c_username,
+				companyName: "",
+				address: user.rows[0].c_address,
+			});
+		}
+	} catch (err) {
+		console.err(err.message);
+		res.status(500).send("Server error");
+	}
+});
 module.exports = router;
