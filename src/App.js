@@ -17,6 +17,7 @@ import { Fragment } from "react";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState("");
+	const [verify, setVerify] = useState(false);
 	const setAuth = (boolean) => {
 		setIsAuthenticated(boolean);
 	};
@@ -32,15 +33,18 @@ function App() {
 				}
 			);
 			const res = await response.json();
-			setIsAuthenticated(res);
+			setVerify(true);
 			setType(localStorage.getItem("type"));
+			setIsAuthenticated(res);
 		}
 	}
 	useEffect(() => {
-		if (type !== "") {
-			isAuth();
+		if (!verify) {
+			if (localStorage.getItem("token")) {
+				isAuth();
+			}
 		}
-	}, []);
+	}, [type]);
 	return (
 		<Fragment>
 			<div className="App">
