@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Stack } from "@mui/material";
 import NotificationButton from "../components/notificationButton";
 import WelcomeBox from "../components/welcomeBox";
@@ -8,6 +8,9 @@ import CustomerSidebar from "../components/sidebars/customerSidebar";
 import CustomerOptions from "../components/options/customerOptions";
 import "./customerDashboard.css";
 function CustomerDashboard({ setAuth }) {
+	useEffect(() => {
+		window.location.reload(true);
+	}, []);
 	return (
 		<div className="co">
 			<Stack direction={"row"}>

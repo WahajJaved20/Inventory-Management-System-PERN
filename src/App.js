@@ -14,16 +14,16 @@ import AdminDashboard from "./dashboards/adminDashboard";
 import RetailerDashboard from "./dashboards/retailerDashboard";
 import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
+import PendingApprovals from "./options/admin/pendingApprovals";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
-	const [type, setType] = useState("");
-	const [verify, setVerify] = useState(false);
+	const [type, setType] = useState();
 	const setAuth = (boolean) => {
 		setIsAuthenticated(boolean);
 	};
 	async function isAuth() {
 		const token = localStorage.getItem("token");
-		if (token !== undefined || !token) {
+		if (type) {
 			console.log("trying...");
 			const response = await fetch(
 				"http://localhost:5000/authentication/verify",
@@ -33,16 +33,15 @@ function App() {
 				}
 			);
 			const res = await response.json();
-			setVerify(true);
-			setType(localStorage.getItem("type"));
-			setIsAuthenticated(res);
+			if (res) {
+				setAuth(true);
+			}
 		}
 	}
 	useEffect(() => {
-		if (!verify) {
-			if (localStorage.getItem("token")) {
-				isAuth();
-			}
+		setType(localStorage.getItem("type"));
+		if (type) {
+			isAuth();
 		}
 	}, [type]);
 	return (
@@ -90,6 +89,7 @@ function App() {
 							element={<CustomerRegister setAuth={setAuth} />}
 						/>
 						<Route
+							exact
 							path="/dashboard/admin"
 							element={
 								isAuthenticated ? (
@@ -100,6 +100,7 @@ function App() {
 							}
 						/>
 						<Route
+							exact
 							path="/dashboard/retailer"
 							element={
 								isAuthenticated ? (
@@ -110,6 +111,7 @@ function App() {
 							}
 						/>
 						<Route
+							exact
 							path="/dashboard/customer"
 							element={
 								isAuthenticated ? (
@@ -118,6 +120,11 @@ function App() {
 									<Navigate to="/" setAuth={setAuth} />
 								)
 							}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/approval"
+							element={<PendingApprovals />}
 						/>
 					</Routes>
 				</Router>

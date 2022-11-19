@@ -9,7 +9,7 @@ import {
 	Button,
 } from "@mui/material";
 import "./customerRegister.css";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import React, { useEffect } from "react";
 import PasswordIcon from "@mui/icons-material/Password";
 import AccountCircle from "@mui/icons-material/AccountCircle";
@@ -57,7 +57,8 @@ function CustomerRegister({ setAuth }) {
 			const parseRes = await response.json();
 			localStorage.setItem("token", parseRes.jwtToken);
 			localStorage.setItem("type", "customer");
-			setAuth(true);
+			const history = useNavigate();
+			history("/");
 		} catch (err) {
 			console.error(err);
 		}
