@@ -17,7 +17,6 @@ function PendingApprovals() {
 				);
 				const parseRes = await response.json();
 				setNotifications(parseRes);
-				console.log(parseRes);
 			} catch (err) {
 				console.error(err);
 			}

@@ -36,8 +36,8 @@ router.post("/handleRetailerApproval", authorize, async (req, res) => {
 	try {
 		const { r_id } = req.body;
 		let enititySelection = await pool.query(
-			"UPDATE RETAILER SET R_APPROVAL_STATUS=2 WHERE r_id=$1",
-			[r_id]
+			"UPDATE RETAILER SET R_APPROVAL_STATUS=$2 WHERE r_id=$1",
+			[r_id, "TRUE"]
 		);
 		let notificationDeletion = await pool.query(
 			"DELETE FROM NOTIFICATIONS WHERE REFERRER_ID=$1",
