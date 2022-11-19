@@ -1,10 +1,10 @@
-import React  from "react";
-import { Stack,  Typography, Button } from "@mui/material";
-import AccessTimeFilledIcon from "@mui/icons-material/AccessTimeFilled";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import DeleteSweepIcon from "@mui/icons-material/DeleteSweep";
-import GroupsIcon from "@mui/icons-material/Groups";
-function AdminOptions() {
+import React from "react";
+import { Stack, Typography, Button } from "@mui/material";
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
+import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
+import StorageIcon from "@mui/icons-material/Storage";
+function RetailerOptions() {
 	return (
 		<>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
@@ -25,18 +25,10 @@ function AdminOptions() {
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								Pending
-							</Typography>
-							<Typography
-								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								Approvals
+								ORDERINGS
 							</Typography>
 						</Stack>
-						<AccessTimeFilledIcon
+						<ShoppingCartIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
@@ -63,7 +55,7 @@ function AdminOptions() {
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								User
+								Out
 							</Typography>
 							<Typography
 								sx={{
@@ -71,10 +63,10 @@ function AdminOptions() {
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								Accesses
+								Bound
 							</Typography>
 						</Stack>
-						<CloudUploadIcon
+						<PhoneForwardedIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
@@ -104,18 +96,10 @@ function AdminOptions() {
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								Revoke
-							</Typography>
-							<Typography
-								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								Access
+								Storage
 							</Typography>
 						</Stack>
-						<DeleteSweepIcon
+						<StorageIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
@@ -142,7 +126,7 @@ function AdminOptions() {
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								View
+								In
 							</Typography>
 							<Typography
 								sx={{
@@ -150,10 +134,10 @@ function AdminOptions() {
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								Clients
+								Bound
 							</Typography>
 						</Stack>
-						<GroupsIcon
+						<PhoneCallbackIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
@@ -166,4 +150,4 @@ function AdminOptions() {
 		</>
 	);
 }
-export default AdminOptions;
+export default RetailerOptions;

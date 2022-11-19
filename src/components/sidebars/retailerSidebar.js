@@ -1,11 +1,10 @@
-import  React  from "react";
+import React from "react";
 import { Box, Typography, Button } from "@mui/material";
-import AccessTimeIcon from "@mui/icons-material/AccessTime";
-import KeyIcon from "@mui/icons-material/Key";
-import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import GroupIcon from "@mui/icons-material/Group";
-
-function AdminSidebar() {
+import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
+import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
+import StorageIcon from "@mui/icons-material/Storage";
+function RetailerSidebar() {
 	return (
 		<Box
 			className="sidebar"
@@ -38,7 +37,7 @@ function AdminSidebar() {
 					marginTop: 25,
 					padding: 1,
 				}}>
-				<AccessTimeIcon sx={{ fontSize: 40, color: "black" }} />
+				<ShoppingCartIcon sx={{ fontSize: 40, color: "black" }} />
 			</Button>
 			<Button
 				sx={{
@@ -47,7 +46,7 @@ function AdminSidebar() {
 					marginTop: 2,
 					padding: 1,
 				}}>
-				<KeyIcon sx={{ fontSize: 40, color: "black" }} />
+				<PhoneForwardedIcon sx={{ fontSize: 40, color: "black" }} />
 			</Button>
 			<Button
 				sx={{
@@ -56,7 +55,7 @@ function AdminSidebar() {
 					marginTop: 2,
 					padding: 1,
 				}}>
-				<DeleteForeverIcon sx={{ fontSize: 40, color: "black" }} />
+				<StorageIcon sx={{ fontSize: 40, color: "black" }} />
 			</Button>
 			<Button
 				sx={{
@@ -65,9 +64,9 @@ function AdminSidebar() {
 					marginTop: 2,
 					padding: 1,
 				}}>
-				<GroupIcon sx={{ fontSize: 40, color: "black" }} />
+				<PhoneCallbackIcon sx={{ fontSize: 40, color: "black" }} />
 			</Button>
 		</Box>
 	);
 }
-export default AdminSidebar;
+export default RetailerSidebar;

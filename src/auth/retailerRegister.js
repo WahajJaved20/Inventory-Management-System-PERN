@@ -19,7 +19,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import BusinessIcon from "@mui/icons-material/Business";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import HomeIcon from "@mui/icons-material/Home";
-function RetailerRegister() {
+function RetailerRegister({ setAuth }) {
 	const [username, setUsername] = React.useState("");
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [password, setPassword] = React.useState("");
@@ -29,6 +29,33 @@ function RetailerRegister() {
 	const [address, setAddress] = React.useState("");
 	function handleClickShowPassword() {
 		setShowPassword(!showPassword);
+	}
+	async function handleSubmit(e) {
+		e.preventDefault();
+		const inputs = {
+			username: username,
+			password: password,
+			email: email,
+			companyName: companyName,
+			mobile: mobile,
+			address: address,
+		};
+		try {
+			const response = await fetch(
+				"http://localhost:5000/authentication/register/retailer",
+				{
+					method: "POST",
+					headers: { "Content-type": "application/json" },
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			localStorage.setItem("token", parseRes.jwtToken);
+			localStorage.setItem("type", "retailer");
+			setAuth(true);
+		} catch (err) {
+			console.error(err);
+		}
 	}
 	useEffect(() => {}, [
 		username,
@@ -295,6 +322,7 @@ function RetailerRegister() {
 				<Button
 					variant="contained"
 					color="success"
+					onClick={handleSubmit}
 					sx={{
 						marginTop: 5,
 						width: 150,
