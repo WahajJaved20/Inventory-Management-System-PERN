@@ -1,23 +1,23 @@
+import "./retailerDashboard.css";
 import React from "react";
 import { Stack } from "@mui/material";
-import AdminSidebar from "../components/sidebars/adminSidebar";
+import RetailerSidebar from "../components/sidebars/retailerSidebar";
+import RetailerOptions from "../components/options/retailerOptions";
+import ProfileInformation from "../components/profileInformation";
 import NotificationButton from "../components/notificationButton";
 import WelcomeBox from "../components/welcomeBox";
-import AdminOptions from "../components/options/adminOptions";
-import ProfileInformation from "../components/profileInformation";
 import LogoutButton from "../components/logout";
-import "./adminDashboard.css";
-function AdminDashboard({ setAuth }) {
+function RetailerDashboard({ setAuth }) {
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
-				<AdminSidebar />
+				<RetailerSidebar />
 				<Stack
 					direction={"column"}
 					sx={{ marginLeft: 2, marginTop: 3 }}>
 					<NotificationButton />
 					<WelcomeBox />
-					<AdminOptions />
+					<RetailerOptions />
 				</Stack>
 
 				<Stack direction={"column"}>
@@ -28,4 +28,4 @@ function AdminDashboard({ setAuth }) {
 		</div>
 	);
 }
-export default AdminDashboard;
+export default RetailerDashboard;

@@ -1,4 +1,4 @@
-import { React } from "react";
+import React  from "react";
 import { Button } from "@mui/material";
 import NotificationsIcon from "@mui/icons-material/Notifications";
 function NotificationButton() {

@@ -18,12 +18,35 @@ import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
 import "./login.css";
 
-function Login() {
+function Login({ setAuth }) {
 	const [username, setUsername] = React.useState("");
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [password, setPassword] = React.useState("");
 	function handleClickShowPassword() {
 		setShowPassword(!showPassword);
+	}
+	async function handleSubmit(e) {
+		e.preventDefault();
+		const inputs = {
+			email: username,
+			password: password,
+		};
+		try {
+			const response = await fetch(
+				"http://localhost:5000/authentication/login",
+				{
+					method: "POST",
+					headers: { "Content-type": "application/json" },
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			localStorage.setItem("token", parseRes.jwtToken);
+			localStorage.setItem("type", parseRes.type);
+			setAuth(true);
+		} catch (err) {
+			console.error(err);
+		}
 	}
 	useEffect(() => {}, [username, showPassword, password]);
 	return (
@@ -74,7 +97,7 @@ function Login() {
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "white",
+									backgroundColor: "#FFFFFF",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
@@ -175,22 +198,20 @@ function Login() {
 								Sign Up
 							</Button>
 						</Link>
-						<Link
-							to="/dashboard/admin"
-							style={{ textDecoration: "none" }}>
-							<Button
-								variant="contained"
-								sx={{
-									width: 130,
-									marginLeft: 2,
-									height: 50,
-									borderRadius: 6,
-									fontSize: 20,
-									fontWeight: "bold",
-								}}>
-								Sign In
-							</Button>
-						</Link>
+
+						<Button
+							onClick={handleSubmit}
+							variant="contained"
+							sx={{
+								width: 130,
+								marginLeft: 2,
+								height: 50,
+								borderRadius: 6,
+								fontSize: 20,
+								fontWeight: "bold",
+							}}>
+							Sign In
+						</Button>
 					</Box>
 				</Stack>
 			</div>
