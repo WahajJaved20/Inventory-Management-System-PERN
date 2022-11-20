@@ -16,5 +16,5 @@ app.use("/dashboard", require("./routes/dashboard"));
 app.use("/notif", require("./routes/notifications"));
 
 app.listen(5000, () => {
-	console.log(`Server is starting on port 3000`);
+	console.log('Server is starting on port 5000');
 });
