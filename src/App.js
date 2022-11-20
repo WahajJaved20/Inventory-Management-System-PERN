@@ -15,6 +15,9 @@ import RetailerDashboard from "./dashboards/retailerDashboard";
 import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
 import PendingApprovals from "./options/admin/pendingApprovals";
+import UserAccesses from "./options/admin/userAccesses";
+import RevokeAccesses from "./options/admin/revokeAccesses";
+import ViewClients from "./options/admin/viewClients";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -23,7 +26,7 @@ function App() {
 	};
 	async function isAuth() {
 		const token = localStorage.getItem("token");
-		if (type) {
+		try {
 			console.log("trying...");
 			const response = await fetch(
 				"http://localhost:5000/authentication/verify",
@@ -33,17 +36,21 @@ function App() {
 				}
 			);
 			const res = await response.json();
-			if (res) {
+			if (res === true) {
 				setAuth(true);
 			}
+		} catch (err) {
+			console.error(err);
+			setAuth(false);
 		}
 	}
 	useEffect(() => {
+		console.log(isAuthenticated);
 		setType(localStorage.getItem("type"));
-		if (type) {
+		if (type !== null) {
 			isAuth();
 		}
-	}, [type]);
+	}, [isAuthenticated]);
 	return (
 		<Fragment>
 			<div className="App">
@@ -125,6 +132,21 @@ function App() {
 							exact
 							path="/dashboard/admin/approval"
 							element={<PendingApprovals />}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/userAccesses"
+							element={<UserAccesses />}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/revokeAccesses"
+							element={<RevokeAccesses />}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/viewClients"
+							element={<ViewClients />}
 						/>
 					</Routes>
 				</Router>

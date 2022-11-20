@@ -72,7 +72,7 @@ function ProfileInformation() {
 							fontWeight: "bold",
 							marginTop: 6,
 						}}>
-						name ? {name[0]} : "U"
+						{name ? name[0] : "U"}
 					</Avatar>
 					<Stack direction={"column"}>
 						<Typography

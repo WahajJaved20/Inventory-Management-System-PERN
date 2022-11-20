@@ -21,7 +21,7 @@ router.post("/getname", authorize, async (req, res) => {
 			user = await pool.query("SELECT * FROM customer WHERE c_id = $1;", [
 				req.user.id,
 			]);
-			res.json(user.rows[0].c_name);
+			res.json(user.rows[0].c_username);
 		}
 	} catch (err) {
 		console.error(err.message);
