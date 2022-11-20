@@ -57,6 +57,7 @@ function CustomerRegister({ setAuth }) {
 			const parseRes = await response.json();
 			localStorage.setItem("token", parseRes.jwtToken);
 			localStorage.setItem("type", "customer");
+			setAuth(true);
 			const history = useNavigate();
 			history("/");
 		} catch (err) {

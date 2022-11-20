@@ -7,6 +7,9 @@ import ProfileInformation from "../components/profileInformation";
 import LogoutButton from "../components/logout";
 import "./adminDashboard.css";
 function AdminDashboard({ setAuth }) {
+	useEffect(() => {
+		setAuth(true);
+	}, []);
 	return (
 		<div className="co">
 			<Stack direction={"row"}>

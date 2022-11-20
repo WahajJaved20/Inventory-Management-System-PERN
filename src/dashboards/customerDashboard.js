@@ -9,7 +9,7 @@ import CustomerOptions from "../components/options/customerOptions";
 import "./customerDashboard.css";
 function CustomerDashboard({ setAuth }) {
 	useEffect(() => {
-		window.location.reload(true);
+		setAuth(true);
 	}, []);
 	return (
 		<div className="co">

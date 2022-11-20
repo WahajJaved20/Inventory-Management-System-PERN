@@ -5,9 +5,9 @@ function LogoutButton({ setAuth }) {
 	return (
 		<Button
 			onClick={() => {
+				localStorage.removeItem("type");
+				localStorage.removeItem("token");
 				setAuth(false);
-				localStorage.setItem("type", null);
-				localStorage.setItem("token", null);
 			}}
 			sx={{
 				backgroundColor: "#4163CF",

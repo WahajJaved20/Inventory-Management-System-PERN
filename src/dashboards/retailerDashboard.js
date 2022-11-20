@@ -8,6 +8,9 @@ import NotificationButton from "../components/notificationButton";
 import WelcomeBox from "../components/welcomeBox";
 import LogoutButton from "../components/logout";
 function RetailerDashboard({ setAuth }) {
+	useEffect(() => {
+		setAuth(true);
+	}, []);
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
