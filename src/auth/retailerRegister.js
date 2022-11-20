@@ -55,6 +55,7 @@ function RetailerRegister({ setAuth }) {
 			localStorage.setItem("type", "retailer");
 			const history = useNavigate();
 			history("/");
+			setAuth(true);
 		} catch (err) {
 			console.error(err);
 		}

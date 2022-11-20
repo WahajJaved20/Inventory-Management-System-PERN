@@ -15,6 +15,9 @@ import RetailerDashboard from "./dashboards/retailerDashboard";
 import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
 import PendingApprovals from "./options/admin/pendingApprovals";
+import UserAccesses from "./options/admin/userAccesses";
+import RevokeAccesses from "./options/admin/revokeAccesses";
+import ViewClients from "./options/admin/viewClients";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -37,13 +40,14 @@ function App() {
 				setAuth(true);
 			}
 		} catch (err) {
+			console.error(err);
 			setAuth(false);
 		}
 	}
 	useEffect(() => {
 		console.log(isAuthenticated);
 		setType(localStorage.getItem("type"));
-		if (type) {
+		if (type !== null) {
 			isAuth();
 		}
 	}, [isAuthenticated]);
@@ -128,6 +132,21 @@ function App() {
 							exact
 							path="/dashboard/admin/approval"
 							element={<PendingApprovals />}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/userAccesses"
+							element={<UserAccesses />}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/revokeAccesses"
+							element={<RevokeAccesses />}
+						/>
+						<Route
+							exact
+							path="/dashboard/admin/viewClients"
+							element={<ViewClients />}
 						/>
 					</Routes>
 				</Router>

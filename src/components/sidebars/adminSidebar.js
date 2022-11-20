@@ -22,18 +22,20 @@ function AdminSidebar() {
 				backgroundColor: "#4163CF",
 				borderRadius: 4,
 			}}>
-			<Typography
-				sx={{
-					fontSize: 30,
-					fontWeight: "bold",
-					color: "white",
-				}}>
-				{" "}
-				IVMS{" "}
-			</Typography>
+			<Link to="/dashboard/admin" style={{ textDecoration: "none" }}>
+				<Typography
+					sx={{
+						fontSize: 30,
+						fontWeight: "bold",
+						color: "white",
+					}}>
+					{" "}
+					IVMS{" "}
+				</Typography>
+			</Link>
 			<Link
 				to="/dashboard/admin/approval"
-				sx={{ textDecoration: "none" }}>
+				style={{ textDecoration: "none" }}>
 				<Button
 					sx={{
 						backgroundColor: "#738CE4",
@@ -44,33 +46,45 @@ function AdminSidebar() {
 					<AccessTimeIcon sx={{ fontSize: 40, color: "black" }} />
 				</Button>
 			</Link>
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 2,
-					padding: 1,
-				}}>
-				<KeyIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 2,
-					padding: 1,
-				}}>
-				<DeleteForeverIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 2,
-					padding: 1,
-				}}>
-				<GroupIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
+			<Link
+				to="/dashboard/admin/userAccesses"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 2,
+						padding: 1,
+					}}>
+					<KeyIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
+			<Link
+				to="/dashboard/admin/revokeAccesses"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 2,
+						padding: 1,
+					}}>
+					<DeleteForeverIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
+			<Link
+				to="/dashboard/admin/viewClients"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 2,
+						padding: 1,
+					}}>
+					<GroupIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
 		</Box>
 	);
 }
