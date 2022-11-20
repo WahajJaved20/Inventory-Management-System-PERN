@@ -23,7 +23,7 @@ function App() {
 	};
 	async function isAuth() {
 		const token = localStorage.getItem("token");
-		if (type) {
+		try {
 			console.log("trying...");
 			const response = await fetch(
 				"http://localhost:5000/authentication/verify",
@@ -33,17 +33,20 @@ function App() {
 				}
 			);
 			const res = await response.json();
-			if (res) {
+			if (res === true) {
 				setAuth(true);
 			}
+		} catch (err) {
+			setAuth(false);
 		}
 	}
 	useEffect(() => {
+		console.log(isAuthenticated);
 		setType(localStorage.getItem("type"));
 		if (type) {
 			isAuth();
 		}
-	}, [type]);
+	}, [isAuthenticated]);
 	return (
 		<Fragment>
 			<div className="App">
