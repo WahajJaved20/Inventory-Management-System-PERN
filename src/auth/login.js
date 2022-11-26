@@ -16,12 +16,14 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import PasswordIcon from "@mui/icons-material/Password";
 import AccountCircle from "@mui/icons-material/AccountCircle";
 import { Link } from "react-router-dom";
+import CustomizedSnackbars from "../components/alerts/authAlerts";
 import "./login.css";
 
 function Login({ setAuth }) {
 	const [username, setUsername] = React.useState("");
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [password, setPassword] = React.useState("");
+	const [open, setOpen] = React.useState(false);
 	function handleClickShowPassword() {
 		setShowPassword(!showPassword);
 	}
@@ -41,9 +43,13 @@ function Login({ setAuth }) {
 				}
 			);
 			const parseRes = await response.json();
-			localStorage.setItem("token", parseRes.jwtToken);
-			localStorage.setItem("type", parseRes.type);
-			setAuth(true);
+			if (parseRes === "Invalid Credential") {
+				setOpen(true);
+			} else {
+				localStorage.setItem("token", parseRes.jwtToken);
+				localStorage.setItem("type", parseRes.type);
+				setAuth(true);
+			}
 		} catch (err) {
 			console.error(err);
 		}
@@ -52,6 +58,7 @@ function Login({ setAuth }) {
 	return (
 		<div>
 			<AuthNavbar />
+			<CustomizedSnackbars open={open} setOpen={setOpen} />
 			<div className="Form">
 				<Stack direction={"column"}>
 					<Stack direction={"row"}>

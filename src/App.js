@@ -85,11 +85,53 @@ function App() {
 						<Route
 							exact
 							path="/register"
-							element={<RegisterPage />}
+							element={
+								!isAuthenticated ? (
+									<RegisterPage />
+								) : type === "admin" ? (
+									<Navigate
+										to="/dashboard/admin"
+										setAuth={setAuth}
+									/>
+								) : type === "retailer" ? (
+									<Navigate
+										to="/dashboard/retailer"
+										setAuth={setAuth}
+									/>
+								) : type === "customer" ? (
+									<Navigate
+										to="/dashboard/customer"
+										setAuth={setAuth}
+									/>
+								) : (
+									<Navigate to="/" setAuth={setAuth} />
+								)
+							}
 						/>
 						<Route
 							path="/register/retailer"
-							element={<RetailerRegister setAuth={setAuth} />}
+							element={
+								!isAuthenticated ? (
+									<RetailerRegister />
+								) : type === "admin" ? (
+									<Navigate
+										to="/dashboard/admin"
+										setAuth={setAuth}
+									/>
+								) : type === "retailer" ? (
+									<Navigate
+										to="/dashboard/retailer"
+										setAuth={setAuth}
+									/>
+								) : type === "customer" ? (
+									<Navigate
+										to="/dashboard/customer"
+										setAuth={setAuth}
+									/>
+								) : (
+									<Navigate to="/" setAuth={setAuth} />
+								)
+							}
 						/>
 						<Route
 							path="/register/customer"
