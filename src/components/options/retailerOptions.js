@@ -1,9 +1,9 @@
 import React from "react";
 import { Stack, Typography, Button } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
+import HistoryIcon from "@mui/icons-material/History";
 function RetailerOptions() {
 	return (
 		<>
@@ -24,11 +24,13 @@ function RetailerOptions() {
 									fontSize: 35,
 									fontWeight: "bold",
 									color: "white",
+									marginTop: 3,
+									marginRight: 2,
 								}}>
-								ORDERINGS
+								HISTORY
 							</Typography>
 						</Stack>
-						<ShoppingCartIcon
+						<HistoryIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
@@ -87,23 +89,21 @@ function RetailerOptions() {
 					<Stack
 						direction={"row"}
 						sx={{ marginLeft: 1, textAlign: "left" }}>
-						<Stack
-							direction={"column"}
-							sx={{ marginTop: 4, marginRight: 2 }}>
+						<Stack direction={"column"} sx={{ marginTop: 4 }}>
 							<Typography
 								sx={{
 									fontSize: 35,
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								Storage
+								INVENTORY
 							</Typography>
 						</Stack>
 						<StorageIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
-								marginLeft: 10,
+								marginLeft: 5,
 							}}
 						/>
 					</Stack>

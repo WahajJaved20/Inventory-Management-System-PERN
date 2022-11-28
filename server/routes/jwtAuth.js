@@ -98,11 +98,13 @@ router.post("/register/customer", async (req, res) => {
 			"INSERT INTO customer (c_username, c_password,c_address,c_mobile_num,c_email) VALUES ($1, $2, $3, $4,$5) RETURNING *",
 			[username, bcryptPassword, address, mobile, email]
 		);
+		console.log("lmao");
 		const jwtToken = jwtGenerator(newUser.rows[0].c_id);
 		return res.json({ jwtToken });
 	} catch (err) {
+		console.log("lmao");
 		console.error(err.message);
-		res.status(500).send("Server error");
+		res.status(500).send({ status: "Server error" });
 	}
 });
 router.post("/login", async (req, res) => {

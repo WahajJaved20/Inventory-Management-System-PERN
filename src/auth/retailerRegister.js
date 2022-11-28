@@ -53,8 +53,6 @@ function RetailerRegister({ setAuth }) {
 			const parseRes = await response.json();
 			localStorage.setItem("token", parseRes.jwtToken);
 			localStorage.setItem("type", "retailer");
-			const history = useNavigate();
-			history("/");
 			setAuth(true);
 		} catch (err) {
 			console.error(err);
