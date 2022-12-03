@@ -5,7 +5,8 @@ const pool = require("../db");
 router.post("/getAdminNotifications", authorize, async (req, res) => {
 	try {
 		let notifications = await pool.query(
-			"SELECT * FROM retailer JOIN notifications ON (referrer_id = R_ID) WHERE TYPE=1"
+			"SELECT * FROM retailer JOIN notifications ON (referrer_id = R_ID) WHERE TYPE=$1",
+			[1]
 		);
 		res.json(notifications.rows);
 	} catch (err) {

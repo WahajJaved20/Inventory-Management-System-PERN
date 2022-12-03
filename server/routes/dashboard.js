@@ -28,6 +28,18 @@ router.post("/getname", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/getRetailerStatus", authorize, async (req, res) => {
+	try {
+		let user;
+		user = await pool.query("SELECT * FROM retailer WHERE r_id = $1;", [
+			req.user.id,
+		]);
+		res.json(user.rows[0].r_approval_status);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 router.post("/getProfile", authorize, async (req, res) => {
 	try {
 		const { type } = req.body;
