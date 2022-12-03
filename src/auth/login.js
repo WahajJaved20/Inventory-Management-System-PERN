@@ -24,6 +24,7 @@ function Login({ setAuth }) {
 	const [showPassword, setShowPassword] = React.useState(false);
 	const [password, setPassword] = React.useState("");
 	const [open, setOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
 	function handleClickShowPassword() {
 		setShowPassword(!showPassword);
 	}
@@ -44,6 +45,10 @@ function Login({ setAuth }) {
 			);
 			const parseRes = await response.json();
 			if (parseRes === "Invalid Credential") {
+				setMessage("Could not Log in, Invalid Credentials");
+				setOpen(true);
+			} else if (parseRes === "Account Not Approved Yet!") {
+				setMessage("Account Not Approved Yet!");
 				setOpen(true);
 			} else {
 				localStorage.setItem("token", parseRes.jwtToken);
@@ -58,7 +63,11 @@ function Login({ setAuth }) {
 	return (
 		<div>
 			<AuthNavbar />
-			<CustomizedSnackbars open={open} setOpen={setOpen} />
+			<CustomizedSnackbars
+				open={open}
+				setOpen={setOpen}
+				message={message}
+			/>
 			<div className="Form">
 				<Stack direction={"column"}>
 					<Stack direction={"row"}>

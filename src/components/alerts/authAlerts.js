@@ -7,7 +7,7 @@ const Alert = React.forwardRef(function Alert(props, ref) {
 	return <MuiAlert elevation={6} ref={ref} variant="filled" {...props} />;
 });
 
-export default function CustomizedSnackbars({ open, setOpen }) {
+export default function CustomizedSnackbars({ open, setOpen, message }) {
 	const handleClose = (event, reason) => {
 		if (reason === "clickaway") {
 			return;
@@ -22,7 +22,7 @@ export default function CustomizedSnackbars({ open, setOpen }) {
 					onClose={handleClose}
 					severity="error"
 					sx={{ width: "100%" }}>
-					Could not Log in, Invalid Credentials
+					{message}
 				</Alert>
 			</Snackbar>
 			{/* <Alert severity="error">This is an error message!</Alert>

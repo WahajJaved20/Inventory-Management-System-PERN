@@ -1,14 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Stack, Typography, Button } from "@mui/material";
 import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
 import HistoryIcon from "@mui/icons-material/History";
 function RetailerOptions() {
+	const [approved, setApproved] = useState(false);
+	async function getApprovalStatus() {
+		try {
+			const token = localStorage.getItem("token");
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getRetailerStatus",
+				{
+					method: "POST",
+					headers: { jwt_token: token },
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			if (parseRes === "TRUE") {
+				setApproved(true);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	useEffect(() => {
+		getApprovalStatus();
+	}, []);
 	return (
 		<>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Button
+					disabled={!approved}
 					sx={{
 						backgroundColor: "#2F2F43",
 						borderRadius: 4,
@@ -40,6 +64,7 @@ function RetailerOptions() {
 					</Stack>
 				</Button>
 				<Button
+					disabled={!approved}
 					sx={{
 						marginLeft: 5,
 						backgroundColor: "#2F2F43",
@@ -80,6 +105,7 @@ function RetailerOptions() {
 			</Stack>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Button
+					disabled={!approved}
 					sx={{
 						backgroundColor: "#2F2F43",
 						borderRadius: 4,
@@ -109,6 +135,7 @@ function RetailerOptions() {
 					</Stack>
 				</Button>
 				<Button
+					disabled={!approved}
 					sx={{
 						marginLeft: 5,
 						backgroundColor: "#2F2F43",
