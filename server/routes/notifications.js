@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const authorize = require("../middleware/authorize");
 const pool = require("../db");
+const { Router } = require("express");
 
 router.post("/getAdminNotifications", authorize, async (req, res) => {
 	try {
@@ -50,4 +51,5 @@ router.post("/handleRetailerApproval", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+
 module.exports = router;

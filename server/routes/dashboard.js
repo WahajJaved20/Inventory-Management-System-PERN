@@ -40,6 +40,23 @@ router.post("/getRetailerStatus", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("addInventory", authorize,async (res, req)=>{
+	try {
+		const {type, description} = req.body;
+		let addinven = await pool.query(
+			"INSERT INTO INVENTORY(INVENTORY_TYPE, INVENTORY_DESCRIPTION) VALUES ($1, $2) RETURNING *",[
+				type, description
+		]);
+		let addretinvent = await pool.query(
+			"UPDATE RETAILER SET INVENTORY_ID = $1 WHERE retailer_id = $2", [addinven.INVENTORY_ID, req.user.id]
+		)
+		res.json('success');
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+
 router.post("/getProfile", authorize, async (req, res) => {
 	try {
 		const { type } = req.body;
