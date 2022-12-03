@@ -17,31 +17,29 @@ function InventoryForm({ setAuth }) {
 	const [type, setType] = React.useState("");
 	const [description, setDescription] = React.useState("");
 	async function handleSubmit(e) {
-		// e.preventDefault();
-		// const inputs = {
-		// 	username: username,
-		// 	password: password,
-		// 	email: email,
-		// 	companyName: companyName,
-		// 	mobile: mobile,
-		// 	address: address,
-		// };
-		// try {
-		// 	const response = await fetch(
-		// 		"http://localhost:5000/authentication/register/retailer",
-		// 		{
-		// 			method: "POST",
-		// 			headers: { "Content-type": "application/json" },
-		// 			body: JSON.stringify(inputs),
-		// 		}
-		// 	);
-		// 	const parseRes = await response.json();
-		// 	localStorage.setItem("token", parseRes.jwtToken);
-		// 	localStorage.setItem("type", "retailer");
-		// 	setAuth(true);
-		// } catch (err) {
-		// 	console.error(err);
-		// }
+		e.preventDefault();
+		const token = localStorage.getItem("token");
+		const inputs = {
+			type: type,
+			description: description,
+		};
+		try {
+			const response = await fetch(
+				"http://localhost:5000/dashboard/addInventory",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+		} catch (err) {
+			console.error(err);
+		}
 	}
 	useEffect(() => {}, []);
 	return (
@@ -50,7 +48,7 @@ function InventoryForm({ setAuth }) {
 				<Typography sx={{ fontSize: 50, textAlign: "center" }}>
 					Inventory Details
 				</Typography>
-
+				<Link></Link>
 				<Stack direction={"column"} className="input-container">
 					<FormControl
 						variant="standard"
