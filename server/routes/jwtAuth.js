@@ -72,6 +72,10 @@ router.post("/register/retailer", async (req, res) => {
 			"INSERT INTO NOTIFICATIONS(referrer_id,string,type) VALUES ($1,$2,$3)",
 			[newUser.rows[0].r_id, "Approve Retailer", 1]
 		);
+		let notifR = await pool.query(
+			"INSERT INTO NOTIFICATIONS(referrer_id,string,type) VALUES ($1,$2,$3)",
+			[newUser.rows[0].r_id, "Inventory Details", 2]
+		);
 		const jwtToken = jwtGenerator(newUser.rows[0].r_id);
 		return res.json({ jwtToken });
 	} catch (err) {
@@ -98,11 +102,13 @@ router.post("/register/customer", async (req, res) => {
 			"INSERT INTO customer (c_username, c_password,c_address,c_mobile_num,c_email) VALUES ($1, $2, $3, $4,$5) RETURNING *",
 			[username, bcryptPassword, address, mobile, email]
 		);
+		console.log("lmao");
 		const jwtToken = jwtGenerator(newUser.rows[0].c_id);
 		return res.json({ jwtToken });
 	} catch (err) {
+		console.log("lmao");
 		console.error(err.message);
-		res.status(500).send("Server error");
+		res.status(500).send({ status: "Server error" });
 	}
 });
 router.post("/login", async (req, res) => {
@@ -145,6 +151,13 @@ router.post("/login", async (req, res) => {
 		);
 		if (!validPassword) {
 			return res.status(401).json("Invalid Credential");
+		}
+		if (type === "retailer") {
+			const status = user.rows[0].r_approval_status;
+			console.log(status);
+			if (status === "FALSE") {
+				res.status(401).json("Account Not Approved Yet!");
+			}
 		}
 		const jwtToken = jwtGenerator(
 			type === "admin"

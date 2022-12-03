@@ -1,14 +1,38 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Stack, Typography, Button } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
+import HistoryIcon from "@mui/icons-material/History";
 function RetailerOptions() {
+	const [approved, setApproved] = useState(false);
+	async function getApprovalStatus() {
+		try {
+			const token = localStorage.getItem("token");
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getRetailerStatus",
+				{
+					method: "POST",
+					headers: { jwt_token: token },
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			if (parseRes === "TRUE") {
+				setApproved(true);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	useEffect(() => {
+		getApprovalStatus();
+	}, []);
 	return (
 		<>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Button
+					disabled={!approved}
 					sx={{
 						backgroundColor: "#2F2F43",
 						borderRadius: 4,
@@ -24,11 +48,13 @@ function RetailerOptions() {
 									fontSize: 35,
 									fontWeight: "bold",
 									color: "white",
+									marginTop: 3,
+									marginRight: 2,
 								}}>
-								ORDERINGS
+								HISTORY
 							</Typography>
 						</Stack>
-						<ShoppingCartIcon
+						<HistoryIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
@@ -38,6 +64,7 @@ function RetailerOptions() {
 					</Stack>
 				</Button>
 				<Button
+					disabled={!approved}
 					sx={{
 						marginLeft: 5,
 						backgroundColor: "#2F2F43",
@@ -78,6 +105,7 @@ function RetailerOptions() {
 			</Stack>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Button
+					disabled={!approved}
 					sx={{
 						backgroundColor: "#2F2F43",
 						borderRadius: 4,
@@ -87,28 +115,27 @@ function RetailerOptions() {
 					<Stack
 						direction={"row"}
 						sx={{ marginLeft: 1, textAlign: "left" }}>
-						<Stack
-							direction={"column"}
-							sx={{ marginTop: 4, marginRight: 2 }}>
+						<Stack direction={"column"} sx={{ marginTop: 4 }}>
 							<Typography
 								sx={{
 									fontSize: 35,
 									fontWeight: "bold",
 									color: "white",
 								}}>
-								Storage
+								INVENTORY
 							</Typography>
 						</Stack>
 						<StorageIcon
 							sx={{
 								color: "#2bbab4",
 								fontSize: 160,
-								marginLeft: 10,
+								marginLeft: 5,
 							}}
 						/>
 					</Stack>
 				</Button>
 				<Button
+					disabled={!approved}
 					sx={{
 						marginLeft: 5,
 						backgroundColor: "#2F2F43",
