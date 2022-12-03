@@ -40,17 +40,18 @@ router.post("/getRetailerStatus", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("addInventory", authorize,async (res, req)=>{
+router.post("/addInventory", authorize, async (req, res) => {
 	try {
-		const {type, description} = req.body;
+		const { type, description } = req.body;
 		let addinven = await pool.query(
-			"INSERT INTO INVENTORY(INVENTORY_TYPE, INVENTORY_DESCRIPTION) VALUES ($1, $2) RETURNING *",[
-				type, description
-		]);
+			"INSERT INTO INVENTORY(INVENTORY_TYPE, INVENTORY_DESCRIPTION) VALUES ($1, $2) RETURNING *",
+			[type, description]
+		);
 		let addretinvent = await pool.query(
-			"UPDATE RETAILER SET INVENTORY_ID = $1 WHERE retailer_id = $2", [addinven.INVENTORY_ID, req.user.id]
-		)
-		res.json('success');
+			"UPDATE INVENTORY SET r_id = $1 WHERE INVENTORY_ID = $2 RETURNING *",
+			[req.user.id, addinven.rows[0].inventory_id]
+		);
+		res.json("success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -91,7 +92,6 @@ router.post("/getProfile", authorize, async (req, res) => {
 			});
 		}
 	} catch (err) {
-		console.err(err.message);
 		res.status(500).send("Server error");
 	}
 });
