@@ -16,7 +16,7 @@ function AdminDashboard({ setAuth }) {
 				<AdminSidebar />
 				<Stack
 					direction={"column"}
-					sx={{ marginLeft: 2, marginTop: 3 }}>
+					sx={{ marginLeft: 2, marginTop: 10 }}>
 					<WelcomeBox />
 					<AdminOptions />
 				</Stack>
