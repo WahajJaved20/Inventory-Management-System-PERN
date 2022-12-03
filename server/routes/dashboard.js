@@ -63,7 +63,16 @@ router.post("/addInventory", authorize, async (req, res) => {
 });
 router.post("/addProduct", authorize, async(req,res)=>{
 	try {
-		const {}
+		const {name, count} = req.body;
+		let addProd = await pool.query(
+			"INSERT INTO PRODUCT(INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT) VALUES ((SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $3),$1, $2)",
+			[name, count, req.user.id]
+		);
+		// update the count in inventory
+		let updateinvent = await pool.query(
+			""
+		)
+		res.json('Success');
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");

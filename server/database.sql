@@ -54,6 +54,12 @@ CREATE TABLE PRODUCT(
     PRODUCT_NAME VARCHAR(50),
     PRODUCT_COUNT INTEGER,
 );
+
+CREATE function update_count()
+    return trigger LANGUAGE PLPGSQL
+    AS $$
+    BEGIN 
+        NEW
 CREATE FUNCTION product_function()
     returns trigger language PLPGSQL
     AS $$
