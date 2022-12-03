@@ -13,8 +13,10 @@ import { Link } from "react-router-dom";
 import React, { useEffect } from "react";
 import CategoryIcon from "@mui/icons-material/Category";
 import DescriptionIcon from "@mui/icons-material/Description";
+import CustomizedSnackbars from "./alerts/authAlerts";
 function InventoryForm({ setAuth }) {
 	const [type, setType] = React.useState("");
+	const [open, setOpen] = React.useState(false);
 	const [description, setDescription] = React.useState("");
 	async function handleSubmit(e) {
 		e.preventDefault();
@@ -37,6 +39,7 @@ function InventoryForm({ setAuth }) {
 			);
 			const parseRes = await response.json();
 			console.log(parseRes);
+			setOpen(true);
 		} catch (err) {
 			console.error(err);
 		}
@@ -48,7 +51,14 @@ function InventoryForm({ setAuth }) {
 				<Typography sx={{ fontSize: 50, textAlign: "center" }}>
 					Inventory Details
 				</Typography>
-				<Link></Link>
+				<Link to="/dashboard/retailer">
+					<CustomizedSnackbars
+						open={open}
+						setOpen={setOpen}
+						message={"Click to go back"}
+						type={"success"}
+					/>
+				</Link>
 				<Stack direction={"column"} className="input-container">
 					<FormControl
 						variant="standard"

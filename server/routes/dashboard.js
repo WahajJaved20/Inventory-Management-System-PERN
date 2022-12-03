@@ -51,6 +51,10 @@ router.post("/addInventory", authorize, async (req, res) => {
 			"UPDATE INVENTORY SET r_id = $1 WHERE INVENTORY_ID = $2 RETURNING *",
 			[req.user.id, addinven.rows[0].inventory_id]
 		);
+		let notifDelete = await pool.query(
+			"DELETE FROM NOTIFICATIONS WHERE referrer_id=$1",
+			[req.user.id]
+		);
 		res.json("success");
 	} catch (err) {
 		console.error(err.message);
