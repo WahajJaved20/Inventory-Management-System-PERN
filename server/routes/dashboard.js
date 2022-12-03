@@ -61,6 +61,14 @@ router.post("/addInventory", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/addProduct", authorize, async(req,res)=>{
+	try {
+		const {}
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 
 router.post("/getProfile", authorize, async (req, res) => {
 	try {
