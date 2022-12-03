@@ -23,8 +23,8 @@ router.post("/handleRetailerRejection", authorize, async (req, res) => {
 			[r_id]
 		);
 		let notificationDeletion = await pool.query(
-			"DELETE FROM NOTIFICATIONS WHERE REFERRER_ID=$1",
-			[r_id]
+			"DELETE FROM NOTIFICATIONS WHERE REFERRER_ID=$1 AND TYPE=$2",
+			[r_id, 1]
 		);
 		res.json({ status: "success" });
 	} catch (err) {
@@ -41,10 +41,23 @@ router.post("/handleRetailerApproval", authorize, async (req, res) => {
 			[r_id, "TRUE"]
 		);
 		let notificationDeletion = await pool.query(
-			"DELETE FROM NOTIFICATIONS WHERE REFERRER_ID=$1",
-			[r_id]
+			"DELETE FROM NOTIFICATIONS WHERE REFERRER_ID=$1 AND TYPE=$2",
+			[r_id, 1]
 		);
 		res.json({ status: "success" });
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+
+router.post("/getRetailerNotifications", authorize, async (req, res) => {
+	try {
+		let notifications = await pool.query(
+			"SELECT * FROM retailer JOIN notifications ON (referrer_id = R_ID) WHERE TYPE=$1",
+			[2]
+		);
+		res.json(notifications.rows);
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");

@@ -7,6 +7,7 @@ import ProfileInformation from "../components/profileInformation";
 import NotificationButton from "../components/notificationButton";
 import WelcomeBox from "../components/welcomeBox";
 import LogoutButton from "../components/logout";
+import { Link } from "react-router-dom";
 
 function RetailerDashboard({ setAuth }) {
 	useEffect(() => {
@@ -19,7 +20,9 @@ function RetailerDashboard({ setAuth }) {
 				<Stack
 					direction={"column"}
 					sx={{ marginLeft: 2, marginTop: 3 }}>
-					<NotificationButton />
+					<Link to="/dashboard/retailer/notifications">
+						<NotificationButton />
+					</Link>
 					<WelcomeBox />
 					<RetailerOptions />
 				</Stack>

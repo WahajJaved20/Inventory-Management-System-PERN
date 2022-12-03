@@ -4,6 +4,7 @@ import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
+import { Link } from "react-router-dom";
 function RetailerSidebar() {
 	return (
 		<Box
@@ -20,15 +21,17 @@ function RetailerSidebar() {
 				backgroundColor: "#4163CF",
 				borderRadius: 4,
 			}}>
-			<Typography
-				sx={{
-					fontSize: 30,
-					fontWeight: "bold",
-					color: "white",
-				}}>
-				{" "}
-				IVMS{" "}
-			</Typography>
+			<Link to="/dashboard/retailer" style={{ textDecoration: "none" }}>
+				<Typography
+					sx={{
+						fontSize: 30,
+						fontWeight: "bold",
+						color: "white",
+					}}>
+					{" "}
+					IVMS{" "}
+				</Typography>
+			</Link>
 
 			<Button
 				sx={{
