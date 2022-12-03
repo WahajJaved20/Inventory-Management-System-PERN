@@ -87,7 +87,7 @@ function App() {
 							path="/register"
 							element={
 								!isAuthenticated ? (
-									<RegisterPage />
+									<RegisterPage setAuth={setAuth} />
 								) : type === "admin" ? (
 									<Navigate
 										to="/dashboard/admin"
@@ -112,7 +112,7 @@ function App() {
 							path="/register/retailer"
 							element={
 								!isAuthenticated ? (
-									<RetailerRegister />
+									<RetailerRegister setAuth={setAuth} />
 								) : type === "admin" ? (
 									<Navigate
 										to="/dashboard/admin"
