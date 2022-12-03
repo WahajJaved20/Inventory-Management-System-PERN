@@ -18,6 +18,8 @@ import PendingApprovals from "./options/admin/pendingApprovals";
 import UserAccesses from "./options/admin/userAccesses";
 import RevokeAccesses from "./options/admin/revokeAccesses";
 import ViewClients from "./options/admin/viewClients";
+import RetailerNotifications from "./dashboards/retailerNotifications";
+import InventoryForm from "./components/inventoryForm";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -189,6 +191,16 @@ function App() {
 							exact
 							path="/dashboard/admin/viewClients"
 							element={<ViewClients />}
+						/>
+						<Route
+							exact
+							path="/dashboard/retailer/notifications"
+							element={<RetailerNotifications />}
+						/>
+						<Route
+							exact
+							path="/dashboard/retailer/notifications/inventoryForm"
+							element={<InventoryForm />}
 						/>
 					</Routes>
 				</Router>

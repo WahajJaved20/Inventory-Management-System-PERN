@@ -2,7 +2,7 @@ import React from "react";
 import { Box, Typography, Button } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import LocalAtmIcon from "@mui/icons-material/LocalAtm";
-
+import { Link } from "react-router-dom";
 function CustomerSidebar() {
 	return (
 		<Box
@@ -19,15 +19,17 @@ function CustomerSidebar() {
 				backgroundColor: "#4163CF",
 				borderRadius: 4,
 			}}>
-			<Typography
-				sx={{
-					fontSize: 30,
-					fontWeight: "bold",
-					color: "white",
-				}}>
-				{" "}
-				IVMS{" "}
-			</Typography>
+			<Link to="/dashboard/admin" style={{ textDecoration: "none" }}>
+				<Typography
+					sx={{
+						fontSize: 30,
+						fontWeight: "bold",
+						color: "white",
+					}}>
+					{" "}
+					IVMS{" "}
+				</Typography>
+			</Link>
 
 			<Button
 				sx={{

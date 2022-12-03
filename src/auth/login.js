@@ -67,6 +67,7 @@ function Login({ setAuth }) {
 				open={open}
 				setOpen={setOpen}
 				message={message}
+				type={"error"}
 			/>
 			<div className="Form">
 				<Stack direction={"column"}>
