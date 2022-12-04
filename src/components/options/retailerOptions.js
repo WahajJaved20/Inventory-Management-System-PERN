@@ -68,45 +68,49 @@ function RetailerOptions() {
 						</Stack>
 					</Button>
 				</Link>
-				<Button
-					disabled={!approved}
-					sx={{
-						marginLeft: 5,
-						backgroundColor: "#2F2F43",
-						borderRadius: 4,
-						height: 200,
-						width: 500,
-					}}>
-					<Stack
-						direction={"row"}
-						sx={{ marginLeft: 1, textAlign: "left" }}>
-						<Stack direction={"column"} sx={{ marginTop: 4 }}>
-							<Typography
+				<Link
+					to="/dashboard/retailer/outbound"
+					style={{ textDecoration: "none" }}>
+					<Button
+						disabled={!approved}
+						sx={{
+							marginLeft: 5,
+							backgroundColor: "#2F2F43",
+							borderRadius: 4,
+							height: 200,
+							width: 500,
+						}}>
+						<Stack
+							direction={"row"}
+							sx={{ marginLeft: 1, textAlign: "left" }}>
+							<Stack direction={"column"} sx={{ marginTop: 4 }}>
+								<Typography
+									sx={{
+										fontSize: 35,
+										fontWeight: "bold",
+										color: "white",
+									}}>
+									Out
+								</Typography>
+								<Typography
+									sx={{
+										fontSize: 35,
+										fontWeight: "bold",
+										color: "white",
+									}}>
+									Bound
+								</Typography>
+							</Stack>
+							<PhoneForwardedIcon
 								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								Out
-							</Typography>
-							<Typography
-								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								Bound
-							</Typography>
+									color: "#2bbab4",
+									fontSize: 160,
+									marginLeft: 4,
+								}}
+							/>
 						</Stack>
-						<PhoneForwardedIcon
-							sx={{
-								color: "#2bbab4",
-								fontSize: 160,
-								marginLeft: 4,
-							}}
-						/>
-					</Stack>
-				</Button>
+					</Button>
+				</Link>
 			</Stack>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Link
@@ -143,45 +147,49 @@ function RetailerOptions() {
 						</Stack>
 					</Button>
 				</Link>
-				<Button
-					disabled={!approved}
-					sx={{
-						marginLeft: 5,
-						backgroundColor: "#2F2F43",
-						borderRadius: 4,
-						height: 200,
-						width: 500,
-					}}>
-					<Stack
-						direction={"row"}
-						sx={{ marginLeft: 1, textAlign: "left" }}>
-						<Stack direction={"column"} sx={{ marginTop: 4 }}>
-							<Typography
+				<Link
+					to="/dashboard/retailer/inbound"
+					style={{ textDecoration: "none" }}>
+					<Button
+						disabled={!approved}
+						sx={{
+							marginLeft: 5,
+							backgroundColor: "#2F2F43",
+							borderRadius: 4,
+							height: 200,
+							width: 500,
+						}}>
+						<Stack
+							direction={"row"}
+							sx={{ marginLeft: 1, textAlign: "left" }}>
+							<Stack direction={"column"} sx={{ marginTop: 4 }}>
+								<Typography
+									sx={{
+										fontSize: 35,
+										fontWeight: "bold",
+										color: "white",
+									}}>
+									In
+								</Typography>
+								<Typography
+									sx={{
+										fontSize: 35,
+										fontWeight: "bold",
+										color: "white",
+									}}>
+									Bound
+								</Typography>
+							</Stack>
+							<PhoneCallbackIcon
 								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								In
-							</Typography>
-							<Typography
-								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								Bound
-							</Typography>
+									color: "#2bbab4",
+									fontSize: 160,
+									marginLeft: 8,
+								}}
+							/>
 						</Stack>
-						<PhoneCallbackIcon
-							sx={{
-								color: "#2bbab4",
-								fontSize: 160,
-								marginLeft: 8,
-							}}
-						/>
-					</Stack>
-				</Button>
+					</Button>
+				</Link>
 			</Stack>
 		</>
 	);

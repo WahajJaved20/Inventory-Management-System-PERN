@@ -1,10 +1,19 @@
 import React, { useEffect } from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
-import SearchBar from "material-ui-search-bar";
-import { Stack, Typography, Slide } from "@mui/material";
+import {
+	Stack,
+	Typography,
+	Slide,
+	FormControl,
+	OutlinedInput,
+	InputAdornment,
+	IconButton,
+	InputLabel,
+} from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import RowSelection from "./dialogs/rowSelect";
+import SearchIcon from "@mui/icons-material/Search";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -48,18 +57,46 @@ function HistoryPage() {
 						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
 						HISTORY
 					</Typography>
-					<SearchBar
-						// onChange={}
-						onRequestSearch={() => console.log("onRequestSearch")}
-						style={{
-							margin: "2 3",
-							width: 1000,
-
-							height: 50,
-							backgroundColor: "#05447a",
-							fontSize: 20,
-						}}
-					/>
+					<FormControl variant="standard">
+						<Stack direction={"column"}>
+							<OutlinedInput
+								endAdornment={
+									<InputAdornment position="end">
+										<IconButton
+											sx={{
+												color: "black",
+												mr: 1,
+												my: 0.5,
+												fontSize: "50px",
+											}}>
+											<SearchIcon />
+										</IconButton>
+									</InputAdornment>
+								}
+								inputProps={{
+									disableunderline: "true",
+								}}
+								sx={{
+									backgroundColor: "#05447a",
+									width: 550,
+									borderRadius: 4,
+									fontSize: 25,
+									height: 60,
+								}}
+							/>
+							<InputLabel
+								style={{ fontSize: 20, marginTop: -10 }}
+								sx={{
+									color: "white",
+									marginLeft: 2,
+								}}>
+								<Typography
+									sx={{ fontSize: 25, fontWeight: "bold" }}>
+									Search
+								</Typography>
+							</InputLabel>
+						</Stack>
+					</FormControl>
 					<DataGrid
 						onRowDoubleClick={handleDataOpen}
 						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}

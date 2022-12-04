@@ -45,15 +45,19 @@ function RetailerSidebar() {
 					<HistoryIcon sx={{ fontSize: 40, color: "white" }} />
 				</Button>
 			</Link>
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 2,
-					padding: 1,
-				}}>
-				<PhoneForwardedIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
+			<Link
+				to="/dashboard/retailer/outbound"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 2,
+						padding: 1,
+					}}>
+					<PhoneForwardedIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
 			<Link
 				to="/dashboard/retailer/inventory"
 				style={{ textDecoration: "none" }}>
@@ -67,15 +71,19 @@ function RetailerSidebar() {
 					<StorageIcon sx={{ fontSize: 40, color: "black" }} />
 				</Button>
 			</Link>
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 2,
-					padding: 1,
-				}}>
-				<PhoneCallbackIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
+			<Link
+				to="/dashboard/retailer/inbound"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 2,
+						padding: 1,
+					}}>
+					<PhoneCallbackIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
 		</Box>
 	);
 }

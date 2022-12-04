@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
 import {
@@ -14,34 +14,25 @@ import {
 	InputLabel,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import InventoryInformation from "./dialogs/inventoryInfo";
 import RowSelection from "./dialogs/rowSelect";
 import SearchIcon from "@mui/icons-material/Search";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
-function InventoryPage() {
+function OutboundPage() {
 	const columns = [
-		{ field: "id", headerName: "Product_ID", width: 200 },
-		{ field: "Product_Name", headerName: "Product_Name", width: 300 },
-		{ field: "Product_Type", headerName: "Product_Type", width: 300 },
-		{ field: "Count", headerName: "Count", width: 300 },
+		{ field: "id", headerName: "Inbound_ID", width: 200 },
+		{ field: "Product_ID", headerName: "Product_ID", width: 300 },
+		{ field: "Product_Count", headerName: "Product_Count", width: 300 },
+		{ field: "Reciever_ID", headerName: "Reciever_ID", width: 300 },
 	];
 
 	const rows = [
-		{ id: 1, Product_Name: "nigga", Product_Type: "haha", Count: 69 },
+		{ id: 1, Product_ID: "nigga", Product_Count: "haha", Reciever_ID: 69 },
 	];
-	const [open, setOpen] = React.useState(false);
 	const [dataOpen, setDataOpen] = React.useState(false);
-	useEffect(() => {}, [open]);
-	const handleClickOpen = () => {
-		setOpen(true);
-	};
 
-	const handleClose = () => {
-		setOpen(false);
-	};
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
@@ -58,7 +49,7 @@ function InventoryPage() {
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
 						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
-						INVENTORY
+						OUTBOUND
 					</Typography>
 					<FormControl variant="standard">
 						<Stack direction={"column"}>
@@ -107,62 +98,17 @@ function InventoryPage() {
 								sx={{
 									backgroundColor: "#4163CF",
 									height: 60,
-									width: 300,
+									width: 400,
 									fontSize: 25,
 									fontWeight: "bold",
 								}}>
-								ADD PRODUCT
+								✨DISPATCH✨ PRODUCT✈
 							</Button>
-						</Grid>
-						<Grid item xs={3}>
-							<Button
-								variant={"contained"}
-								sx={{
-									backgroundColor: "#4163CF",
-									height: 60,
-									width: 300,
-									fontSize: 25,
-									fontWeight: "bold",
-								}}>
-								DELETE PRODUCT
-							</Button>
-						</Grid>
-						<Grid item xs={3}>
-							<Button
-								variant={"contained"}
-								sx={{
-									backgroundColor: "#4163CF",
-									height: 60,
-									width: 200,
-									fontSize: 25,
-									fontWeight: "bold",
-								}}>
-								History
-							</Button>
-						</Grid>
-						<Grid item xs={3}>
-							<Button
-								onClick={handleClickOpen}
-								variant={"contained"}
-								sx={{
-									backgroundColor: "#4163CF",
-									height: 60,
-									width: 380,
-									fontSize: 25,
-									fontWeight: "bold",
-								}}>
-								Inventory Details
-							</Button>
-							<InventoryInformation
-								Transition={Transition}
-								handleClose={handleClose}
-								open={open}
-							/>
 						</Grid>
 					</Grid>
 					<DataGrid
 						onRowDoubleClick={handleDataOpen}
-						sx={{ marginTop: 2, fontSize: 20 }}
+						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
 						columns={columns}
 						pageSize={5}
 						rowsPerPageOptions={[5]}
@@ -178,4 +124,4 @@ function InventoryPage() {
 		</div>
 	);
 }
-export default InventoryPage;
+export default OutboundPage;
