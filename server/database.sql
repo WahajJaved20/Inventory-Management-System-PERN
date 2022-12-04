@@ -55,11 +55,11 @@ CREATE TABLE PRODUCT(
     PRODUCT_COUNT INTEGER,
 );
 
-CREATE function update_count()
+CREATE function update_count(new_count)
     return trigger LANGUAGE PLPGSQL
     AS $$
     BEGIN 
-        NEW
+        
 CREATE FUNCTION product_function()
     returns trigger language PLPGSQL
     AS $$

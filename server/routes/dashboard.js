@@ -65,13 +65,13 @@ router.post("/addProduct", authorize, async(req,res)=>{
 	try {
 		const {name, count} = req.body;
 		let addProd = await pool.query(
-			"INSERT INTO PRODUCT(INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT) VALUES ((SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $3),$1, $2)",
-			[name, count, req.user.id]
+			"INSERT INTO PRODUCT(INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT) VALUES ((SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $1),$2, $3) RETURNING *",
+			[ req.user.id,name, count]
 		);
 		// update the count in inventory
 		let updateinvent = await pool.query(
-			""
-		)
+			"UPDATE INVENTORY SET INVENTORY_COUNT = INVENOTRY_COUNT+$1 WHERE INVENTORY_ID = $2",[count, addProd.rows[0].inventory_id]
+		);
 		res.json('Success');
 	} catch (err) {
 		console.error(err.message);
