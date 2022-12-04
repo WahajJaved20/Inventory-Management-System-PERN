@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
 import SearchBar from "material-ui-search-bar";
@@ -16,11 +16,14 @@ import {
 	Divider,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
+import InventoryInformation from "./dialogs/inventoryInfo";
+import RowSelection from "./dialogs/rowSelect";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 function InventoryPage() {
+	useEffect(() => {}, [open]);
 	const columns = [
 		{ field: "id", headerName: "ID", width: 200 },
 		{ field: "Name", headerName: "Name", width: 300 },
@@ -50,19 +53,18 @@ function InventoryPage() {
 				<RetailerSidebar />
 				<Stack
 					direction={"column"}
-					sx={{ marginLeft: 5, marginTop: 4 }}>
+					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
 						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
 						INVENTORY
 					</Typography>
 					<SearchBar
-						dataSource={rows.id}
 						// onChange={}
 						onRequestSearch={() => console.log("onRequestSearch")}
 						style={{
 							margin: "2 3",
 							width: 1000,
-							maxWidth: 800,
+
 							height: 50,
 							backgroundColor: "#05447a",
 							fontSize: 20,
@@ -121,39 +123,11 @@ function InventoryPage() {
 								}}>
 								Inventory Details
 							</Button>
-							<Dialog
+							<InventoryInformation
+								Transition={Transition}
+								handleClose={handleClose}
 								open={open}
-								TransitionComponent={Transition}
-								keepMounted
-								onClose={handleClose}
-								aria-describedby="alert-dialog-slide-description">
-								<DialogTitle>{"INVENTORY DETAILS"}</DialogTitle>
-								<DialogContent>
-									<DialogContentText>
-										ID: haha
-									</DialogContentText>
-									<Divider />
-									<DialogContentText>
-										TYPE: haha
-									</DialogContentText>
-									<Divider />
-									<DialogContentText>
-										Count: haha
-									</DialogContentText>
-									<Divider />
-									<DialogContentText>
-										Max Count: haha
-									</DialogContentText>
-									<Divider />
-									<DialogContentText>
-										Description: haha
-									</DialogContentText>
-									<Divider />
-								</DialogContent>
-								<DialogActions>
-									<Button onClick={handleClose}>Close</Button>
-								</DialogActions>
-							</Dialog>
+							/>
 						</Grid>
 					</Grid>
 					<DataGrid
@@ -164,27 +138,11 @@ function InventoryPage() {
 						rowsPerPageOptions={[5]}
 						rows={rows}
 					/>
-					<Dialog
+					<RowSelection
 						open={dataOpen}
-						TransitionComponent={Transition}
-						keepMounted
-						onClose={handleDataClose}
-						aria-describedby="alert-dialog-slide-description">
-						<DialogTitle>{"Options"}</DialogTitle>
-						<DialogContent>
-							<Button>
-								<DialogContentText>INBOUND</DialogContentText>
-							</Button>
-							<Divider />
-							<Button>
-								<DialogContentText>OUTBOUND</DialogContentText>
-							</Button>
-							<Divider />
-						</DialogContent>
-						<DialogActions>
-							<Button onClick={handleDataClose}>Close</Button>
-						</DialogActions>
-					</Dialog>
+						Transition={Transition}
+						handleClose={handleDataClose}
+					/>
 				</Stack>
 			</Stack>
 		</div>
