@@ -32,38 +32,42 @@ function RetailerOptions() {
 	return (
 		<>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
-				<Button
-					disabled={!approved}
-					sx={{
-						backgroundColor: "#2F2F43",
-						borderRadius: 4,
-						height: 200,
-						width: 500,
-					}}>
-					<Stack
-						direction={"row"}
-						sx={{ marginLeft: 1, textAlign: "left" }}>
-						<Stack direction={"column"} sx={{ marginTop: 4 }}>
-							<Typography
+				<Link
+					to="/dashboard/retailer/history"
+					style={{ textDecoration: "none" }}>
+					<Button
+						disabled={!approved}
+						sx={{
+							backgroundColor: "#2F2F43",
+							borderRadius: 4,
+							height: 200,
+							width: 500,
+						}}>
+						<Stack
+							direction={"row"}
+							sx={{ marginLeft: 1, textAlign: "left" }}>
+							<Stack direction={"column"} sx={{ marginTop: 4 }}>
+								<Typography
+									sx={{
+										fontSize: 35,
+										fontWeight: "bold",
+										color: "white",
+										marginTop: 3,
+										marginRight: 2,
+									}}>
+									HISTORY
+								</Typography>
+							</Stack>
+							<HistoryIcon
 								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-									marginTop: 3,
-									marginRight: 2,
-								}}>
-								HISTORY
-							</Typography>
+									color: "#2bbab4",
+									fontSize: 160,
+									marginLeft: 4,
+								}}
+							/>
 						</Stack>
-						<HistoryIcon
-							sx={{
-								color: "#2bbab4",
-								fontSize: 160,
-								marginLeft: 4,
-							}}
-						/>
-					</Stack>
-				</Button>
+					</Button>
+				</Link>
 				<Button
 					disabled={!approved}
 					sx={{

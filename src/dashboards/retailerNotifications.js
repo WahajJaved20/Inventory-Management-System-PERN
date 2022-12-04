@@ -1,4 +1,4 @@
-import { Stack, Box, Typography, Button } from "@mui/material";
+import { Stack, Box, Typography } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import RetailerSidebar from "../components/sidebars/retailerSidebar";
 import { Link } from "react-router-dom";

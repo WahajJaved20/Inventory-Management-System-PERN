@@ -6,7 +6,6 @@ import {
 	OutlinedInput,
 	Stack,
 	InputAdornment,
-	IconButton,
 	Button,
 } from "@mui/material";
 import { Link } from "react-router-dom";

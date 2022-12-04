@@ -156,7 +156,7 @@ router.post("/login", async (req, res) => {
 			const status = user.rows[0].r_approval_status;
 			console.log(status);
 			if (status === "FALSE") {
-				res.status(401).json("Account Not Approved Yet!");
+				return res.status(401).json("Account Not Approved Yet!");
 			}
 		}
 		const jwtToken = jwtGenerator(

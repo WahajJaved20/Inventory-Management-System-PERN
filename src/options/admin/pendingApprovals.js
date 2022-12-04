@@ -1,9 +1,22 @@
-import { Stack, Box, Typography, Button } from "@mui/material";
+import { Stack, Box, Typography, Button, Slide } from "@mui/material";
 import React, { useEffect, useState } from "react";
 import AdminSidebar from "../../components/sidebars/adminSidebar";
 import "../background.css";
+import GetMaxCount from "./dialogs/getCount";
+const Transition = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
 function PendingApprovals() {
 	const [notifications, setNotifications] = useState([]);
+	const [dataOpen, setDataOpen] = React.useState(false);
+	const handleDataOpen = (notif) => {
+		localStorage.setItem("notif", notif["r_id"]);
+		setDataOpen(true);
+	};
+
+	const handleDataClose = () => {
+		setDataOpen(false);
+	};
 	async function getNotifications() {
 		const token = localStorage.getItem("token");
 		try {
@@ -46,33 +59,17 @@ function PendingApprovals() {
 			console.error(err);
 		}
 	}
-	async function handleApproval(e) {
-		const token = localStorage.getItem("token");
-		try {
-			const inputs = { r_id: e["r_id"] };
 
-			const response = await fetch(
-				"http://localhost:5000/notif/handleRetailerApproval",
-				{
-					method: "POST",
-					headers: {
-						jwt_token: token,
-						"Content-type": "application/json",
-					},
-					body: JSON.stringify(inputs),
-				}
-			);
-			const parseRes = await response.json();
-			console.log(parseRes);
-			getNotifications();
-		} catch (err) {
-			console.error(err);
-		}
-	}
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
 				<AdminSidebar />
+				<GetMaxCount
+					Transition={Transition}
+					handleClose={handleDataClose}
+					open={dataOpen}
+					getNotifications={getNotifications}
+				/>
 				<Stack
 					direction={"column"}
 					sx={{ marginTop: 3, marginLeft: 3 }}>
@@ -110,7 +107,7 @@ function PendingApprovals() {
 										</Typography>
 										<Button
 											onClick={() =>
-												handleApproval(notif)
+												handleDataOpen(notif)
 											}
 											variant="contained"
 											color="success"

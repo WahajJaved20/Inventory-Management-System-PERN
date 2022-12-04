@@ -43,13 +43,9 @@ router.post("/getRetailerStatus", authorize, async (req, res) => {
 router.post("/addInventory", authorize, async (req, res) => {
 	try {
 		const { type, description } = req.body;
-		let addinven = await pool.query(
-			"INSERT INTO INVENTORY(INVENTORY_TYPE, INVENTORY_DESCRIPTION) VALUES ($1, $2) RETURNING *",
-			[type, description]
-		);
 		let addretinvent = await pool.query(
-			"UPDATE INVENTORY SET r_id = $1 WHERE INVENTORY_ID = $2 RETURNING *",
-			[req.user.id, addinven.rows[0].inventory_id]
+			"UPDATE INVENTORY SET inventory_type=$1,inventory_description=$2 WHERE r_id = $3 RETURNING *",
+			[type, description, req.user.id]
 		);
 		let notifDelete = await pool.query(
 			"DELETE FROM NOTIFICATIONS WHERE referrer_id=$1",

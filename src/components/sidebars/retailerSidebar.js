@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Typography, Button } from "@mui/material";
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+import HistoryIcon from "@mui/icons-material/History";
 import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
@@ -32,16 +32,19 @@ function RetailerSidebar() {
 					IVMS{" "}
 				</Typography>
 			</Link>
-
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 25,
-					padding: 1,
-				}}>
-				<ShoppingCartIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
+			<Link
+				to="/dashboard/retailer/history"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 25,
+						padding: 1,
+					}}>
+					<HistoryIcon sx={{ fontSize: 40, color: "white" }} />
+				</Button>
+			</Link>
 			<Button
 				sx={{
 					backgroundColor: "#738CE4",

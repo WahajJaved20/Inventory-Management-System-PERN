@@ -21,6 +21,7 @@ import ViewClients from "./options/admin/viewClients";
 import RetailerNotifications from "./dashboards/retailerNotifications";
 import InventoryForm from "./components/inventoryForm";
 import InventoryPage from "./options/retailer/inventory";
+import HistoryPage from "./options/retailer/history";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -207,6 +208,11 @@ function App() {
 							exact
 							path="/dashboard/retailer/inventory"
 							element={<InventoryPage />}
+						/>
+						<Route
+							exact
+							path="/dashboard/retailer/history"
+							element={<HistoryPage />}
 						/>
 					</Routes>
 				</Router>

@@ -36,7 +36,7 @@ router.post("/handleRetailerRejection", authorize, async (req, res) => {
 
 router.post("/handleRetailerApproval", authorize, async (req, res) => {
 	try {
-		const { r_id } = req.body;
+		const { r_id, count } = req.body;
 		let enititySelection = await pool.query(
 			"UPDATE RETAILER SET R_APPROVAL_STATUS=$2 WHERE r_id=$1",
 			[r_id, "TRUE"]
@@ -44,6 +44,10 @@ router.post("/handleRetailerApproval", authorize, async (req, res) => {
 		let notificationDeletion = await pool.query(
 			"DELETE FROM NOTIFICATIONS WHERE REFERRER_ID=$1 AND TYPE=$2",
 			[r_id, 1]
+		);
+		let addinven = await pool.query(
+			"INSERT INTO INVENTORY(r_id,inventory_max_count) VALUES ($1,$2) RETURNING *",
+			[r_id, count]
 		);
 		res.json({ status: "success" });
 	} catch (err) {

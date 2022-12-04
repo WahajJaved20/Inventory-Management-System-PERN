@@ -2,19 +2,7 @@ import React, { useEffect } from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
 import SearchBar from "material-ui-search-bar";
-import {
-	Stack,
-	Button,
-	Grid,
-	Typography,
-	Slide,
-	Dialog,
-	DialogActions,
-	DialogTitle,
-	DialogContent,
-	DialogContentText,
-	Divider,
-} from "@mui/material";
+import { Stack, Button, Grid, Typography, Slide } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import InventoryInformation from "./dialogs/inventoryInfo";
 import RowSelection from "./dialogs/rowSelect";
@@ -23,16 +11,16 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
 function InventoryPage() {
-	useEffect(() => {}, [open]);
 	const columns = [
-		{ field: "id", headerName: "ID", width: 200 },
-		{ field: "Name", headerName: "Name", width: 300 },
+		{ field: "id", headerName: "Product_ID", width: 200 },
+		{ field: "Product_Name", headerName: "Product_Name", width: 300 },
 		{ field: "Count", headerName: "Count", width: 300 },
 	];
-	const rows = [{ id: 1, Name: "nigga", Count: 69 }];
+
+	const rows = [{ id: 1, Product_Name: "nigga", Count: 69 }];
 	const [open, setOpen] = React.useState(false);
 	const [dataOpen, setDataOpen] = React.useState(false);
-
+	useEffect(() => {}, [open]);
 	const handleClickOpen = () => {
 		setOpen(true);
 	};
@@ -70,36 +58,36 @@ function InventoryPage() {
 							fontSize: 20,
 						}}
 					/>
-					<Grid container spacing={5} sx={{ marginTop: 1 }}>
+					<Grid container spacing={2} sx={{ marginTop: 1 }}>
 						<Grid item xs={3}>
 							<Button
-								variant="contained"
+								variant={"contained"}
 								sx={{
 									backgroundColor: "#4163CF",
 									height: 60,
-									width: 200,
+									width: 300,
 									fontSize: 25,
 									fontWeight: "bold",
 								}}>
-								Inbound
+								ADD PRODUCT
 							</Button>
 						</Grid>
 						<Grid item xs={3}>
 							<Button
-								variant="contained"
+								variant={"contained"}
 								sx={{
 									backgroundColor: "#4163CF",
 									height: 60,
-									width: 200,
+									width: 300,
 									fontSize: 25,
 									fontWeight: "bold",
 								}}>
-								Outbound
+								DELETE PRODUCT
 							</Button>
 						</Grid>
 						<Grid item xs={3}>
 							<Button
-								variant="contained"
+								variant={"contained"}
 								sx={{
 									backgroundColor: "#4163CF",
 									height: 60,
@@ -113,11 +101,11 @@ function InventoryPage() {
 						<Grid item xs={3}>
 							<Button
 								onClick={handleClickOpen}
-								variant="contained"
+								variant={"contained"}
 								sx={{
 									backgroundColor: "#4163CF",
 									height: 60,
-									width: 400,
+									width: 380,
 									fontSize: 25,
 									fontWeight: "bold",
 								}}>

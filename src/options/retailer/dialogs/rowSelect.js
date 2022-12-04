@@ -20,11 +20,19 @@ function RowSelection({ Transition, handleClose, open, data }) {
 			<DialogTitle>{"Options"}</DialogTitle>
 			<DialogContent>
 				<Button>
-					<DialogContentText>INBOUND</DialogContentText>
+					<DialogContentText>INCREASE PRODUCT</DialogContentText>
 				</Button>
 				<Divider />
 				<Button>
-					<DialogContentText>OUTBOUND</DialogContentText>
+					<DialogContentText>DECREASE PRODUCT</DialogContentText>
+				</Button>
+				<Divider />
+				<Button>
+					<DialogContentText>REMOVE PRODUCT</DialogContentText>
+				</Button>
+				<Divider />
+				<Button>
+					<DialogContentText>UPDATE PRODUCT</DialogContentText>
 				</Button>
 				<Divider />
 			</DialogContent>
