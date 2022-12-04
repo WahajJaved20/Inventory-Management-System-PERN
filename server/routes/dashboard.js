@@ -116,4 +116,44 @@ router.post("/getProfile", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+
+router.get("/getInventory", authorize, async (req,res)=>{
+	try {
+		let getID = await pool.query(
+			"SELECT * from INVENTORY WHERE R_ID = $1",
+			[req.user.id]
+		);
+		res.json(getID.rows[0]);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+router.
+router.get("/getInbound", authorize, async(req,res)=>{
+	try {
+		let getInbound = await pool.query(
+			"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID where R_ID = $1",
+			[req.user.id]
+		);
+		res.json(getInbound.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+
+router.get("/getOutbound", authorize, async (req,res)=>{
+	try {
+		let getOutbound = pool.query(
+			"SELECT * FROM OUTBOUND JOIN INVENTORY ON OUTBOUD.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE R_ID = $1", 
+			[req.user.id]
+		);
+		res.json(getOutbound.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+
 module.exports = router;
