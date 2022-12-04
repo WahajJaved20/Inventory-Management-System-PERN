@@ -20,6 +20,7 @@ import RevokeAccesses from "./options/admin/revokeAccesses";
 import ViewClients from "./options/admin/viewClients";
 import RetailerNotifications from "./dashboards/retailerNotifications";
 import InventoryForm from "./components/inventoryForm";
+import InventoryPage from "./options/retailer/inventory";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -201,6 +202,11 @@ function App() {
 							exact
 							path="/dashboard/retailer/notifications/inventoryForm"
 							element={<InventoryForm />}
+						/>
+						<Route
+							exact
+							path="/dashboard/retailer/inventory"
+							element={<InventoryPage />}
 						/>
 					</Routes>
 				</Router>

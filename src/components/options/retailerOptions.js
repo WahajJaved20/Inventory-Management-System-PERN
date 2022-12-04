@@ -4,6 +4,7 @@ import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
 import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
 import HistoryIcon from "@mui/icons-material/History";
+import { Link } from "react-router-dom";
 function RetailerOptions() {
 	const [approved, setApproved] = useState(false);
 	async function getApprovalStatus() {
@@ -104,36 +105,40 @@ function RetailerOptions() {
 				</Button>
 			</Stack>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
-				<Button
-					disabled={!approved}
-					sx={{
-						backgroundColor: "#2F2F43",
-						borderRadius: 4,
-						height: 200,
-						width: 500,
-					}}>
-					<Stack
-						direction={"row"}
-						sx={{ marginLeft: 1, textAlign: "left" }}>
-						<Stack direction={"column"} sx={{ marginTop: 4 }}>
-							<Typography
+				<Link
+					to="/dashboard/retailer/inventory"
+					style={{ textDecoration: "none" }}>
+					<Button
+						disabled={!approved}
+						sx={{
+							backgroundColor: "#2F2F43",
+							borderRadius: 4,
+							height: 200,
+							width: 500,
+						}}>
+						<Stack
+							direction={"row"}
+							sx={{ marginLeft: 1, textAlign: "left" }}>
+							<Stack direction={"column"} sx={{ marginTop: 4 }}>
+								<Typography
+									sx={{
+										fontSize: 35,
+										fontWeight: "bold",
+										color: "white",
+									}}>
+									INVENTORY
+								</Typography>
+							</Stack>
+							<StorageIcon
 								sx={{
-									fontSize: 35,
-									fontWeight: "bold",
-									color: "white",
-								}}>
-								INVENTORY
-							</Typography>
+									color: "#2bbab4",
+									fontSize: 160,
+									marginLeft: 5,
+								}}
+							/>
 						</Stack>
-						<StorageIcon
-							sx={{
-								color: "#2bbab4",
-								fontSize: 160,
-								marginLeft: 5,
-							}}
-						/>
-					</Stack>
-				</Button>
+					</Button>
+				</Link>
 				<Button
 					disabled={!approved}
 					sx={{

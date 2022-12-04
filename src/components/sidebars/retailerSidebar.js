@@ -51,15 +51,19 @@ function RetailerSidebar() {
 				}}>
 				<PhoneForwardedIcon sx={{ fontSize: 40, color: "black" }} />
 			</Button>
-			<Button
-				sx={{
-					backgroundColor: "#738CE4",
-					borderRadius: 4,
-					marginTop: 2,
-					padding: 1,
-				}}>
-				<StorageIcon sx={{ fontSize: 40, color: "black" }} />
-			</Button>
+			<Link
+				to="/dashboard/retailer/inventory"
+				style={{ textDecoration: "none" }}>
+				<Button
+					sx={{
+						backgroundColor: "#738CE4",
+						borderRadius: 4,
+						marginTop: 2,
+						padding: 1,
+					}}>
+					<StorageIcon sx={{ fontSize: 40, color: "black" }} />
+				</Button>
+			</Link>
 			<Button
 				sx={{
 					backgroundColor: "#738CE4",
