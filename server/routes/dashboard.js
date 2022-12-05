@@ -201,12 +201,21 @@ router.post("/sendOutbound", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.get("/getInbound", authorize, async (req, res) => {
+router.post("/getInbound", authorize, async (req, res) => {
 	try {
-		let getInbound = await pool.query(
-			"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID where R_ID = $1",
-			[req.user.id]
-		);
+		let { id } = req.body;
+		let getInbound;
+		if (!id) {
+			getInbound = await pool.query(
+				"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN PRODUCT ON PRODUCT.PRODUCT_ID=INBOUND.PRODUCT_ID where R_ID = $1",
+				[req.user.id]
+			);
+		} else {
+			getInbound = await pool.query(
+				"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN PRODUCT ON PRODUCT.PRODUCT_ID=INBOUND.PRODUCT_ID where R_ID = $1 and INBOUD.product_id=$2",
+				[req.user.id, id]
+			);
+		}
 		res.json(getInbound.rows);
 	} catch (err) {
 		console.error(err.message);

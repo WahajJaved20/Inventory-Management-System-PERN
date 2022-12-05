@@ -541,7 +541,6 @@ function InventoryPage() {
 							<Button
 								onClick={() => {
 									handleDataClose();
-
 									handleDecOpen();
 								}}>
 								<DialogContentText>

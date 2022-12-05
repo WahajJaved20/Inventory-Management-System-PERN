@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
 import {
@@ -12,9 +12,15 @@ import {
 	InputAdornment,
 	IconButton,
 	InputLabel,
+	Dialog,
+	DialogActions,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	Divider,
+	TextField,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import RowSelection from "./dialogs/rowSelect";
 import SearchIcon from "@mui/icons-material/Search";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -27,12 +33,22 @@ function InboundPage() {
 		{ field: "Product_Count", headerName: "Product_Count", width: 300 },
 		{ field: "Sender_ID", headerName: "Sender_ID", width: 300 },
 	];
+	const [rows, setRows] = React.useState([
+		{
+			id: 1,
+			Product_ID: "nigga",
+			Product_Count: "haha",
+			Sender_ID: 69,
+		},
+	]);
 
-	const rows = [
-		{ id: 1, Product_ID: "nigga", Product_Count: "haha", Sender_ID: 69 },
-	];
 	const [dataOpen, setDataOpen] = React.useState(false);
-
+	const [searchQuery, setSearchQuery] = React.useState("");
+	const [productName, setProductName] = React.useState("");
+	const [productCount, setProductCount] = React.useState("");
+	const [productType, setProductType] = React.useState("");
+	const [productDescription, setProductDescription] = React.useState("");
+	const [existOpen, setExistOpen] = React.useState(false);
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
@@ -40,6 +56,82 @@ function InboundPage() {
 	const handleDataClose = () => {
 		setDataOpen(false);
 	};
+	const handleExistOpen = () => {
+		setExistOpen(true);
+	};
+
+	const handleExistClose = () => {
+		setExistOpen(false);
+	};
+	async function handleAddApproval() {
+		const token = localStorage.getItem("token");
+		try {
+			const inputs = {
+				name: productName,
+				count: productCount,
+				type: productType,
+				description: productDescription,
+			};
+
+			const response = await fetch(
+				"http://localhost:5000/dashboard/addProduct",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			setProductName("");
+			setProductType("");
+			setProductCount("");
+			setProductDescription("");
+			handleExistClose();
+			getInboundList();
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	async function getInboundList() {
+		const token = localStorage.getItem("token");
+		try {
+			const inputs = {
+				name: searchQuery,
+			};
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getInbound",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			let tempRows = [];
+			parseRes.map((pr) => {
+				tempRows.push({
+					id: pr.product_id,
+					Product_ID: pr.product_name,
+					Product_Count: pr.product_count,
+					Sender_ID: pr.sender_id,
+				});
+			});
+			setRows(tempRows);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	useEffect(() => {
+		getInboundList();
+	}, []);
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
@@ -94,6 +186,7 @@ function InboundPage() {
 					<Grid container spacing={2} sx={{ marginTop: 1 }}>
 						<Grid item xs={3}>
 							<Button
+								onClick={handleDataOpen}
 								variant={"contained"}
 								sx={{
 									backgroundColor: "#4163CF",
@@ -104,6 +197,87 @@ function InboundPage() {
 								}}>
 								ADD PRODUCT
 							</Button>
+							<Dialog
+								open={dataOpen}
+								TransitionComponent={Transition}
+								keepMounted
+								onClose={handleDataClose}
+								aria-describedby="alert-dialog-slide-description">
+								<DialogTitle>{"ADD PRODUCT"}</DialogTitle>
+								<DialogContent>
+									<Button>Add Existing</Button>
+									<Divider />
+									<Button
+										onClick={() => {
+											handleDataClose();
+											handleExistOpen();
+										}}>
+										Add New
+									</Button>
+								</DialogContent>
+							</Dialog>
+							<Dialog
+								open={existOpen}
+								TransitionComponent={Transition}
+								keepMounted
+								onClose={handleExistClose}
+								aria-describedby="alert-dialog-slide-description">
+								<DialogTitle>{"PRODUCT DETAILS"}</DialogTitle>
+								<DialogContent>
+									<DialogContentText>Name:</DialogContentText>
+									<TextField
+										value={productName}
+										variant="standard"
+										onChange={(e) => {
+											setProductName(e.target.value);
+										}}
+									/>
+									<Divider />
+									<DialogContentText>Type:</DialogContentText>
+									<TextField
+										value={productType}
+										variant="standard"
+										onChange={(e) => {
+											setProductType(e.target.value);
+										}}
+									/>
+									<Divider />
+									<DialogContentText>
+										Description:
+									</DialogContentText>
+									<TextField
+										value={productDescription}
+										variant="standard"
+										onChange={(e) => {
+											setProductDescription(
+												e.target.value
+											);
+										}}
+									/>
+									<Divider />
+									<DialogContentText>
+										Count :
+									</DialogContentText>
+									<TextField
+										value={productCount}
+										variant="standard"
+										onChange={(e) => {
+											setProductCount(e.target.value);
+										}}
+									/>
+									<Divider />
+								</DialogContent>
+								<DialogActions>
+									<Button onClick={handleExistClose}>
+										Close
+									</Button>
+								</DialogActions>
+								<DialogActions>
+									<Button onClick={handleAddApproval}>
+										Approve
+									</Button>
+								</DialogActions>
+							</Dialog>
 						</Grid>
 					</Grid>
 					<DataGrid
@@ -113,11 +287,6 @@ function InboundPage() {
 						pageSize={5}
 						rowsPerPageOptions={[5]}
 						rows={rows}
-					/>
-					<RowSelection
-						open={dataOpen}
-						Transition={Transition}
-						handleClose={handleDataClose}
 					/>
 				</Stack>
 			</Stack>
