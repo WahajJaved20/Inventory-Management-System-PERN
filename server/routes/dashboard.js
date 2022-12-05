@@ -228,11 +228,12 @@ router.get("/getOutbound", authorize, async (req, res) => {
 });
 router.post("/editProduct", authorize, async (req, res) => {
 	try {
-		const { name, count, description, type } = req.body;
+		const { id, name, count, description, type } = req.body;
 		let editProduct = pool.query(
-			"UPDATE PRODUCT SET PRODUCT_NAME = $1, PRODUCT_COUNT = $2, PRODUCT_DESCRIPTION = $3, PRODUCT_TYPE = $4 where INVENTORY_ID = (SELECT INVENTORY_ID FROM INVENTORY WHERE R_ID = $5)",
-			[name, count, description, type, req.user.id]
+			"UPDATE PRODUCT SET PRODUCT_NAME = $1, PRODUCT_COUNT = $2, PRODUCT_DESCRIPTION = $3, PRODUCT_TYPE = $4 where PRODUCT_ID=$5",
+			[name, count, description, type, id]
 		);
+		res.json("success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -272,5 +273,17 @@ router.post("/getProducts", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-
+router.post("/getProductItem", authorize, async (req, res) => {
+	try {
+		const { id } = req.body;
+		let searchProduct = await pool.query(
+			"SELECT * FROM PRODUCT WHERE PRODUCT_ID= $1 ",
+			[id]
+		);
+		res.json(searchProduct.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 module.exports = router;

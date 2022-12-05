@@ -58,6 +58,13 @@ function InventoryPage() {
 	const [productID, setProductID] = React.useState("");
 	const [idOpen, setIDOpen] = React.useState(false);
 	const [decOpen, setDecOpen] = React.useState(false);
+	const [editOpen, setEditOpen] = React.useState(false);
+	const handleEditOpen = () => {
+		setEditOpen(true);
+	};
+	const handleEditClose = () => {
+		setEditOpen(false);
+	};
 	const handleIDOpen = () => {
 		setIDOpen(true);
 	};
@@ -103,6 +110,69 @@ function InventoryPage() {
 	const handleDataClose = () => {
 		setDataOpen(false);
 	};
+	async function editProductData() {
+		const token = localStorage.getItem("token");
+		const id = localStorage.getItem("id");
+		try {
+			const inputs = {
+				id: id,
+				name: productName,
+				count: productCount,
+				description: productDescription,
+				type: productType,
+			};
+			const response = await fetch(
+				"http://localhost:5000/dashboard/editProduct",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			setProductCount("");
+			setProductType("");
+			setProductDescription("");
+			setProductName("");
+			localStorage.removeItem("id");
+			handleEditClose();
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	async function getProductItem() {
+		const token = localStorage.getItem("token");
+		const id = localStorage.getItem("id");
+		try {
+			const inputs = {
+				id: id,
+			};
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getProductItem",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			setProductID(id);
+			setProductCount(parseRes[0].product_count);
+			setProductType(parseRes[0].product_type);
+			setProductDescription(parseRes[0].product_description);
+			setProductName(parseRes[0].product_name);
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	async function handleProductDecreaseCount() {
 		const token = localStorage.getItem("token");
 		const id = localStorage.getItem("id");
@@ -462,6 +532,7 @@ function InventoryPage() {
 							<Button
 								onClick={() => {
 									handleDataClose();
+									getProductItem();
 									handleAddOpen();
 								}}>
 								<DialogContentText>ADD COUNT</DialogContentText>
@@ -470,6 +541,7 @@ function InventoryPage() {
 							<Button
 								onClick={() => {
 									handleDataClose();
+
 									handleDecOpen();
 								}}>
 								<DialogContentText>
@@ -512,6 +584,7 @@ function InventoryPage() {
 							<Button
 								onClick={() => {
 									handleDataClose();
+									getProductItem();
 									handleIDOpen();
 								}}>
 								<DialogContentText>
@@ -520,14 +593,81 @@ function InventoryPage() {
 							</Button>
 							<Divider />
 							<Button>
-								<DialogContentText>
+								<DialogContentText
+									onClick={() => {
+										handleDataClose();
+										getProductItem();
+										handleEditOpen();
+									}}>
 									EDIT PRODUCT
 								</DialogContentText>
 							</Button>
+							<Dialog
+								open={editOpen}
+								TransitionComponent={Transition}
+								keepMounted
+								onClose={handleEditClose}
+								aria-describedby="alert-dialog-slide-description">
+								<DialogTitle>{"PRODUCT DETAILS"}</DialogTitle>
+								<DialogContent>
+									<DialogContentText>Name:</DialogContentText>
+									<TextField
+										value={productName}
+										variant="standard"
+										onChange={(e) => {
+											setProductName(e.target.value);
+										}}
+									/>
+									<Divider />
+									<DialogContentText>Type:</DialogContentText>
+									<TextField
+										value={productType}
+										variant="standard"
+										onChange={(e) => {
+											setProductType(e.target.value);
+										}}
+									/>
+									<Divider />
+									<DialogContentText>
+										Description:
+									</DialogContentText>
+									<TextField
+										value={productDescription}
+										variant="standard"
+										onChange={(e) => {
+											setProductDescription(
+												e.target.value
+											);
+										}}
+									/>
+									<Divider />
+									<DialogContentText>
+										Count :
+									</DialogContentText>
+									<TextField
+										value={productCount}
+										variant="standard"
+										onChange={(e) => {
+											setProductCount(e.target.value);
+										}}
+									/>
+									<Divider />
+								</DialogContent>
+								<DialogActions>
+									<Button onClick={handleEditClose}>
+										Close
+									</Button>
+								</DialogActions>
+								<DialogActions>
+									<Button onClick={editProductData}>
+										Approve
+									</Button>
+								</DialogActions>
+							</Dialog>
 							<Divider />
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={handleDataClose}>Close</Button>
+							<Button onClick={handleEditClose}>Close</Button>
 						</DialogActions>
 					</Dialog>
 				</Stack>
