@@ -57,6 +57,32 @@ router.post("/addInventory", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/decreaseProduct", authorize, async (req, res) => {
+	try {
+		const { id, count } = req.body;
+		console.log("lmao");
+		let getinventory = await pool.query(
+			"SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $1",
+			[req.user.id]
+		);
+		let product = await pool.query(
+			"SELECT * FROM PRODUCT JOIN INVENTORY ON PRODUCT.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE INVENTORY.R_ID = $1 AND PRODUCT_ID = $2 ",
+			[req.user.id, id]
+		);
+		let insertion = await pool.query(
+			"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE INVENTORY_ID=$2 AND PRODUCT_ID=$3",
+			[
+				parseInt(product.rows[0].product_count) - parseInt(count),
+				getinventory.rows[0].inventory_id,
+				id,
+			]
+		);
+		res.json("success");
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 router.post("/addProduct", authorize, async (req, res) => {
 	try {
 		const { name, count, type, description } = req.body;
@@ -64,7 +90,6 @@ router.post("/addProduct", authorize, async (req, res) => {
 			"SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $1",
 			[req.user.id]
 		);
-		console.log("haaaaa");
 
 		let product = await pool.query(
 			"SELECT * FROM PRODUCT JOIN INVENTORY ON PRODUCT.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE INVENTORY.R_ID = $1 AND PRODUCT_NAME LIKE $2 ",
@@ -247,4 +272,5 @@ router.post("/getProducts", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+
 module.exports = router;

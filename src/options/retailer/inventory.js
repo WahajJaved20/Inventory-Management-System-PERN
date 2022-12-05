@@ -20,6 +20,7 @@ import {
 	Divider,
 	TextField,
 } from "@mui/material";
+import { Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import InventoryInformation from "./dialogs/inventoryInfo";
 import SearchIcon from "@mui/icons-material/Search";
@@ -56,11 +57,18 @@ function InventoryPage() {
 	const [searchQuery, setSearchQuery] = React.useState("");
 	const [productID, setProductID] = React.useState("");
 	const [idOpen, setIDOpen] = React.useState(false);
+	const [decOpen, setDecOpen] = React.useState(false);
 	const handleIDOpen = () => {
 		setIDOpen(true);
 	};
 	const handleIDClose = () => {
 		setIDOpen(false);
+	};
+	const handleDecOpen = () => {
+		setDecOpen(true);
+	};
+	const handleDecClose = () => {
+		setDecOpen(false);
 	};
 	const handleAddOpen = () => {
 		setAddOpen(true);
@@ -79,6 +87,7 @@ function InventoryPage() {
 		productCount,
 		productDescription,
 		productType,
+		productID,
 	]);
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -94,6 +103,36 @@ function InventoryPage() {
 	const handleDataClose = () => {
 		setDataOpen(false);
 	};
+	async function handleProductDecreaseCount() {
+		const token = localStorage.getItem("token");
+		const id = localStorage.getItem("id");
+		try {
+			const inputs = {
+				id: id,
+				count: productCount,
+			};
+
+			const response = await fetch(
+				"http://localhost:5000/dashboard/decreaseProduct",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			setProductCount("");
+			localStorage.removeItem("id");
+			handleDecClose();
+			getProductList();
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	async function handleProductRemoval() {
 		const token = localStorage.getItem("token");
 		try {
@@ -114,8 +153,9 @@ function InventoryPage() {
 			);
 			const parseRes = await response.json();
 			console.log(parseRes);
-			handleIDClose();
 			setProductID("");
+			handleIDClose();
+
 			getProductList();
 		} catch (err) {
 			console.error(err);
@@ -144,11 +184,11 @@ function InventoryPage() {
 			);
 			const parseRes = await response.json();
 			console.log(parseRes);
-			handleAddClose();
 			setProductName("");
 			setProductType("");
 			setProductCount("");
 			setProductDescription("");
+			handleAddClose();
 			getProductList();
 		} catch (err) {
 			console.error(err);
@@ -267,8 +307,8 @@ function InventoryPage() {
 								<DialogContent>
 									<DialogContentText>Name:</DialogContentText>
 									<TextField
+										value={productName}
 										variant="standard"
-										defaultValue={productName}
 										onChange={(e) => {
 											setProductName(e.target.value);
 										}}
@@ -276,7 +316,7 @@ function InventoryPage() {
 									<Divider />
 									<DialogContentText>Type:</DialogContentText>
 									<TextField
-										defaultValue={productType}
+										value={productType}
 										variant="standard"
 										onChange={(e) => {
 											setProductType(e.target.value);
@@ -287,7 +327,7 @@ function InventoryPage() {
 										Description:
 									</DialogContentText>
 									<TextField
-										defaultValue={productDescription}
+										value={productDescription}
 										variant="standard"
 										onChange={(e) => {
 											setProductDescription(
@@ -300,7 +340,7 @@ function InventoryPage() {
 										Count :
 									</DialogContentText>
 									<TextField
-										defaultValue={productCount}
+										value={productCount}
 										variant="standard"
 										onChange={(e) => {
 											setProductCount(e.target.value);
@@ -343,7 +383,7 @@ function InventoryPage() {
 								<DialogContent>
 									<DialogContentText>ID :</DialogContentText>
 									<TextField
-										defaultValue={productID}
+										value={productID}
 										variant="standard"
 										onChange={(e) => {
 											setProductID(e.target.value);
@@ -364,17 +404,21 @@ function InventoryPage() {
 							</Dialog>
 						</Grid>
 						<Grid item xs={3}>
-							<Button
-								variant={"contained"}
-								sx={{
-									backgroundColor: "#4163CF",
-									height: 60,
-									width: 200,
-									fontSize: 25,
-									fontWeight: "bold",
-								}}>
-								History
-							</Button>
+							<Link
+								to="/dashboard/retailer/history"
+								style={{ textDecoration: "none" }}>
+								<Button
+									variant={"contained"}
+									sx={{
+										backgroundColor: "#4163CF",
+										height: 60,
+										width: 200,
+										fontSize: 25,
+										fontWeight: "bold",
+									}}>
+									History
+								</Button>
+							</Link>
 						</Grid>
 						<Grid item xs={3}>
 							<Button
@@ -399,6 +443,7 @@ function InventoryPage() {
 					<DataGrid
 						onRowDoubleClick={(e) => {
 							handleDataOpen(e);
+							localStorage.setItem("id", e.row.id);
 						}}
 						sx={{ marginTop: 2, fontSize: 20 }}
 						columns={columns}
@@ -422,13 +467,53 @@ function InventoryPage() {
 								<DialogContentText>ADD COUNT</DialogContentText>
 							</Button>
 							<Divider />
-							<Button>
+							<Button
+								onClick={() => {
+									handleDataClose();
+									handleDecOpen();
+								}}>
 								<DialogContentText>
 									DECREASE COUNT
 								</DialogContentText>
 							</Button>
+							<Dialog
+								open={decOpen}
+								TransitionComponent={Transition}
+								keepMounted
+								onClose={handleDecClose}
+								aria-describedby="alert-dialog-slide-description">
+								<DialogTitle>{"PRODUCT DETAILS"}</DialogTitle>
+								<DialogContent>
+									<DialogContentText>
+										Count :
+									</DialogContentText>
+									<TextField
+										value={productCount}
+										variant="standard"
+										onChange={(e) => {
+											setProductCount(e.target.value);
+										}}
+									/>
+									<Divider />
+								</DialogContent>
+								<DialogActions>
+									<Button onClick={handleDecClose}>
+										Close
+									</Button>
+								</DialogActions>
+								<DialogActions>
+									<Button
+										onClick={handleProductDecreaseCount}>
+										Approve
+									</Button>
+								</DialogActions>
+							</Dialog>
 							<Divider />
-							<Button>
+							<Button
+								onClick={() => {
+									handleDataClose();
+									handleIDOpen();
+								}}>
 								<DialogContentText>
 									REMOVE PRODUCT
 								</DialogContentText>
