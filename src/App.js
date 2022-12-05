@@ -22,6 +22,8 @@ import RetailerNotifications from "./dashboards/retailerNotifications";
 import InventoryForm from "./components/inventoryForm";
 import InventoryPage from "./options/retailer/inventory";
 import HistoryPage from "./options/retailer/history";
+import InboundPage from "./options/retailer/inbound";
+import OutboundPage from "./options/retailer/outbound";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -213,6 +215,16 @@ function App() {
 							exact
 							path="/dashboard/retailer/history"
 							element={<HistoryPage />}
+						/>
+						<Route
+							exact
+							path="/dashboard/retailer/inbound"
+							element={<InboundPage />}
+						/>
+						<Route
+							exact
+							path="/dashboard/retailer/outbound"
+							element={<OutboundPage />}
 						/>
 					</Routes>
 				</Router>
