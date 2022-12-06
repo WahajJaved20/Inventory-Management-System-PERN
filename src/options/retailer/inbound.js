@@ -54,13 +54,22 @@ function InboundPage() {
 	const [productDescription, setProductDescription] = React.useState("");
 	const [existOpen, setExistOpen] = React.useState(false);
 	const [sender, setSender] = React.useState("");
-	const [senders, setSenders] = React.useState([{ s_name: "dummy" }]);
+	const [senders, setSenders] = React.useState([]);
 	const [app, setApp] = React.useState(false);
+	const [products, setProducts] = React.useState([]);
+	const [product, setProduct] = React.useState();
+	const [productOpen, setProductOpen] = React.useState(false);
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
 	const handleDataClose = () => {
 		setDataOpen(false);
+	};
+	const handleProductOpen = () => {
+		setProductOpen(true);
+	};
+	const handleProductClose = () => {
+		setProductOpen(false);
 	};
 	const handleAppOpen = () => {
 		setApp(true);
@@ -89,6 +98,28 @@ function InboundPage() {
 			);
 			const parseRes = await response.json();
 			setSenders(parseRes);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	async function getProductsList() {
+		const token = localStorage.getItem("token");
+		try {
+			const inputs = { name: "" };
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getProducts",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			setProducts(parseRes);
 		} catch (err) {
 			console.error(err);
 		}
@@ -165,7 +196,7 @@ function InboundPage() {
 	useEffect(() => {
 		getInboundList();
 		getSendersList();
-		console.log(searchQuery);
+		getProductsList();
 	}, [searchQuery]);
 	return (
 		<div className="co">
@@ -243,7 +274,13 @@ function InboundPage() {
 								aria-describedby="alert-dialog-slide-description">
 								<DialogTitle>{"ADD PRODUCT"}</DialogTitle>
 								<DialogContent>
-									<Button>Add Existing</Button>
+									<Button
+										onClick={() => {
+											handleDataClose();
+											handleProductOpen();
+										}}>
+										Add Existing
+									</Button>
 									<Divider />
 									<Button
 										onClick={() => {
@@ -378,6 +415,57 @@ function InboundPage() {
 								Reject
 							</Button>
 						</DialogContent>
+					</Dialog>
+					<Dialog
+						open={productOpen}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleProductClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"PRODUCT DETAILS"}</DialogTitle>
+						<DialogContent>
+							<Divider />
+
+							<FormControl
+								variant="standard"
+								sx={{ m: 1, minWidth: 120 }}>
+								<InputLabel id="demo-simple-select-standard-label">
+									Product
+								</InputLabel>
+								<Select
+									labelId="demo-simple-select-standard-label"
+									id="demo-simple-select-standard"
+									value={product}
+									onChange={(e) => {
+										setProduct(e.target.value);
+									}}
+									label="Product">
+									{products ? (
+										products.map((sen) => (
+											<MenuItem value={sen.product_name}>
+												{sen.product_name}
+											</MenuItem>
+										))
+									) : (
+										<MenuItem value="">Noone</MenuItem>
+									)}
+								</Select>
+							</FormControl>
+							<DialogContentText>Count:</DialogContentText>
+							<TextField
+								value={productCount}
+								variant="standard"
+								onChange={(e) => {
+									setProductCount(e.target.value);
+								}}
+							/>
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleProductClose}>Close</Button>
+						</DialogActions>
+						<DialogActions>
+							<Button>Approve</Button>
+						</DialogActions>
 					</Dialog>
 				</Stack>
 			</Stack>
