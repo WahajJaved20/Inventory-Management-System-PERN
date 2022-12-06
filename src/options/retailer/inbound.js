@@ -19,6 +19,8 @@ import {
 	DialogContentText,
 	Divider,
 	TextField,
+	MenuItem,
+	Select,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
@@ -29,16 +31,18 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function InboundPage() {
 	const columns = [
 		{ field: "id", headerName: "Inbound_ID", width: 200 },
-		{ field: "Product_I9D", headerName: "Product_ID", width: 300 },
+		{ field: "Product_Name", headerName: "Product_Name", width: 300 },
 		{ field: "Product_Count", headerName: "Product_Count", width: 300 },
-		{ field: "Sender_ID", headerName: "Sender_ID", width: 300 },
+		{ field: "Sender_Name", headerName: "Sender_Name", width: 300 },
+		{ field: "Approval_Status", headerName: "Approval_Status", width: 300 },
 	];
 	const [rows, setRows] = React.useState([
 		{
 			id: 1,
-			Product_ID: "nigga",
+			Product_Name: "nigga",
 			Product_Count: "haha",
-			Sender_ID: 69,
+			Sender_Name: "me",
+			Approval_Status: "false",
 		},
 	]);
 
@@ -49,12 +53,20 @@ function InboundPage() {
 	const [productType, setProductType] = React.useState("");
 	const [productDescription, setProductDescription] = React.useState("");
 	const [existOpen, setExistOpen] = React.useState(false);
+	const [sender, setSender] = React.useState("");
+	const [senders, setSenders] = React.useState([{ s_name: "dummy" }]);
+	const [app, setApp] = React.useState(false);
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
-
 	const handleDataClose = () => {
 		setDataOpen(false);
+	};
+	const handleAppOpen = () => {
+		setApp(true);
+	};
+	const handleAppClose = () => {
+		setApp(false);
 	};
 	const handleExistOpen = () => {
 		setExistOpen(true);
@@ -63,6 +75,24 @@ function InboundPage() {
 	const handleExistClose = () => {
 		setExistOpen(false);
 	};
+	async function getSendersList() {
+		const token = localStorage.getItem("token");
+		try {
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getSender",
+				{
+					method: "GET",
+					headers: {
+						jwt_token: token,
+					},
+				}
+			);
+			const parseRes = await response.json();
+			setSenders(parseRes);
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
 		try {
@@ -71,10 +101,11 @@ function InboundPage() {
 				count: productCount,
 				type: productType,
 				description: productDescription,
+				sendername: sender,
 			};
 
 			const response = await fetch(
-				"http://localhost:5000/dashboard/addProduct",
+				"http://localhost:5000/dashboard/addInboundNew",
 				{
 					method: "POST",
 					headers: {
@@ -90,6 +121,7 @@ function InboundPage() {
 			setProductType("");
 			setProductCount("");
 			setProductDescription("");
+			setSender("");
 			handleExistClose();
 			getInboundList();
 		} catch (err) {
@@ -118,10 +150,11 @@ function InboundPage() {
 			let tempRows = [];
 			parseRes.map((pr) => {
 				tempRows.push({
-					id: pr.product_id,
-					Product_ID: pr.product_name,
-					Product_Count: pr.product_count,
-					Sender_ID: pr.sender_id,
+					id: pr.inbound_id,
+					Product_Name: pr.product_name,
+					Product_Count: pr.product_name,
+					Sender_Name: pr.s_name,
+					Approval_Status: pr.approval_status,
 				});
 			});
 			setRows(tempRows);
@@ -131,7 +164,9 @@ function InboundPage() {
 	}
 	useEffect(() => {
 		getInboundList();
-	}, []);
+		getSendersList();
+		console.log(searchQuery);
+	}, [searchQuery]);
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
@@ -146,6 +181,9 @@ function InboundPage() {
 					<FormControl variant="standard">
 						<Stack direction={"column"}>
 							<OutlinedInput
+								onChange={(e) => {
+									setSearchQuery(e.target.value);
+								}}
 								endAdornment={
 									<InputAdornment position="end">
 										<IconButton
@@ -266,6 +304,33 @@ function InboundPage() {
 										}}
 									/>
 									<Divider />
+									<FormControl
+										variant="standard"
+										sx={{ m: 1, minWidth: 120 }}>
+										<InputLabel id="demo-simple-select-standard-label">
+											Sender
+										</InputLabel>
+										<Select
+											labelId="demo-simple-select-standard-label"
+											id="demo-simple-select-standard"
+											value={sender}
+											onChange={(e) => {
+												setSender(e.target.value);
+											}}
+											label="Sender">
+											{senders ? (
+												senders.map((sen) => (
+													<MenuItem value={sen.s_id}>
+														{sen.s_name}
+													</MenuItem>
+												))
+											) : (
+												<MenuItem value="">
+													Noone
+												</MenuItem>
+											)}
+										</Select>
+									</FormControl>
 								</DialogContent>
 								<DialogActions>
 									<Button onClick={handleExistClose}>
@@ -281,13 +346,39 @@ function InboundPage() {
 						</Grid>
 					</Grid>
 					<DataGrid
-						onRowDoubleClick={handleDataOpen}
+						onRowDoubleClick={handleAppOpen}
 						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
 						columns={columns}
 						pageSize={5}
 						rowsPerPageOptions={[5]}
 						rows={rows}
 					/>
+					<Dialog
+						open={app}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleAppClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"APPROVAL STATUS"}</DialogTitle>
+						<DialogContent>
+							<Divider />
+							<Button
+								onClick={() => {
+									handleAppClose();
+									// to open
+								}}>
+								Approve
+							</Button>
+							<Divider />
+							<Button
+								onClick={() => {
+									handleAppClose();
+									// to open
+								}}>
+								Reject
+							</Button>
+						</DialogContent>
+					</Dialog>
 				</Stack>
 			</Stack>
 		</div>
