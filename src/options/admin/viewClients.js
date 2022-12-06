@@ -52,7 +52,7 @@ function ViewClients() {
 												marginRight: 10,
 												marginTop: 1,
 											}}>
-											Name: {cl.r_username}
+											Name: {cl.r_name}
 										</Typography>
 										<Typography
 											sx={{
@@ -60,7 +60,7 @@ function ViewClients() {
 												marginRight: 10,
 												marginTop: 1,
 											}}>
-											Name: {cl.inventory_id}
+											Inventory_ID: {cl.inventory_id}
 										</Typography>
 									</Stack>
 								</Box>

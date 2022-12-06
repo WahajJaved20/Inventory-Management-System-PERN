@@ -38,17 +38,18 @@ router.post("/handleCustomerDeletion", authorize, async (req, res) => {
 router.post("/handleRetailerDeletion", authorize, async (req, res) => {
 	try {
 		const { r_id } = req.body;
-		let inventory_id = await pool.query(
-			"SELECT INVENTORY_ID FROM RETAILER WHERE R_ID=$1;",
+		console.log(r_id);
+		let inventID = await pool.query(
+			"SELECT * FROM INVENTORY WHERE r_ID=$1",
 			[r_id]
 		);
-		let deleteStock = await pool.query(
-			"DELETE FROM STOCK WHERE INVENTORY_ID=$1",
-			[inventory_id.rows[0].inventory_id]
+		let deleteProducts = await pool.query(
+			"DELETE FROM PRODUCT WHERE inventory_id=$1",
+			[inventID.rows[0].inventory_id]
 		);
 		let deleteInventory = await pool.query(
-			"DELETE FROM INVENTORY WHERE INVENTORY_ID=$1",
-			[inventory_id.rows[0].inventory_id]
+			"DELETE FROM INVENTORY WHERE r_ID=$1",
+			[r_id]
 		);
 		let deleteRetailer = await pool.query(
 			"DELETE FROM RETAILER WHERE R_ID=$1",
