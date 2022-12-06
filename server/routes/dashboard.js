@@ -391,6 +391,7 @@ router.post("/getProducts", authorize, async (req, res) => {
 			"SELECT * FROM PRODUCT JOIN INVENTORY ON PRODUCT.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE INVENTORY.R_ID = $1 AND PRODUCT_NAME LIKE $2 ",
 			[req.user.id, "%" + name + "%"]
 		);
+		console.log(searchProduct.rows);
 		res.json(searchProduct.rows);
 	} catch (err) {
 		console.error(err.message);
