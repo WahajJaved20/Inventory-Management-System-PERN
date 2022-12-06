@@ -206,13 +206,13 @@ router.post("/getInbound", authorize, async (req, res) => {
 		let getInbound;
 		if (!name) {
 			getInbound = await pool.query(
-				"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN PRODUCT ON INBOUND.PRODUCT_NAME=PRODUCT.PRODUCT_NAME JOIN SENDER ON SENDER.S_ID=INBOUND.SENDER_ID where R_ID = $1",
-				[req.user.id]
+				"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN PRODUCT ON INBOUND.PRODUCT_NAME=PRODUCT.PRODUCT_NAME JOIN SENDER ON SENDER.S_ID=INBOUND.SENDER_ID where R_ID = $1 AND APPROVAL_STATUS=$2",
+				[req.user.id, "False"]
 			);
 		} else {
 			getInbound = await pool.query(
-				"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN SENDER ON SENDER.S_ID=INBOUND.SENDER_ID where R_ID = $1 and INBOUND.product_name LIKE $2",
-				[req.user.id, "%" + name + "%"]
+				"SELECT * FROM INBOUND JOIN INVENTORY ON INBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN SENDER ON SENDER.S_ID=INBOUND.SENDER_ID where R_ID = $1 and INBOUND.product_name LIKE $2 AND APPROVAL_STATUS=$3",
+				[req.user.id, "%" + name + "%", "False"]
 			);
 		}
 		res.json(getInbound.rows);
@@ -400,16 +400,16 @@ router.post("/getProductItem", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("/sendInboundHistory", authorize, async (req,res)=>{
+router.post("/sendInboundHistory", authorize, async (req, res) => {
 	try {
-		const {id} = req.body;
+		const { id } = req.body;
 		let createHistory = await pool.query(
 			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
 			[id]
 		);
 	} catch (err) {
 		console.error(err.message);
-		res.status(500).send("Server error");	
+		res.status(500).send("Server error");
 	}
 });
 
