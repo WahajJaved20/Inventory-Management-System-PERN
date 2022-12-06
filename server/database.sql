@@ -169,8 +169,8 @@ CREATE OR REPLACE TRIGGER check_num
     EXECUTE FUNCTION CHECK_PHONE();
 
 --=====================================
---TRIGGER TO CHECK IF INVENTORY FULL
---=====================================
+--TRIGGER TO CHECK IF INVENTORY FULL 
+]--=====================================
 CREATE OR REPLACE FUNCTION product_function()
     returns trigger
     AS $$
@@ -189,7 +189,7 @@ CREATE OR REPLACE TRIGGER CHECKPRODUCT
     FOR EACH ROW
     EXECUTE PROCEDURE product_function();
 --=====================================
---TRIGGER TO CHECK IF INVENTORY GETS NEGATIVE 
+--TRIGGER TO CHECK IF INVENTORY BECOMES NEGATIVE (DONE)
 --=====================================
 CREATE OR REPLACE TRIGGER CHECKPRODUCT1
     BEFORE INSERT OR UPDATE 
