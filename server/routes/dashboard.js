@@ -435,5 +435,15 @@ router.post("/sendOutboundHistory", authorize, async(req,res)=>{
 		res.status(500).send("Server error");
 	}
 });
-
+router.post("/getHistory", authorize, async(req,res)=>{
+	try {
+		let getHistory = await pool.query(
+			"SELECT * FROM HISTORY"
+		);
+		res.json(getHistory.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 module.exports = router;
