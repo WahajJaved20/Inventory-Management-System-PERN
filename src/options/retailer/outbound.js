@@ -1,8 +1,10 @@
-import React, { useEffect } from "react";
+import React from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
 import {
 	Stack,
+	Button,
+	Grid,
 	Typography,
 	Slide,
 	FormControl,
@@ -18,27 +20,19 @@ import SearchIcon from "@mui/icons-material/Search";
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
 });
-function HistoryPage() {
-	useEffect(() => {}, []);
+function OutboundPage() {
 	const columns = [
-		{ field: "id", headerName: "Transaction_ID", width: 200 },
-		{
-			field: "Transaction_Status",
-			headerName: "Transaction_Status",
-			width: 300,
-		},
-		{ field: "Inventory_ID", headerName: "Inventory_ID", width: 300 },
-		{ field: "Date", headerName: "Date", width: 300 },
+		{ field: "id", headerName: "Inbound_ID", width: 200 },
+		{ field: "Product_ID", headerName: "Product_ID", width: 300 },
+		{ field: "Product_Count", headerName: "Product_Count", width: 300 },
+		{ field: "Reciever_ID", headerName: "Reciever_ID", width: 300 },
 	];
+
 	const rows = [
-		{
-			id: 1,
-			Transaction_Status: "pending",
-			Inventory_ID: 69,
-			Date: "2022-10-10",
-		},
+		{ id: 1, Product_ID: "nigga", Product_Count: "haha", Reciever_ID: 69 },
 	];
 	const [dataOpen, setDataOpen] = React.useState(false);
+
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
@@ -55,7 +49,7 @@ function HistoryPage() {
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
 						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
-						HISTORY
+						OUTBOUND
 					</Typography>
 					<FormControl variant="standard">
 						<Stack direction={"column"}>
@@ -97,6 +91,21 @@ function HistoryPage() {
 							</InputLabel>
 						</Stack>
 					</FormControl>
+					<Grid container spacing={2} sx={{ marginTop: 1 }}>
+						<Grid item xs={3}>
+							<Button
+								variant={"contained"}
+								sx={{
+									backgroundColor: "#4163CF",
+									height: 60,
+									width: 400,
+									fontSize: 25,
+									fontWeight: "bold",
+								}}>
+								✨DISPATCH✨ PRODUCT✈
+							</Button>
+						</Grid>
+					</Grid>
 					<DataGrid
 						onRowDoubleClick={handleDataOpen}
 						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
@@ -115,4 +124,4 @@ function HistoryPage() {
 		</div>
 	);
 }
-export default HistoryPage;
+export default OutboundPage;
