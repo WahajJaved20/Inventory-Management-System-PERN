@@ -317,7 +317,6 @@ router.post("/addProduct", authorize, async (req, res) => {
 				]
 			);
 		} else {
-			console.log("haha lol");
 			let addProd = await pool.query(
 				"INSERT INTO PRODUCT(INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT,PRODUCT_TYPE,PRODUCT_DESCRIPTION) VALUES ($1,$2, $3,$4,$5) RETURNING *",
 				[
@@ -404,6 +403,18 @@ router.post("/getProductItem", authorize, async (req, res) => {
 router.post("/sendInboundHistory", authorize, async (req, res) => {
 	try {
 		const { id } = req.body;
+		let createHistory = await pool.query(
+			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
+			[id]
+		);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+router.post("/sendOutboundHistory", authorize, async(req,res)=>{
+	try {
+		const {id} = req.body;
 		let createHistory = await pool.query(
 			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
 			[id]
