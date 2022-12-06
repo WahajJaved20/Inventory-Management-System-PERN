@@ -29,7 +29,7 @@ const Transition = React.forwardRef(function Transition(props, ref) {
 function InboundPage() {
 	const columns = [
 		{ field: "id", headerName: "Inbound_ID", width: 200 },
-		{ field: "Product_ID", headerName: "Product_ID", width: 300 },
+		{ field: "Product_I9D", headerName: "Product_ID", width: 300 },
 		{ field: "Product_Count", headerName: "Product_Count", width: 300 },
 		{ field: "Sender_ID", headerName: "Sender_ID", width: 300 },
 	];

@@ -27,7 +27,7 @@ function RevokeAccesses() {
 		const token = localStorage.getItem("token");
 		try {
 			console.log(e);
-			const inputs = { c_id: e["c_id"] };
+			const inputs = { r_id: e["r_id"] };
 
 			const response = await fetch(
 				"http://localhost:5000/access/handleRetailerDeletion",
@@ -59,6 +59,7 @@ function RevokeAccesses() {
 					</Typography>
 					{retailers.length !== 0 ? (
 						retailers.map((ret) => {
+							console.log(ret);
 							return (
 								<Box
 									key={ret.r_id}
@@ -76,7 +77,7 @@ function RevokeAccesses() {
 												marginRight: 10,
 												marginTop: 1,
 											}}>
-											Name: {ret.r_username}
+											Name: {ret.r_name}
 										</Typography>
 										<Typography
 											sx={{
@@ -85,7 +86,7 @@ function RevokeAccesses() {
 												marginTop: 1,
 											}}>
 											Status:{" "}
-											{ret.r_approval_status === true
+											{ret.r_approval_status === "TRUE"
 												? "Approved"
 												: "Pending"}
 										</Typography>
