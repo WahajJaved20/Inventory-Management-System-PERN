@@ -38,15 +38,6 @@ router.get("/getSender", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("/addInboundExisting", authorize, async (req, res) => {
-	try {
-		let getSender = await pool.query("SELECT S_NAME from Sender");
-		res.json(getSender.rows);
-	} catch (err) {
-		console.error(err.message);
-		res.status(500).send("Server error");
-	}
-});
 router.post("/handleProductApproval", authorize, async (req, res) => {
 	try {
 		const { name } = req.body;
@@ -156,19 +147,30 @@ router.get("/getInventory", authorize, async (req, res) => {
 
 router.post("/addInboundExisting", authorize, async (req, res) => {
 	try {
-		const { sendername, count, name } = req.body;
-		let getInventory = await pool.query(
-			"SELECT INVENTORY_ID FROM INVENTORY WHERE R_ID = $1",
+		const { count, name } = req.body;
+		console.log(count);
+		console.log(name);
+		let inventID = await pool.query(
+			"SELECT * FROM INVENTORY WHERE R_ID=$1 ",
 			[req.user.id]
 		);
-		let s_id = await pool.query(
-			"SELECT S_ID FROM SENDER WHERE S_NAME = $1",
-			[sendername]
+		console.log(count);
+		console.log(name);
+		let product_count = await pool.query(
+			"SELECT * FROM PRODUCT WHERE PRODUCT_NAME=$1 AND INVENTORY_ID=$2",
+			[name, inventID.rows[0].inventory_id]
 		);
-		let addInbound = await pool.query(
-			"INSERT INTO INBOUND (PRODUCT_COUNT, PRODUCT_NAME, SENDER_ID, INVENTORY_ID) VALUES ()",
-			[name, count, s_id.rows[0].S_ID]
+		console.log(count);
+		console.log(name);
+		let updateProduct = await pool.query(
+			"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE PRODUCT_NAME=$2",
+			[
+				parseInt(product_count.rows[0].product_count) + parseInt(count),
+				name,
+			]
 		);
+		console.log("done oz");
+		res.json("success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -181,19 +183,16 @@ router.post("/addInboundNew", authorize, async (req, res) => {
 			"SELECT INVENTORY_ID FROM INVENTORY WHERE R_ID = $1",
 			[req.user.id]
 		);
-		console.log("1");
-
-		console.log("2");
 		let addInbound = await pool.query(
 			"INSERT INTO INBOUND (PRODUCT_COUNT, PRODUCT_NAME, SENDER_ID, INVENTORY_ID) VALUES ($2,$1,$3,$4)",
 			[name, count, sendername, getInventory.rows[0].inventory_id]
 		);
-		console.log("3");
+
 		let addProduct = await pool.query(
 			"INSERT INTO PRODUCT (PRODUCT_NAME,PRODUCT_COUNT, PRODUCT_DESCRIPTION, PRODUCT_TYPE) VALUES ($1,$2,$3,$4)",
 			[name, count, description, type]
 		);
-		console.log("4");
+
 		res.json("success");
 	} catch (err) {
 		console.error(err.message);
@@ -216,6 +215,27 @@ router.post("/getInbound", authorize, async (req, res) => {
 			);
 		}
 		res.json(getInbound.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
+router.post("/rejectInbound", authorize, async (req, res) => {
+	try {
+		let { id } = req.body;
+		let inbound = await pool.query(
+			"SELECT * FROM INBOUND WHERE INBOUND_ID=$1",
+			[id]
+		);
+		let result = await pool.query(
+			"DELETE FROM INBOUND WHERE INBOUND_ID=$1",
+			[id]
+		);
+		let res2 = await pool.query(
+			"DELETE FROM PRODUCT WHERE PRODUCT_NAME=$1 AND PRODUCT_COUNT=$2",
+			[inbound.rows[0].product_name, inbound.rows[0].product_count]
+		);
+		res.json("success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -250,18 +270,23 @@ router.post("/addOutbound", authorize, async (req, res) => {
 			[req.user.id]
 		);
 		let getreciever = await pool.query(
-			"SELECT R_ID FROM RECIEVER WHERE R_NAME = $1", 
+			"SELECT R_ID FROM RECIEVER WHERE R_NAME = $1",
 			[recv_name]
 		);
 		let getProduct = await pool.query(
-			"SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME = $1", 
+			"SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME = $1",
 			[name]
 		);
 		let getOutbound = await pool.query(
 			"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT,RECIEVER_ID) VALUES ($1,$2,$3,$4)",
-			[getInventory.rows[0].inventory_id, getProduct.rows[0],count, getreciever.rows[0]]
+			[
+				getInventory.rows[0].inventory_id,
+				getProduct.rows[0],
+				count,
+				getreciever.rows[0],
+			]
 		);
-		res.json('Success');
+		res.json("Success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -282,7 +307,6 @@ router.get("/getOutbound", authorize, async (req, res) => {
 router.post("/decreaseProduct", authorize, async (req, res) => {
 	try {
 		const { id, count } = req.body;
-		console.log("lmao");
 		let getinventory = await pool.query(
 			"SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $1",
 			[req.user.id]
@@ -318,7 +342,6 @@ router.post("/addProduct", authorize, async (req, res) => {
 			[req.user.id, name]
 		);
 		if (product.rows[0]) {
-			console.log("updation");
 			let insertion = await pool.query(
 				"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE INVENTORY_ID=$2 AND PRODUCT_NAME=$3",
 				[
@@ -391,7 +414,6 @@ router.post("/getProducts", authorize, async (req, res) => {
 			"SELECT * FROM PRODUCT JOIN INVENTORY ON PRODUCT.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE INVENTORY.R_ID = $1 AND PRODUCT_NAME LIKE $2 ",
 			[req.user.id, "%" + name + "%"]
 		);
-		console.log(searchProduct.rows);
 		res.json(searchProduct.rows);
 	} catch (err) {
 		console.error(err.message);
@@ -414,18 +436,35 @@ router.post("/getProductItem", authorize, async (req, res) => {
 router.post("/sendInboundHistory", authorize, async (req, res) => {
 	try {
 		const { id } = req.body;
+		const inventoryID = await pool.query(
+			"SELECT * FROM INBOUND WHERE INBOUND_ID=$1",
+			[id]
+		);
+		const assignProduct = await pool.query(
+			"UPDATE PRODUCT SET INVENTORY_ID=$1 WHERE PRODUCT_NAME=$2 AND PRODUCT_COUNT=$3",
+			[
+				inventoryID.rows[0].inventory_id,
+				inventoryID.rows[0].product_name,
+				inventoryID.rows[0].product_count,
+			]
+		);
+		const change = await pool.query(
+			"UPDATE INBOUND SET APPROVAL_STATUS = $2 WHERE INBOUND_ID = $1",
+			[id, "True"]
+		);
 		let createHistory = await pool.query(
 			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
 			[id]
 		);
+		res.json("success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
 	}
 });
-router.post("/sendOutboundHistory", authorize, async(req,res)=>{
+router.post("/sendOutboundHistory", authorize, async (req, res) => {
 	try {
-		const {id} = req.body;
+		const { id } = req.body;
 		let createHistory = await pool.query(
 			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
 			[id]

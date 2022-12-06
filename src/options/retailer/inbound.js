@@ -53,17 +53,24 @@ function InboundPage() {
 	const [productType, setProductType] = React.useState("");
 	const [productDescription, setProductDescription] = React.useState("");
 	const [existOpen, setExistOpen] = React.useState(false);
-	const [sender, setSender] = React.useState("");
+	const [sender, setSender] = React.useState("dummy");
 	const [senders, setSenders] = React.useState([]);
 	const [app, setApp] = React.useState(false);
 	const [products, setProducts] = React.useState([]);
-	const [product, setProduct] = React.useState();
+	const [product, setProduct] = React.useState("dummy");
 	const [productOpen, setProductOpen] = React.useState(false);
+	const [confirmation, setConfirmationOpen] = React.useState(false);
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
 	const handleDataClose = () => {
 		setDataOpen(false);
+	};
+	const handleConfirmationOpen = () => {
+		setConfirmationOpen(true);
+	};
+	const handleConfirmationClose = () => {
+		setConfirmationOpen(false);
 	};
 	const handleProductOpen = () => {
 		setProductOpen(true);
@@ -124,6 +131,54 @@ function InboundPage() {
 			console.error(err);
 		}
 	}
+	async function handleInboundApproval() {
+		const token = localStorage.getItem("token");
+		const id = localStorage.getItem("id");
+		try {
+			const inputs = { id: id };
+			const response = await fetch(
+				"http://localhost:5000/dashboard/sendInboundHistory",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			localStorage.removeItem("id");
+			getInboundList();
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	async function handleInboundRejection() {
+		const token = localStorage.getItem("token");
+		const id = localStorage.getItem("id");
+		try {
+			const inputs = { id: id };
+			const response = await fetch(
+				"http://localhost:5000/dashboard/rejectInbound",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			localStorage.removeItem("id");
+			getInboundList();
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
 		try {
@@ -153,6 +208,43 @@ function InboundPage() {
 			setProductCount("");
 			setProductDescription("");
 			setSender("");
+			handleExistClose();
+			getInboundList();
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	async function handleExistingAdd() {
+		console.log("Here1");
+		const token = localStorage.getItem("token");
+		try {
+			console.log("Here2");
+			const inputs = {
+				name: product,
+				count: productCount,
+			};
+			console.log("Here3");
+			const response = await fetch(
+				"http://localhost:5000/dashboard/addInboundExisting",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			console.log("Here4");
+			const parseRes = await response.json();
+			console.log(parseRes);
+			console.log("Here5");
+			setProductName("");
+			setProductType("");
+			setProductCount("");
+			setProductDescription("");
+			setSender("");
+			setProduct("");
 			handleExistClose();
 			getInboundList();
 		} catch (err) {
@@ -383,7 +475,11 @@ function InboundPage() {
 						</Grid>
 					</Grid>
 					<DataGrid
-						onRowDoubleClick={handleAppOpen}
+						onRowDoubleClick={(e) => {
+							console.log(e);
+							localStorage.setItem("id", e.row.id);
+							handleAppOpen();
+						}}
 						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
 						columns={columns}
 						pageSize={5}
@@ -402,7 +498,7 @@ function InboundPage() {
 							<Button
 								onClick={() => {
 									handleAppClose();
-									// to open
+									handleInboundApproval();
 								}}>
 								Approve
 							</Button>
@@ -410,7 +506,7 @@ function InboundPage() {
 							<Button
 								onClick={() => {
 									handleAppClose();
-									// to open
+									handleInboundRejection();
 								}}>
 								Reject
 							</Button>
@@ -464,8 +560,40 @@ function InboundPage() {
 							<Button onClick={handleProductClose}>Close</Button>
 						</DialogActions>
 						<DialogActions>
-							<Button>Approve</Button>
+							<Button
+								onClick={() => {
+									handleConfirmationOpen();
+								}}>
+								Approve
+							</Button>
 						</DialogActions>
+					</Dialog>
+					<Dialog
+						open={confirmation}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleConfirmationClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"Are You Sure?"}</DialogTitle>
+						<DialogContent>
+							<Divider />
+							<Button
+								onClick={() => {
+									handleProductClose();
+									handleConfirmationClose();
+								}}>
+								Cancel
+							</Button>
+							<Divider />
+							<Button
+								onClick={() => {
+									handleProductClose();
+									handleConfirmationClose();
+									handleExistingAdd();
+								}}>
+								Confirm
+							</Button>
+						</DialogContent>
 					</Dialog>
 				</Stack>
 			</Stack>
