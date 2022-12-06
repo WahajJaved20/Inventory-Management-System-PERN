@@ -29,7 +29,7 @@ router.post("/getname", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("/addInboundExisting", authorize, async (req,res)=>{
+router.post("/addInboundExisting", authorize, async (req, res) => {
 	try {
 		const { sendername, count, name } = req.body;
 		let getInventory = await pool.query(
@@ -37,46 +37,46 @@ router.post("/addInboundExisting", authorize, async (req,res)=>{
 			[req.user.id]
 		);
 		let s_id = await pool.query(
-			"SELECT S_ID FROM SENDER WHERE S_NAME = $1", 
+			"SELECT S_ID FROM SENDER WHERE S_NAME = $1",
 			[sendername]
 		);
 		let addInbound = await pool.query(
 			"INSERT INTO INBOUND (PRODUCT_COUNT, PRODUCT_NAME, SENDER_ID, INVENTORY_ID) VALUES ()",
-			[name,count,s_id.rows[0].S_ID]
+			[name, count, s_id.rows[0].S_ID]
 		);
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
 	}
 });
-router.post("/addInboundNew", authorize, async (req,res)=>{
+router.post("/addInboundNew", authorize, async (req, res) => {
 	try {
-		const { sendername, count, name,type, description } = req.body;
+		const { sendername, count, name, type, description } = req.body;
 		let getInventory = await pool.query(
 			"SELECT INVENTORY_ID FROM INVENTORY WHERE R_ID = $1",
 			[req.user.id]
 		);
 		let s_id = await pool.query(
-			"SELECT S_ID FROM SENDER WHERE S_NAME = $1", 
+			"SELECT S_ID FROM SENDER WHERE S_NAME = $1",
 			[sendername]
 		);
 		let addInbound = await pool.query(
 			"INSERT INTO INBOUND (PRODUCT_COUNT, PRODUCT_NAME, SENDER_ID, INVENTORY_ID) VALUES ()",
-			[name,count,s_id.rows[0].S_ID, getInventory.rows[0].inventory_id]
+			[name, count, s_id.rows[0].S_ID, getInventory.rows[0].inventory_id]
 		);
 		let addProduct = await pool.query(
 			"INSERT INTO PRODUCT (PRODUCT_NAME,PRODUCT_COUNT, PRODUCT_DESCRIPTION, PRODUCT_TYPE) VALUES ($1,$2,$3,$4)",
-			[name,count,description,type]
+			[name, count, description, type]
 		);
-		res.json()
+		res.json();
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
 	}
 });
-router.post("/handleProductApproval", authorize, async (req,res)=>{
+router.post("/handleProductApproval", authorize, async (req, res) => {
 	try {
-		const {name} = req.body;
+		const { name } = req.body;
 		let getInventory = await pool.query(
 			"SELECT INVENTORY_ID FROM INVENTORY where R_ID = $1 ",
 			[req.user.id]
@@ -87,21 +87,18 @@ router.post("/handleProductApproval", authorize, async (req,res)=>{
 			[getInventory.rows[0].inventory_id, name]
 		);
 		if (checkInventory.rows[0]) {
-			
-		}else{
+		} else {
 			let addID = await pool.query(
-				"UPDATE PRODUCT SET INVENTORY_ID = $1",
-				[getInventory.rows[0].inventory_id]
+				"UPDATE PRODUCT SET INVENTORY_ID = $1 WHERE PRODUCT_NAME=$2",
+				[getInventory.rows[0].inventory_id, name]
 			);
 		}
 		let addInventory = await pool.query(
 			"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT+$1",
 			[checkInventory.rows[0].PRODUCT_COUNT]
 		);
-		res.json('success');
-	} catch (err) {
-		
-	}
+		res.json("success");
+	} catch (err) {}
 });
 router.post("/getRetailerStatus", authorize, async (req, res) => {
 	try {
@@ -298,26 +295,21 @@ router.post("/getInbound", authorize, async (req, res) => {
 	}
 });
 
-router.post("/addOutbound", authorize, async (req,res)=>{
+router.post("/addOutbound", authorize, async (req, res) => {
 	try {
-		const {count, name, recv_name} = req.body;
+		const { count, name, recv_name } = req.body;
 		let getInventory = await pool.query(
-			"SELECT * FROM INVENTORY WHERE R_ID = $1", [req.user.id]
+			"SELECT * FROM INVENTORY WHERE R_ID = $1",
+			[req.user.id]
 		);
-		let getreciever = await pool.query(
-			""
-		)
-		let getOutbound = await pool.query(
-			"INSERT "
-		)
-		
+		let getreciever = await pool.query("");
+		let getOutbound = await pool.query("INSERT ");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
 	}
 });
-router.get("/getOutbound", authorize, async (req,res)=>{
-
+router.get("/getOutbound", authorize, async (req, res) => {
 	try {
 		let getOutbound = pool.query(
 			"SELECT * FROM OUTBOUND JOIN INVENTORY ON OUTBOUD.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE R_ID = $1",

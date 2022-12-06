@@ -19,6 +19,8 @@ import {
 	DialogContentText,
 	Divider,
 	TextField,
+	MenuItem,
+	Select,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
@@ -49,6 +51,8 @@ function InboundPage() {
 	const [productType, setProductType] = React.useState("");
 	const [productDescription, setProductDescription] = React.useState("");
 	const [existOpen, setExistOpen] = React.useState(false);
+	const [sender, setSender] = React.useState("");
+	const [senders, setSenders] = React.useState([]);
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
@@ -63,6 +67,24 @@ function InboundPage() {
 	const handleExistClose = () => {
 		setExistOpen(false);
 	};
+	async function getSendersList() {
+		const token = localStorage.getItem("token");
+		try {
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getSender",
+				{
+					method: "GET",
+					headers: {
+						jwt_token: token,
+					},
+				}
+			);
+			const parseRes = await response.json();
+			setSenders(parseRes);
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
 		try {
@@ -74,7 +96,7 @@ function InboundPage() {
 			};
 
 			const response = await fetch(
-				"http://localhost:5000/dashboard/addProduct",
+				"http://localhost:5000/dashboard/addInboundNew",
 				{
 					method: "POST",
 					headers: {
@@ -131,6 +153,7 @@ function InboundPage() {
 	}
 	useEffect(() => {
 		getInboundList();
+		getSendersList();
 	}, []);
 	return (
 		<div className="co">
@@ -266,6 +289,30 @@ function InboundPage() {
 										}}
 									/>
 									<Divider />
+									<FormControl
+										variant="standard"
+										sx={{ m: 1, minWidth: 120 }}>
+										<InputLabel id="demo-simple-select-standard-label">
+											Sender
+										</InputLabel>
+										<Select
+											labelId="demo-simple-select-standard-label"
+											id="demo-simple-select-standard"
+											value={sender}
+											onChange={(e) => {
+												setSender(e.target.value);
+											}}
+											label="Age">
+											<MenuItem value="">
+												<em>None</em>
+											</MenuItem>
+											{senders.map((sen) => (
+												<MenuItem value={sen.s_name}>
+													{sen.s_name}
+												</MenuItem>
+											))}
+										</Select>
+									</FormControl>
 								</DialogContent>
 								<DialogActions>
 									<Button onClick={handleExistClose}>
