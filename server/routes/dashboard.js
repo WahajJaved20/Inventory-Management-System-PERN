@@ -249,8 +249,19 @@ router.post("/addOutbound", authorize, async (req, res) => {
 			"SELECT * FROM INVENTORY WHERE R_ID = $1",
 			[req.user.id]
 		);
-		let getreciever = await pool.query("SELECT R_ID FROM RECIEVER WHERE ");
-		let getOutbound = await pool.query("INSERT ");
+		let getreciever = await pool.query(
+			"SELECT R_ID FROM RECIEVER WHERE R_NAME = $1", 
+			[recv_name]
+		);
+		let getProduct = await pool.query(
+			"SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME = $1", 
+			[name]
+		);
+		let getOutbound = await pool.query(
+			"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT,RECIEVER_ID) VALUES ($1,$2,$3,$4)",
+			[getInventory.rows[0].inventory_id, getProduct.rows[0],count, getreciever.rows[0]]
+		);
+		res.json('Success');
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
