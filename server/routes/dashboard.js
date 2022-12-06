@@ -400,4 +400,17 @@ router.post("/getProductItem", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/sendInboundHistory", authorize, async (req,res)=>{
+	try {
+		const {id} = req.body;
+		let createHistory = await pool.query(
+			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
+			[id]
+		);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");	
+	}
+});
+
 module.exports = router;
