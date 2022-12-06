@@ -121,7 +121,8 @@ CREATE TABLE SENDER (
 CREATE TABLE HISTORY (
     HISTORY_ID SERIAL PRIMARY KEY,
     ID VARCHAR(200) UNIQUE NOT NULL,
-    ENTRY_TIME TIMESTAMP
+    ENTRY_TIME TIMESTAMP,
+    STATUS VARCHAR(20) DEFAULT 'COMPLETED'
 );
 
 --triggers
@@ -326,7 +327,7 @@ CREATE OR REPLACE TRIGGER NEW_INVENTORY
     FOR EACH ROW 
     EXECUTE PROCEDURE NEW_INVENTORY_COUNT();
 --============================
---Trigger for updating inventory count(NOT DONE)
+--Trigger for updating inventory count(DONE)
 --============================
 
 CREATE OR REPLACE FUNCTION UPDATE_INVENTORY_COUNT()
@@ -353,6 +354,38 @@ CREATE OR REPLACE FUNCTION UPDATE_INVENTORY_COUNT()
     $$ LANGUAGE plpgsql;
 CREATE OR REPLACE TRIGGER UPDATE_INVENTORY
     BEFORE UPDATE
+    ON PRODUCT 
+    FOR EACH ROW 
+    EXECUTE PROCEDURE UPDATE_INVENTORY_COUNT();
+
+--============================
+--Trigger for deleting inventory count(DONE)
+--============================
+
+CREATE OR REPLACE FUNCTION UPDATE_INVENTORY_COUNT()
+    RETURNS TRIGGER
+    AS $$
+    DECLARE 
+        COUNT INTEGER;
+        new_COUNT INTEGER;
+        id uuid;
+    BEGIN 
+        select inventory_count INTO COUNT from inventory where Inventory_ID= OLD.INVENTORY_ID;
+        select Inventory_ID INTO id from inventory where Inventory_ID= OLD.INVENTORY_ID;
+        IF COUNT = NEW.PRODUCT_COUNT THEN 
+            RETURN NULL;
+        ELSE
+            NEW_COUNT := NEW.PRODUCT_COUNT - COUNT;
+            RAISE NOTICE '%', NEW_COUNT;
+            RAISE NOTICE '%', id;
+            
+            UPDATE INVENTORY SET INVENTORY_COUNT = Inventory_count+NEW_COUNT WHERE INVENTORY_ID = id;  
+            RETURN NEW;
+        END IF;
+    END;
+    $$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER UPDATE_INVENTORY
+    AFTER DELETE
     ON PRODUCT 
     FOR EACH ROW 
     EXECUTE PROCEDURE UPDATE_INVENTORY_COUNT();
