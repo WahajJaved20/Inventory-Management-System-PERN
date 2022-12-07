@@ -123,7 +123,7 @@ CREATE TABLE HISTORY (
     ID VARCHAR(200) UNIQUE NOT NULL,
     ENTRY_TIME TIMESTAMP
 );
-
+ALTER TABLE HISTORY ALTER COLUMN ID TYPE INTEGER;
 --triggers
 --============================
 --password check in retailer (DONE)
