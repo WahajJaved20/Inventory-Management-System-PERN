@@ -24,6 +24,7 @@ import InventoryPage from "./options/retailer/inventory";
 import HistoryPage from "./options/retailer/history";
 import InboundPage from "./options/retailer/inbound";
 import OutboundPage from "./options/retailer/outbound";
+import AdminHistoryPage from "./options/admin/userAccesses";
 function App() {
 	const [isAuthenticated, setIsAuthenticated] = useState(false);
 	const [type, setType] = useState();
@@ -184,7 +185,7 @@ function App() {
 						<Route
 							exact
 							path="/dashboard/admin/userAccesses"
-							element={<UserAccesses />}
+							element={<AdminHistoryPage />}
 						/>
 						<Route
 							exact

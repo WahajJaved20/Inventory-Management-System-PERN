@@ -71,7 +71,7 @@ function AdminOptions() {
 										fontWeight: "bold",
 										color: "white",
 									}}>
-									User
+									Transaction
 								</Typography>
 								<Typography
 									sx={{
@@ -79,7 +79,7 @@ function AdminOptions() {
 										fontWeight: "bold",
 										color: "white",
 									}}>
-									Accesses
+									History
 								</Typography>
 							</Stack>
 							<CloudUploadIcon

@@ -190,18 +190,14 @@ function InboundPage() {
 				sendername: sender,
 			};
 
-			const response = await fetch(
-				"http://localhost:5000/dashboard/addInboundNew",
-				{
-					method: "POST",
-					headers: {
-						jwt_token: token,
-						"Content-type": "application/json",
-					},
-					body: JSON.stringify(inputs),
-				}
-			);
-			const parseRes = await response.json();
+			await fetch("http://localhost:5000/dashboard/addInboundNew", {
+				method: "POST",
+				headers: {
+					jwt_token: token,
+					"Content-type": "application/json",
+				},
+				body: JSON.stringify(inputs),
+			});
 			setProductName("");
 			setProductType("");
 			setProductCount("");

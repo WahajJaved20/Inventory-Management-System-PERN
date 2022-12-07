@@ -493,4 +493,25 @@ router.post("/getHistory", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/getAdminHistory", authorize, async (req, res) => {
+	try {
+		const { name } = req.body;
+		let history;
+		if (!name) {
+			history = await pool.query(
+				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID"
+			);
+		} else {
+			history = await pool.query(
+				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID WHERE PRODUCT_NAME LIKE $1",
+				["%" + name + "%"]
+			);
+		}
+
+		res.json(history.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 module.exports = router;
