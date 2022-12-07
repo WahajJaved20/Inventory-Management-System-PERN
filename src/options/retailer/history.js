@@ -4,7 +4,6 @@ import "../background.css";
 import {
 	Stack,
 	Typography,
-	Slide,
 	FormControl,
 	OutlinedInput,
 	InputAdornment,
@@ -12,12 +11,7 @@ import {
 	InputLabel,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import RowSelection from "./dialogs/rowSelect";
 import SearchIcon from "@mui/icons-material/Search";
-
-const Transition = React.forwardRef(function Transition(props, ref) {
-	return <Slide direction="up" ref={ref} {...props} />;
-});
 function HistoryPage() {
 	const [history, setHistory] = React.useState([]);
 	const [searchQuery, setSearchQuery] = React.useState("");
@@ -41,9 +35,9 @@ function HistoryPage() {
 			parseRes.map((pr) => {
 				tempRows.push({
 					id: pr.history_id,
-					Inbound_ID: pr.inbound_id,
+					ID: pr.inbound_id ? pr.inbound_id : pr.outbound_id,
 					Transaction_Status:
-						pr.approval_status == "True" ? "Approved" : "Declined",
+						pr.approval_status === "True" ? "Approved" : "Declined",
 					Timestamp: pr.entry_time,
 					Product_Name: pr.product_name,
 					Product_Count: pr.product_count,
@@ -60,8 +54,8 @@ function HistoryPage() {
 	const columns = [
 		{ field: "id", headerName: "Transaction_ID", width: 200 },
 		{
-			field: "Inbound_ID",
-			headerName: "Inbound_ID",
+			field: "ID",
+			headerName: "ID",
 			width: 300,
 		},
 		{
@@ -81,14 +75,6 @@ function HistoryPage() {
 		},
 		{ field: "Timestamp", headerName: "Timestamp", width: 300 },
 	];
-	const [dataOpen, setDataOpen] = React.useState(false);
-	const handleDataOpen = () => {
-		setDataOpen(true);
-	};
-
-	const handleDataClose = () => {
-		setDataOpen(false);
-	};
 	return (
 		<div className="co">
 			<Stack direction={"row"}>

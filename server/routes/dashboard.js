@@ -38,6 +38,15 @@ router.get("/getSender", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.get("/getReciever", authorize, async (req, res) => {
+	try {
+		let getReciever = await pool.query("SELECT * from Reciever");
+		res.json(getReciever.rows);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 router.post("/handleProductApproval", authorize, async (req, res) => {
 	try {
 		const { name } = req.body;
@@ -241,30 +250,9 @@ router.post("/rejectInbound", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("/sendOutbound", authorize, async (req, res) => {
-	try {
-		const { id, name, count, mobile, address, email } = req.body;
-		let getInventory = await pool.query(
-			"SELECT INVENTORY_ID FROM INVENTORY WHERE R_ID = $1",
-			[req.user.id]
-		);
-		let addSender = await pool.query(
-			"INSERT INTO RECIEVER (S_MOBILE_NUM,S_ADDRESS,S_EMAIL) VALUES ($1,$2,$3) RETURNING *",
-			[mobile, address, email]
-		);
-		let addOutbound = await pool.query(
-			"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT, PRODUCT_NAME,RECIEVER_ID) VALUES ($1,$2,$3,$4,$5)",
-			[getInventory.rows[0], id, count, name, addSender.rows[0].R_ID]
-		);
-		res.json("success");
-	} catch (err) {
-		console.error(err.message);
-		res.status(500).send("Server error");
-	}
-});
 router.post("/addOutbound", authorize, async (req, res) => {
 	try {
-		const { count, name, recv_name } = req.body;
+		const { count, id, recv_name } = req.body;
 		let getInventory = await pool.query(
 			"SELECT * FROM INVENTORY WHERE R_ID = $1",
 			[req.user.id]
@@ -273,31 +261,36 @@ router.post("/addOutbound", authorize, async (req, res) => {
 			"SELECT R_ID FROM RECIEVER WHERE R_NAME = $1",
 			[recv_name]
 		);
-		let getProduct = await pool.query(
-			"SELECT PRODUCT_ID FROM PRODUCT WHERE PRODUCT_NAME = $1",
-			[name]
-		);
 		let getOutbound = await pool.query(
-			"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT,RECIEVER_ID) VALUES ($1,$2,$3,$4)",
+			"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT,RECIEVER_ID) VALUES ($1,$2,$3,$4) RETURNING *",
 			[
 				getInventory.rows[0].inventory_id,
-				getProduct.rows[0],
+				id,
 				count,
-				getreciever.rows[0],
+				getreciever.rows[0].r_id,
 			]
 		);
-		res.json("Success");
+		res.json(getOutbound.rows[0]);
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
 	}
 });
-router.get("/getOutbound", authorize, async (req, res) => {
+router.post("/getOutbound", authorize, async (req, res) => {
 	try {
-		let getOutbound = pool.query(
-			"SELECT * FROM OUTBOUND JOIN INVENTORY ON OUTBOUD.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE R_ID = $1",
-			[req.user.id]
-		);
+		let { name } = req.body;
+		let getOutbound;
+		if (!name) {
+			getOutbound = await pool.query(
+				"SELECT * FROM OUTBOUND JOIN INVENTORY ON OUTBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN PRODUCT ON OUTBOUND.PRODUCT_ID=PRODUCT.PRODUCT_ID JOIN RECIEVER ON RECIEVER.R_ID=OUTBOUND.RECIEVER_ID where INVENTORY.R_ID = $1",
+				[req.user.id]
+			);
+		} else {
+			getOutbound = await pool.query(
+				"SELECT * FROM OUTBOUND JOIN INVENTORY ON OUTBOUND.INVENTORY_ID = INVENTORY.INVENTORY_ID JOIN PRODUCT ON OUTBOUND.PRODUCT_ID=PRODUCT.PRODUCT_ID JOIN RECIEVER ON RECIEVER.R_ID=OUTBOUND.RECIEVER_ID where INVENTORY.R_ID = $1 AND PRODUCT.PRODUCT_NAME LIKE $2",
+				[req.user.id, "%" + name + "%"]
+			);
+		}
 		res.json(getOutbound.rows);
 	} catch (err) {
 		console.error(err.message);
