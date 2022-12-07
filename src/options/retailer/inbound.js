@@ -202,7 +202,6 @@ function InboundPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
 			setProductName("");
 			setProductType("");
 			setProductCount("");
