@@ -53,7 +53,6 @@ function InventoryPage() {
 	const [productCount, setProductCount] = React.useState("");
 	const [productType, setProductType] = React.useState("");
 	const [productDescription, setProductDescription] = React.useState("");
-	const [inventory, setInventory] = React.useState("");
 	const [searchQuery, setSearchQuery] = React.useState("");
 	const [productID, setProductID] = React.useState("");
 	const [idOpen, setIDOpen] = React.useState(false);
