@@ -59,11 +59,18 @@ function InventoryPage() {
 	const [idOpen, setIDOpen] = React.useState(false);
 	const [decOpen, setDecOpen] = React.useState(false);
 	const [editOpen, setEditOpen] = React.useState(false);
+	const [countOpen, setCountOpen] = React.useState(false);
 	const handleEditOpen = () => {
 		setEditOpen(true);
 	};
 	const handleEditClose = () => {
 		setEditOpen(false);
+	};
+	const handleCountOpen = () => {
+		setCountOpen(true);
+	};
+	const handleCountClose = () => {
+		setCountOpen(false);
 	};
 	const handleIDOpen = () => {
 		setIDOpen(true);
@@ -259,6 +266,7 @@ function InventoryPage() {
 			setProductCount("");
 			setProductDescription("");
 			handleAddClose();
+			handleCountClose();
 			getProductList();
 		} catch (err) {
 			console.error(err);
@@ -533,7 +541,7 @@ function InventoryPage() {
 								onClick={() => {
 									handleDataClose();
 									getProductItem();
-									handleAddOpen();
+									handleCountOpen();
 								}}>
 								<DialogContentText>ADD COUNT</DialogContentText>
 							</Button>
@@ -667,6 +675,31 @@ function InventoryPage() {
 						</DialogContent>
 						<DialogActions>
 							<Button onClick={handleEditClose}>Close</Button>
+						</DialogActions>
+					</Dialog>
+					<Dialog
+						open={countOpen}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleCountClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"PRODUCT DETAILS"}</DialogTitle>
+						<DialogContent>
+							<DialogContentText>Count :</DialogContentText>
+							<TextField
+								value={productCount}
+								variant="standard"
+								onChange={(e) => {
+									setProductCount(e.target.value);
+								}}
+							/>
+							<Divider />
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleCountClose}>Close</Button>
+						</DialogActions>
+						<DialogActions>
+							<Button onClick={handleAddApproval}>Approve</Button>
 						</DialogActions>
 					</Dialog>
 				</Stack>
