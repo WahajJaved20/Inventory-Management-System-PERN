@@ -474,12 +474,27 @@ router.post("/sendOutboundHistory", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("/getHistory", authorize, async(req,res)=>{
+router.post("/getHistory", authorize, async (req, res) => {
 	try {
-		let getHistory = await pool.query(
-			"SELECT * FROM HISTORY"
+		const { name } = req.body;
+		const inventID = await pool.query(
+			"SELECT * FROM INVENTORY WHERE r_id=$1",
+			[req.user.id]
 		);
-		res.json(getHistory.rows);
+		let history;
+		if (!name) {
+			history = await pool.query(
+				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID AND INBOUND.INVENTORY_ID=$1",
+				[inventID.rows[0].inventory_id]
+			);
+		} else {
+			history = await pool.query(
+				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID AND INBOUND.INVENTORY_ID=$1 WHERE PRODUCT_NAME LIKE $2",
+				[inventID.rows[0].inventory_id, "%" + name + "%"]
+			);
+		}
+
+		res.json(history.rows);
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");

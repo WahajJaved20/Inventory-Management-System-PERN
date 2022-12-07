@@ -124,7 +124,7 @@ CREATE TABLE HISTORY (
     ENTRY_TIME TIMESTAMP,
     STATUS VARCHAR(20) DEFAULT 'COMPLETED'
 );
-
+ALTER TABLE HISTORY ALTER COLUMN ID TYPE INTEGER;
 --triggers
 --============================
 --password check in retailer (DONE)
