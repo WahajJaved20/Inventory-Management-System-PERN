@@ -35,16 +35,7 @@ function InventoryPage() {
 		{ field: "Count", headerName: "Count", width: 300 },
 		{ field: "Description", headerName: "Description", width: 300 },
 	];
-	const [rows, setRows] = React.useState([
-		{
-			id: 1,
-			Product_Name: "nigga",
-			Product_Type: "haha",
-			Count: 69,
-			Description: "lmfao gottem",
-		},
-	]);
-
+	const [rows, setRows] = React.useState([]);
 	const [open, setOpen] = React.useState(false);
 	const [dataOpen, setDataOpen] = React.useState(false);
 	const [addOpen, setAddOpen] = React.useState(false);
@@ -58,7 +49,9 @@ function InventoryPage() {
 	const [decOpen, setDecOpen] = React.useState(false);
 	const [editOpen, setEditOpen] = React.useState(false);
 	const [countOpen, setCountOpen] = React.useState(false);
+	const [errors, setErrors] = React.useState(new Map());
 	const [data, setData] = React.useState({});
+	const [errOpen, setErrOpen] = React.useState(false);
 	const handleEditOpen = () => {
 		setEditOpen(true);
 	};

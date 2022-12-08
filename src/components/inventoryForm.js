@@ -16,8 +16,20 @@ import CustomizedSnackbars from "./alerts/authAlerts";
 function InventoryForm({ setAuth }) {
 	const [type, setType] = React.useState("");
 	const [open, setOpen] = React.useState(false);
+	const [errOpen, setErrOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
 	const [description, setDescription] = React.useState("");
 	async function handleSubmit(e) {
+		if (!type) {
+			setMessage("Type Length Should be greater than 0");
+			setErrOpen(true);
+			return;
+		}
+		if (!description) {
+			setMessage("Description Length Should be greater than 0");
+			setErrOpen(true);
+			return;
+		}
 		e.preventDefault();
 		const token = localStorage.getItem("token");
 		const inputs = {
@@ -58,12 +70,19 @@ function InventoryForm({ setAuth }) {
 						type={"success"}
 					/>
 				</Link>
+				<CustomizedSnackbars
+					open={errOpen}
+					setOpen={setErrOpen}
+					message={message}
+					type={"error"}
+				/>
 				<Stack direction={"column"} className="input-container">
 					<FormControl
 						variant="standard"
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								error={type.length === 0}
 								onChange={(e) => {
 									setType(e.target.value);
 								}}
@@ -101,6 +120,7 @@ function InventoryForm({ setAuth }) {
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								error={description.length === 0}
 								onChange={(e) => {
 									setDescription(e.target.value);
 								}}

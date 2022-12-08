@@ -19,6 +19,7 @@ import VisibilityOff from "@mui/icons-material/VisibilityOff";
 import BusinessIcon from "@mui/icons-material/Business";
 import ContactPhoneIcon from "@mui/icons-material/ContactPhone";
 import HomeIcon from "@mui/icons-material/Home";
+import CustomizedSnackbars from "../components/alerts/authAlerts";
 function RetailerRegister({ setAuth }) {
 	const [username, setUsername] = React.useState("");
 	const [showPassword, setShowPassword] = React.useState(false);
@@ -27,10 +28,48 @@ function RetailerRegister({ setAuth }) {
 	const [companyName, setCompanyName] = React.useState("");
 	const [mobile, setMobile] = React.useState("");
 	const [address, setAddress] = React.useState("");
+	const [errors, setErrors] = React.useState(new Map());
+	const [open, setOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
+	const type = "error";
+	var validRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$/;
+	var phoneRegex = /^\d{11}$/;
 	function handleClickShowPassword() {
 		setShowPassword(!showPassword);
 	}
 	async function handleSubmit(e) {
+		console.log(errors);
+		if (!username || errors["username"]) {
+			setMessage("The username should be atleast 6 characters long.");
+			setOpen(true);
+			return;
+		}
+		if (!email || errors["email"] == true) {
+			setMessage("Please Enter a valid email");
+			setOpen(true);
+			return;
+		}
+		if (!password || errors["password"]) {
+			setMessage("The password should be atleast 8 characters long.");
+			setOpen(true);
+			return;
+		}
+
+		if (!companyName || errors["companyName"]) {
+			setMessage("The company Name is required");
+			setOpen(true);
+			return;
+		}
+		if (!mobile || errors["phone"]) {
+			setMessage("Please Enter the correct phone number");
+			setOpen(true);
+			return;
+		}
+		if (!address || errors["address"]) {
+			setMessage("The address should be atleast 10 characters long.");
+			setOpen(true);
+			return;
+		}
 		e.preventDefault();
 		const inputs = {
 			username: username,
@@ -68,6 +107,12 @@ function RetailerRegister({ setAuth }) {
 	]);
 	return (
 		<div className="bg-img">
+			<CustomizedSnackbars
+				open={open}
+				setOpen={setOpen}
+				message={message}
+				type={type}
+			/>
 			<div className="container">
 				<Typography sx={{ fontSize: 50, textAlign: "center" }}>
 					Retailer Registration
@@ -79,8 +124,23 @@ function RetailerRegister({ setAuth }) {
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								required
+								error={username.length < 6}
 								onChange={(e) => {
 									setUsername(e.target.value);
+									if (e.target.value.length < 6) {
+										setErrors(
+											new Map(
+												errors.set("username", true)
+											)
+										);
+									} else {
+										setErrors(
+											new Map(
+												errors.set("username", false)
+											)
+										);
+									}
 								}}
 								startAdornment={
 									<InputAdornment position="start">
@@ -116,8 +176,18 @@ function RetailerRegister({ setAuth }) {
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								error={!email.match(validRegex) ? true : false}
 								onChange={(e) => {
 									setEmail(e.target.value);
+									if (e.target.value.match(validRegex)) {
+										setErrors(
+											new Map(errors.set("email", false))
+										);
+									} else {
+										setErrors(
+											new Map(errors.set("email", true))
+										);
+									}
 								}}
 								startAdornment={
 									<InputAdornment position="start">
@@ -155,7 +225,21 @@ function RetailerRegister({ setAuth }) {
 							<OutlinedInput
 								onChange={(e) => {
 									setPassword(e.target.value);
+									if (e.target.value.length < 8) {
+										setErrors(
+											new Map(
+												errors.set("password", true)
+											)
+										);
+									} else {
+										setErrors(
+											new Map(
+												errors.set("password", false)
+											)
+										);
+									}
 								}}
+								error={password.length < 8}
 								type={showPassword ? "text" : "password"}
 								value={password}
 								startAdornment={
@@ -212,8 +296,22 @@ function RetailerRegister({ setAuth }) {
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								error={companyName.length === 0}
 								onChange={(e) => {
 									setCompanyName(e.target.value);
+									if (e.target.value.length === 0) {
+										setErrors(
+											new Map(
+												errors.set("companyName", true)
+											)
+										);
+									} else {
+										setErrors(
+											new Map(
+												errors.set("companyName", false)
+											)
+										);
+									}
 								}}
 								startAdornment={
 									<InputAdornment position="start">
@@ -249,8 +347,18 @@ function RetailerRegister({ setAuth }) {
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								error={!mobile.match(phoneRegex) ? true : false}
 								onChange={(e) => {
 									setMobile(e.target.value);
+									if (e.target.value.match(phoneRegex)) {
+										setErrors(
+											new Map(errors.set("phone", false))
+										);
+									} else {
+										setErrors(
+											new Map(errors.set("phone", true))
+										);
+									}
 								}}
 								startAdornment={
 									<InputAdornment position="start">
@@ -286,8 +394,20 @@ function RetailerRegister({ setAuth }) {
 						sx={{ marginLeft: 3, marginTop: 5 }}>
 						<Stack direction={"column"}>
 							<OutlinedInput
+								error={address.length < 10}
 								onChange={(e) => {
 									setAddress(e.target.value);
+									if (e.target.value.length < 10) {
+										setErrors(
+											new Map(errors.set("address", true))
+										);
+									} else {
+										setErrors(
+											new Map(
+												errors.set("address", false)
+											)
+										);
+									}
 								}}
 								startAdornment={
 									<InputAdornment position="start">
