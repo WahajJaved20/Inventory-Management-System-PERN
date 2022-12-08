@@ -59,8 +59,8 @@ router.post("/handleRetailerApproval", authorize, async (req, res) => {
 router.post("/getRetailerNotifications", authorize, async (req, res) => {
 	try {
 		let notifications = await pool.query(
-			"SELECT * FROM retailer JOIN notifications ON (referrer_id = R_ID) WHERE TYPE=$1",
-			[2]
+			"SELECT * FROM retailer JOIN notifications ON (referrer_id = R_ID) WHERE TYPE=$1 AND R_ID=$2",
+			[2, req.user.id]
 		);
 		res.json(notifications.rows);
 	} catch (err) {
