@@ -166,6 +166,23 @@ router.post("/getQueriedInventory", authorize, async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
+router.post("/getQueriedRetailer", authorize, async (req, res) => {
+	try {
+		const { inventory_ID } = req.body;
+		let retailer_id = await pool.query(
+			"SELECT * FROM INVENTORY WHERE INVENTORY_ID=$1",
+			[inventory_ID]
+		);
+		let getID = await pool.query(
+			"SELECT * from RETAILER JOIN INVENTORY ON RETAILER.R_ID=INVENTORY.R_ID WHERE INVENTORY_ID = $1",
+			[inventory_ID]
+		);
+		res.json(getID.rows[0]);
+	} catch (err) {
+		console.error(err.message);
+		res.status(500).send("Server error");
+	}
+});
 router.post("/addInboundExisting", authorize, async (req, res) => {
 	try {
 		const { count, name } = req.body;

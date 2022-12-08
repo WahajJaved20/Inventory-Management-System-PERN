@@ -9,12 +9,34 @@ import {
 	InputAdornment,
 	IconButton,
 	InputLabel,
+	Dialog,
+	DialogActions,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	Divider,
+	TextField,
+	MenuItem,
+	Select,
+	Button,
+	Slide,
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
+const Transition = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
 function AdminHistoryPage() {
 	const [history, setHistory] = React.useState([]);
 	const [searchQuery, setSearchQuery] = React.useState("");
+	const [dataOpen, setDataOpen] = React.useState(false);
+	const [retailer, setRetailer] = React.useState({});
+	const handleDataOpen = () => {
+		setDataOpen(true);
+	};
+	const handleDataClose = () => {
+		setDataOpen(false);
+	};
 	async function getHistory() {
 		const token = localStorage.getItem("token");
 		try {
@@ -44,7 +66,32 @@ function AdminHistoryPage() {
 					Inventory_ID: pr.inventory_id,
 				});
 			});
+			console.log(tempRows);
 			setHistory(tempRows);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	async function handleQueriedRetailer() {
+		const token = localStorage.getItem("token");
+		const inventory_ID = localStorage.getItem("inventory_ID");
+		try {
+			const inputs = { inventory_ID: inventory_ID };
+
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getQueriedRetailer",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			setRetailer(parseRes);
+			localStorage.removeItem("inventory_ID");
 		} catch (err) {
 			console.error(err);
 		}
@@ -136,12 +183,41 @@ function AdminHistoryPage() {
 						</Stack>
 					</FormControl>
 					<DataGrid
+						onRowDoubleClick={(e) => {
+							localStorage.setItem(
+								"inventory_ID",
+								e.row.Inventory_ID
+							);
+							handleDataOpen();
+							handleQueriedRetailer();
+						}}
 						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
 						columns={columns}
-						pageSize={5}
-						rowsPerPageOptions={[5]}
+						pageSize={7}
+						rowsPerPageOptions={[7]}
 						rows={history}
 					/>
+					<Dialog
+						open={dataOpen}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleDataClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"TRANSACTION OWNER"}</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								Retailer_ID: {retailer["r_id"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Retailer_Name: {retailer["r_name"]}
+							</DialogContentText>
+							<Divider />
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleDataClose}>Close</Button>
+						</DialogActions>
+					</Dialog>
 				</Stack>
 			</Stack>
 		</div>

@@ -9,13 +9,10 @@ import {
 } from "react-router-dom";
 import RegisterPage from "./auth/registerScreen";
 import RetailerRegister from "./auth/retailerRegister";
-import CustomerRegister from "./auth/customerRegister";
 import AdminDashboard from "./dashboards/adminDashboard";
 import RetailerDashboard from "./dashboards/retailerDashboard";
-import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
 import PendingApprovals from "./options/admin/pendingApprovals";
-import UserAccesses from "./options/admin/userAccesses";
 import RevokeAccessPage from "./options/admin/revokeAccesses";
 import ViewClients from "./options/admin/viewClients";
 import RetailerNotifications from "./dashboards/retailerNotifications";
@@ -79,11 +76,6 @@ function App() {
 										to="/dashboard/retailer"
 										setAuth={setAuth}
 									/>
-								) : type === "customer" ? (
-									<Navigate
-										to="/dashboard/customer"
-										setAuth={setAuth}
-									/>
 								) : (
 									<Navigate to="/" setAuth={setAuth} />
 								)
@@ -103,11 +95,6 @@ function App() {
 								) : type === "retailer" ? (
 									<Navigate
 										to="/dashboard/retailer"
-										setAuth={setAuth}
-									/>
-								) : type === "customer" ? (
-									<Navigate
-										to="/dashboard/customer"
 										setAuth={setAuth}
 									/>
 								) : (
@@ -130,20 +117,12 @@ function App() {
 										to="/dashboard/retailer"
 										setAuth={setAuth}
 									/>
-								) : type === "customer" ? (
-									<Navigate
-										to="/dashboard/customer"
-										setAuth={setAuth}
-									/>
 								) : (
 									<Navigate to="/" setAuth={setAuth} />
 								)
 							}
 						/>
-						<Route
-							path="/register/customer"
-							element={<CustomerRegister setAuth={setAuth} />}
-						/>
+
 						<Route
 							exact
 							path="/dashboard/admin"
@@ -166,17 +145,7 @@ function App() {
 								)
 							}
 						/>
-						<Route
-							exact
-							path="/dashboard/customer"
-							element={
-								isAuthenticated ? (
-									<CustomerDashboard setAuth={setAuth} />
-								) : (
-									<Navigate to="/" setAuth={setAuth} />
-								)
-							}
-						/>
+
 						<Route
 							exact
 							path="/dashboard/admin/approval"
