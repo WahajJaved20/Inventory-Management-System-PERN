@@ -4,7 +4,12 @@ const pool = require("../db");
 
 router.post("/getListOfRetailers", authorize, async (req, res) => {
 	try {
-		let retailers = await pool.query("SELECT * FROM RETAILER_ACCESSES;");
+		const { name } = req.body;
+		let retailers = await pool.query(
+			"SELECT * FROM RETAILER JOIN INVENTORY ON RETAILER.R_ID = INVENTORY.R_ID WHERE R_NAME LIKE $1;",
+			["%" + name + "%"]
+		);
+		console.log(retailers);
 		res.json(retailers.rows);
 	} catch (err) {
 		console.error(err.message);

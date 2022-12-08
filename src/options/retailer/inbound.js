@@ -270,7 +270,7 @@ function InboundPage() {
 				tempRows.push({
 					id: pr.inbound_id,
 					Product_Name: pr.product_name,
-					Product_Count: pr.product_name,
+					Product_Count: pr.product_count,
 					Sender_Name: pr.s_name,
 					Approval_Status: pr.approval_status,
 				});
