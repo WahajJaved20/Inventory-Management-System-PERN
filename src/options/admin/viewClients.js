@@ -1,81 +1,216 @@
-import { Stack, Box, Typography } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import AdminSidebar from "../../components/sidebars/adminSidebar";
 import "../background.css";
+import {
+	Stack,
+	Typography,
+	FormControl,
+	OutlinedInput,
+	InputAdornment,
+	IconButton,
+	InputLabel,
+	Dialog,
+	DialogActions,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	Divider,
+	TextField,
+	MenuItem,
+	Select,
+	Button,
+	Slide,
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import SearchIcon from "@mui/icons-material/Search";
+const Transition = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
 function ViewClients() {
-	const [clients, setClients] = useState([]);
-	async function getClients() {
+	const [searchQuery, setSearchQuery] = React.useState("");
+	const [retailers, setRetailers] = React.useState([]);
+	const [dataOpen, setDataOpen] = React.useState(false);
+	const [inventory, setInventory] = React.useState({});
+	async function getRetailers() {
 		const token = localStorage.getItem("token");
 		try {
+			const inputs = { name: searchQuery };
 			const response = await fetch(
 				"http://localhost:5000/access/getListOfRetailers",
 				{
 					method: "POST",
-					headers: { jwt_token: token },
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
 				}
 			);
 			const parseRes = await response.json();
-			setClients(parseRes);
+			console.log(parseRes);
+			let tempRows = [];
+			parseRes.map((pr) => {
+				tempRows.push({
+					id: pr.r_id,
+					Retailer_Name: pr.r_name,
+					Inventory_ID: pr.inventory_id,
+				});
+			});
+
+			setRetailers(tempRows);
 		} catch (err) {
 			console.error(err);
 		}
 	}
 	useEffect(() => {
-		getClients();
-	}, [clients]);
+		getRetailers();
+	}, [searchQuery]);
+	const columns = [
+		{ field: "id", headerName: "Retailer_ID", width: 500 },
+		{
+			field: "Retailer_Name",
+			headerName: "Retailer_Name",
+			width: 300,
+		},
+		{
+			field: "Inventory_ID",
+			headerName: "Inventory_ID",
+			width: 400,
+		},
+	];
+	const handleDataOpen = () => {
+		setDataOpen(true);
+	};
+	const handleDataClose = () => {
+		setDataOpen(false);
+	};
+	async function handleQueriedInventory() {
+		const token = localStorage.getItem("token");
+		const inventory_ID = localStorage.getItem("inventory_ID");
+		try {
+			const inputs = { inventory_ID: inventory_ID };
+
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getQueriedInventory",
+				{
+					method: "POST",
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
+				}
+			);
+			const parseRes = await response.json();
+			setInventory(parseRes);
+			localStorage.removeItem("inventory_ID");
+		} catch (err) {
+			console.error(err);
+		}
+	}
 	return (
 		<div className="co">
 			<Stack direction={"row"}>
 				<AdminSidebar />
 				<Stack
 					direction={"column"}
-					sx={{ marginTop: 3, marginLeft: 3 }}>
-					<Typography sx={{ fontSize: 40, marginLeft: 70 }}>
+					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
+					<Typography
+						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
 						LIST OF CLIENTS
 					</Typography>
-					{clients.length !== 0 ? (
-						clients.map((cl) => {
-							return (
-								<Box
-									key={cl.r_id}
-									sx={{
-										width: "1",
-										backgroundColor: "#4163CF",
-										padding: 2,
-										borderRadius: 5,
-										marginBottom: 5,
-									}}>
-									<Stack direction={"row"}>
-										<Typography
+					<FormControl variant="standard">
+						<Stack direction={"column"}>
+							<OutlinedInput
+								onChange={(e) => {
+									setSearchQuery(e.target.value);
+								}}
+								endAdornment={
+									<InputAdornment position="end">
+										<IconButton
 											sx={{
-												fontSize: 25,
-												marginRight: 10,
-												marginTop: 1,
+												color: "black",
+												mr: 1,
+												my: 0.5,
+												fontSize: "50px",
 											}}>
-											Name: {cl.r_name}
-										</Typography>
-										<Typography
-											sx={{
-												fontSize: 25,
-												marginRight: 10,
-												marginTop: 1,
-											}}>
-											Inventory_ID: {cl.inventory_id}
-										</Typography>
-									</Stack>
-								</Box>
+											<SearchIcon />
+										</IconButton>
+									</InputAdornment>
+								}
+								inputProps={{
+									disableunderline: "true",
+								}}
+								sx={{
+									backgroundColor: "#05447a",
+									width: 550,
+									borderRadius: 4,
+									fontSize: 25,
+									height: 60,
+								}}
+							/>
+							<InputLabel
+								style={{ fontSize: 20, marginTop: -10 }}
+								sx={{
+									color: "white",
+									marginLeft: 2,
+								}}>
+								<Typography
+									sx={{ fontSize: 25, fontWeight: "bold" }}>
+									Search
+								</Typography>
+							</InputLabel>
+						</Stack>
+					</FormControl>
+					<DataGrid
+						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
+						onRowDoubleClick={(e) => {
+							localStorage.setItem(
+								"inventory_ID",
+								e.row.Inventory_ID
 							);
-						})
-					) : (
-						<Typography
-							sx={{
-								fontSize: 40,
-								marginLeft: 70,
-								marginTop: 40,
-							}}>
-							NO CLIENTS YET
-						</Typography>
-					)}
+							handleDataOpen();
+							handleQueriedInventory();
+						}}
+						columns={columns}
+						pageSize={5}
+						rowsPerPageOptions={[5]}
+						rows={retailers}
+					/>
+					<Dialog
+						open={dataOpen}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleDataClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"INVENTORY DETAILS"}</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								ID: {inventory["inventory_id"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								TYPE: {inventory["inventory_type"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Count: {inventory["inventory_count"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Max Count: {inventory["inventory_max_count"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Description:{" "}
+								{inventory["inventory_description"]}
+							</DialogContentText>
+							<Divider />
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleDataClose}>Close</Button>
+						</DialogActions>
+					</Dialog>
 				</Stack>
 			</Stack>
 		</div>

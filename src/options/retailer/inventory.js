@@ -22,7 +22,6 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
-import InventoryInformation from "./dialogs/inventoryInfo";
 import SearchIcon from "@mui/icons-material/Search";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
@@ -59,6 +58,7 @@ function InventoryPage() {
 	const [decOpen, setDecOpen] = React.useState(false);
 	const [editOpen, setEditOpen] = React.useState(false);
 	const [countOpen, setCountOpen] = React.useState(false);
+	const [data, setData] = React.useState({});
 	const handleEditOpen = () => {
 		setEditOpen(true);
 	};
@@ -89,8 +89,26 @@ function InventoryPage() {
 	const handleAddClose = () => {
 		setAddOpen(false);
 	};
+	async function getDetails() {
+		const token = localStorage.getItem("token");
+		try {
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getInventory",
+				{
+					method: "GET",
+					headers: { jwt_token: token },
+				}
+			);
+			const parseRes = await response.json();
+			setData(parseRes);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
 	useEffect(() => {
 		getProductList();
+		getDetails();
 	}, [
 		open,
 		searchQuery,
@@ -101,6 +119,7 @@ function InventoryPage() {
 		productDescription,
 		productType,
 		productID,
+		data,
 	]);
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -510,11 +529,6 @@ function InventoryPage() {
 								}}>
 								Inventory Details
 							</Button>
-							<InventoryInformation
-								Transition={Transition}
-								handleClose={handleClose}
-								open={open}
-							/>
 						</Grid>
 					</Grid>
 					<DataGrid
@@ -699,6 +713,39 @@ function InventoryPage() {
 						</DialogActions>
 						<DialogActions>
 							<Button onClick={handleAddApproval}>Approve</Button>
+						</DialogActions>
+					</Dialog>
+					<Dialog
+						open={open}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"INVENTORY DETAILS"}</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								ID: {data["inventory_id"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								TYPE: {data["inventory_type"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Count: {data["inventory_count"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Max Count: {data["inventory_max_count"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Description: {data["inventory_description"]}
+							</DialogContentText>
+							<Divider />
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleClose}>Close</Button>
 						</DialogActions>
 					</Dialog>
 				</Stack>

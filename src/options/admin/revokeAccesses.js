@@ -1,33 +1,93 @@
-import { Stack, Box, Typography, Button } from "@mui/material";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import AdminSidebar from "../../components/sidebars/adminSidebar";
 import "../background.css";
-function RevokeAccesses() {
-	const [retailers, setRetailers] = useState([]);
+import {
+	Stack,
+	Typography,
+	FormControl,
+	OutlinedInput,
+	InputAdornment,
+	IconButton,
+	InputLabel,
+	Dialog,
+	DialogActions,
+	DialogTitle,
+	DialogContent,
+	DialogContentText,
+	Divider,
+	TextField,
+	MenuItem,
+	Select,
+	Button,
+	Slide,
+} from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import SearchIcon from "@mui/icons-material/Search";
+const Transition = React.forwardRef(function Transition(props, ref) {
+	return <Slide direction="up" ref={ref} {...props} />;
+});
+function RevokeAccessPage() {
+	const [searchQuery, setSearchQuery] = React.useState("");
+	const [retailers, setRetailers] = React.useState([]);
+	const [dataOpen, setDataOpen] = React.useState(false);
 	async function getRetailers() {
 		const token = localStorage.getItem("token");
 		try {
+			const inputs = { name: searchQuery };
 			const response = await fetch(
 				"http://localhost:5000/access/getListOfRetailers",
 				{
 					method: "POST",
-					headers: { jwt_token: token },
+					headers: {
+						jwt_token: token,
+						"Content-type": "application/json",
+					},
+					body: JSON.stringify(inputs),
 				}
 			);
 			const parseRes = await response.json();
-			setRetailers(parseRes);
+			console.log(parseRes);
+			let tempRows = [];
+			parseRes.map((pr) => {
+				tempRows.push({
+					id: pr.r_id,
+					Retailer_Name: pr.r_name,
+					Mobile_Number: pr.r_mobile_num,
+				});
+			});
+
+			setRetailers(tempRows);
 		} catch (err) {
 			console.error(err);
 		}
 	}
 	useEffect(() => {
 		getRetailers();
-	}, [retailers]);
-	async function handleDeletion(e) {
+	}, [searchQuery]);
+	const columns = [
+		{ field: "id", headerName: "Retailer_ID", width: 500 },
+		{
+			field: "Retailer_Name",
+			headerName: "Retailer_Name",
+			width: 300,
+		},
+		{
+			field: "Mobile_Number",
+			headerName: "Mobile_Number",
+			width: 400,
+		},
+	];
+	const handleDataOpen = () => {
+		setDataOpen(true);
+	};
+	const handleDataClose = () => {
+		setDataOpen(false);
+	};
+	async function handleDeletion() {
 		const token = localStorage.getItem("token");
+		const r_id = localStorage.getItem("id");
 		try {
-			console.log(e);
-			const inputs = { r_id: e["r_id"] };
+			const inputs = { r_id: r_id };
 
 			const response = await fetch(
 				"http://localhost:5000/access/handleRetailerDeletion",
@@ -42,6 +102,8 @@ function RevokeAccesses() {
 			);
 			const parseRes = await response.json();
 			console.log(parseRes);
+			handleDataClose();
+			localStorage.removeItem("id");
 			getRetailers();
 		} catch (err) {
 			console.error(err);
@@ -53,79 +115,87 @@ function RevokeAccesses() {
 				<AdminSidebar />
 				<Stack
 					direction={"column"}
-					sx={{ marginTop: 3, marginLeft: 3 }}>
-					<Typography sx={{ fontSize: 40, marginLeft: 70 }}>
+					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
+					<Typography
+						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
 						RETAILER ACCESSES
 					</Typography>
-					{retailers.length !== 0 ? (
-						retailers.map((ret) => {
-							console.log(ret);
-							return (
-								<Box
-									key={ret.r_id}
-									sx={{
-										width: "1",
-										backgroundColor: "#4163CF",
-										padding: 2,
-										borderRadius: 5,
-										marginBottom: 5,
-									}}>
-									<Stack direction={"row"}>
-										<Typography
+					<FormControl variant="standard">
+						<Stack direction={"column"}>
+							<OutlinedInput
+								onChange={(e) => {
+									setSearchQuery(e.target.value);
+								}}
+								endAdornment={
+									<InputAdornment position="end">
+										<IconButton
 											sx={{
-												fontSize: 25,
-												marginRight: 10,
-												marginTop: 1,
+												color: "black",
+												mr: 1,
+												my: 0.5,
+												fontSize: "50px",
 											}}>
-											Name: {ret.r_name}
-										</Typography>
-										<Typography
-											sx={{
-												fontSize: 25,
-												marginRight: 10,
-												marginTop: 1,
-											}}>
-											Status:{" "}
-											{ret.r_approval_status === "TRUE"
-												? "Approved"
-												: "Pending"}
-										</Typography>
-										<Typography
-											sx={{
-												fontSize: 25,
-												marginRight: 10,
-												marginTop: 1,
-											}}>
-											Inventory ID: {ret.inventory_id}
-										</Typography>
-										<Button
-											onClick={() => handleDeletion(ret)}
-											variant="contained"
-											color="error"
-											sx={{
-												width: 150,
-												height: 50,
-												fontWeight: "bold",
-											}}>
-											Delete Account
-										</Button>
-									</Stack>
-								</Box>
-							);
-						})
-					) : (
-						<Typography
-							sx={{
-								fontSize: 40,
-								marginLeft: 70,
-								marginTop: 40,
-							}}>
-							NO RETAILERS YET
-						</Typography>
-					)}
+											<SearchIcon />
+										</IconButton>
+									</InputAdornment>
+								}
+								inputProps={{
+									disableunderline: "true",
+								}}
+								sx={{
+									backgroundColor: "#05447a",
+									width: 550,
+									borderRadius: 4,
+									fontSize: 25,
+									height: 60,
+								}}
+							/>
+							<InputLabel
+								style={{ fontSize: 20, marginTop: -10 }}
+								sx={{
+									color: "white",
+									marginLeft: 2,
+								}}>
+								<Typography
+									sx={{ fontSize: 25, fontWeight: "bold" }}>
+									Search
+								</Typography>
+							</InputLabel>
+						</Stack>
+					</FormControl>
+					<DataGrid
+						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
+						onRowDoubleClick={(e) => {
+							handleDataOpen();
+							localStorage.setItem("id", e.row.id);
+						}}
+						columns={columns}
+						pageSize={5}
+						rowsPerPageOptions={[5]}
+						rows={retailers}
+					/>
+					<Dialog
+						open={dataOpen}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleDataClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"REVOKE ACCESS"}</DialogTitle>
+						<DialogActions>
+							<Button onClick={handleDataClose}>Close</Button>
+						</DialogActions>
+						<DialogActions>
+							<Button
+								onClick={() => {
+									handleDeletion();
+								}}>
+								REVOKE{" "}
+							</Button>
+						</DialogActions>
+					</Dialog>
 				</Stack>
 			</Stack>
 		</div>
 	);
 }
-export default RevokeAccesses;
+export default RevokeAccessPage;

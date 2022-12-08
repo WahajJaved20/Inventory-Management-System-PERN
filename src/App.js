@@ -16,7 +16,7 @@ import CustomerDashboard from "./dashboards/customerDashboard";
 import { Fragment } from "react";
 import PendingApprovals from "./options/admin/pendingApprovals";
 import UserAccesses from "./options/admin/userAccesses";
-import RevokeAccesses from "./options/admin/revokeAccesses";
+import RevokeAccessPage from "./options/admin/revokeAccesses";
 import ViewClients from "./options/admin/viewClients";
 import RetailerNotifications from "./dashboards/retailerNotifications";
 import InventoryForm from "./components/inventoryForm";
@@ -190,7 +190,7 @@ function App() {
 						<Route
 							exact
 							path="/dashboard/admin/revokeAccesses"
-							element={<RevokeAccesses />}
+							element={<RevokeAccessPage />}
 						/>
 						<Route
 							exact
