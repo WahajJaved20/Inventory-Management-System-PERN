@@ -371,41 +371,50 @@ router.post("/addProduct", authorize, async (req, res) => {
 			"SELECT * FROM PRODUCT JOIN INVENTORY ON PRODUCT.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE INVENTORY.R_ID = $1 AND PRODUCT_NAME LIKE $2 ",
 			[req.user.id, name]
 		);
-		if (product.rows[0]) {
-			let insertion = await pool.query(
-				"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE INVENTORY_ID=$2 AND PRODUCT_NAME=$3",
-				[
-					parseInt(product.rows[0].product_count) + parseInt(count),
-					getinventory.rows[0].inventory_id,
-					name,
-				]
-			);
-			let updateInventory = await pool.query(
-				"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
-				[
-					parseInt(getinventory.rows[0].inventory_count) +
-						parseInt(count),
-					getinventory.rows[0].inventory_id,
-				]
-			);
+
+		if (
+			parseInt(getinventory.rows[0].inventory_count) + parseInt(count) >
+			getinventory.rows[0].inventory_max_count
+		) {
+			res.json("count exceeded");
 		} else {
-			let addProd = await pool.query(
-				"INSERT INTO PRODUCT(INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT,PRODUCT_TYPE,PRODUCT_DESCRIPTION) VALUES ($1,$2, $3,$4,$5) RETURNING *",
-				[
-					getinventory.rows[0].inventory_id,
-					name,
-					count,
-					type,
-					description,
-				]
-			);
-			// update the count in inventory
-			let updateinvent = await pool.query(
-				"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT+$1 WHERE INVENTORY_ID = $2",
-				[count, addProd.rows[0].inventory_id]
-			);
+			if (product.rows[0]) {
+				let insertion = await pool.query(
+					"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE INVENTORY_ID=$2 AND PRODUCT_NAME=$3",
+					[
+						parseInt(product.rows[0].product_count) +
+							parseInt(count),
+						getinventory.rows[0].inventory_id,
+						name,
+					]
+				);
+				let updateInventory = await pool.query(
+					"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
+					[
+						parseInt(getinventory.rows[0].inventory_count) +
+							parseInt(count),
+						getinventory.rows[0].inventory_id,
+					]
+				);
+			} else {
+				let addProd = await pool.query(
+					"INSERT INTO PRODUCT(INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT,PRODUCT_TYPE,PRODUCT_DESCRIPTION) VALUES ($1,$2, $3,$4,$5) RETURNING *",
+					[
+						getinventory.rows[0].inventory_id,
+						name,
+						count,
+						type,
+						description,
+					]
+				);
+				// update the count in inventory
+				let updateinvent = await pool.query(
+					"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT+$1 WHERE INVENTORY_ID = $2",
+					[count, addProd.rows[0].inventory_id]
+				);
+			}
+			res.json("Success");
 		}
-		res.json("Success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -448,24 +457,30 @@ router.post("/editProduct", authorize, async (req, res) => {
 router.post("/removeProduct", authorize, async (req, res) => {
 	try {
 		const { id } = req.body;
-		console.log(id);
+
 		let prod = await pool.query(
 			"SELECT * FROM PRODUCT WHERE PRODUCT_ID = $1",
 			[id]
 		);
-		let getinventory = await pool.query(
-			"SELECT * FROM INVENTORY where R_ID = $1 ",
-			[req.user.id]
-		);
-		let subtractcount = pool.query(
-			"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT-$1 WHERE INVENTORY_ID = (SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $2)",
-			[prod.rows[0].product_count, req.user.id]
-		);
-		let removeProduct = pool.query(
-			"DELETE FROM PRODUCT WHERE PRODUCT_ID = $1",
-			[id]
-		);
-		res.json("success");
+		console.log(prod.rows);
+		if (prod.rows.length == 0) {
+			res.json("non-existent");
+			return;
+		} else {
+			let getinventory = await pool.query(
+				"SELECT * FROM INVENTORY where R_ID = $1 ",
+				[req.user.id]
+			);
+			let subtractcount = pool.query(
+				"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT-$1 WHERE INVENTORY_ID = (SELECT INVENTORY_ID from INVENTORY WHERE R_ID = $2)",
+				[prod.rows[0].product_count, req.user.id]
+			);
+			let removeProduct = pool.query(
+				"DELETE FROM PRODUCT WHERE PRODUCT_ID = $1",
+				[id]
+			);
+			res.json("success");
+		}
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");

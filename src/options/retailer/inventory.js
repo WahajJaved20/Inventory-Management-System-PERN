@@ -23,6 +23,7 @@ import {
 import { Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
+import CustomizedSnackbars from "../../components/alerts/authAlerts";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -52,6 +53,7 @@ function InventoryPage() {
 	const [errors, setErrors] = React.useState(new Map());
 	const [data, setData] = React.useState({});
 	const [errOpen, setErrOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
 	const handleEditOpen = () => {
 		setEditOpen(true);
 	};
@@ -181,7 +183,6 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
 			setProductID(id);
 			setProductCount(parseRes[0].product_count);
 			setProductType(parseRes[0].product_type);
@@ -223,6 +224,7 @@ function InventoryPage() {
 	}
 	async function handleProductRemoval() {
 		const token = localStorage.getItem("token");
+		console.log(errors);
 		try {
 			const inputs = {
 				id: productID,
@@ -240,7 +242,12 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "non-existent") {
+				setMessage("Product Does Not Exist");
+				setErrOpen(true);
+				return;
+			}
+
 			setProductID("");
 			handleIDClose();
 
@@ -271,7 +278,11 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "count exceeded") {
+				setMessage("Cannot exceed maximum inventory count limit");
+				setErrOpen(true);
+				return;
+			}
 			setProductName("");
 			setProductType("");
 			setProductCount("");
@@ -329,6 +340,12 @@ function InventoryPage() {
 						INVENTORY
 					</Typography>
 					<FormControl variant="standard">
+						<CustomizedSnackbars
+							open={errOpen}
+							setOpen={setErrOpen}
+							message={message}
+							type={"error"}
+						/>
 						<Stack direction={"column"}>
 							<OutlinedInput
 								onChange={(e) => {
@@ -472,10 +489,15 @@ function InventoryPage() {
 								<DialogContent>
 									<DialogContentText>ID :</DialogContentText>
 									<TextField
+										error={productID <= 0}
 										value={productID}
 										variant="standard"
 										onChange={(e) => {
 											setProductID(e.target.value);
+											localStorage.setItem(
+												"id",
+												e.target.value
+											);
 										}}
 									/>
 									<Divider />
@@ -693,6 +715,7 @@ function InventoryPage() {
 						<DialogContent>
 							<DialogContentText>Count :</DialogContentText>
 							<TextField
+								error={productCount <= 0}
 								value={productCount}
 								variant="standard"
 								onChange={(e) => {
