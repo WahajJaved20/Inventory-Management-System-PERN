@@ -34,25 +34,6 @@ function RegisterPage() {
 						RETAILER
 					</Button>
 				</Link>
-				<Link
-					to="/register/customer"
-					style={{ textDecoration: "none" }}>
-					<Button
-						sx={{
-							"&:hover": {
-								backgroundColor: "#fff",
-								color: "#3c52b2",
-							},
-							marginTop: 5,
-							width: "70%",
-							backgroundColor: "#9A8ECE",
-							color: "white",
-							fontWeight: "bold",
-							fontSize: 20,
-						}}>
-						CUSTOMER
-					</Button>
-				</Link>
 			</div>
 		</div>
 	);

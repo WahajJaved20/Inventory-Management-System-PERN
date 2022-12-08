@@ -43,6 +43,7 @@ function HistoryPage() {
 					Product_Count: pr.product_count,
 				});
 			});
+
 			setHistory(tempRows);
 		} catch (err) {
 			console.error(err);
