@@ -130,6 +130,26 @@ function InventoryPage() {
 		setDataOpen(false);
 	};
 	async function editProductData() {
+		if (!productName) {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productType) {
+			setMessage("Product Type is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productDescription) {
+			setMessage("Product Description is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (parseInt(productCount) <= 0 || !productCount) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		const token = localStorage.getItem("token");
 		const id = localStorage.getItem("id");
 		try {
@@ -152,7 +172,11 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "exceeded") {
+				setMessage("Cannot exceed maximum inventory count limit");
+				setErrOpen(true);
+				return;
+			}
 			setProductCount("");
 			setProductType("");
 			setProductDescription("");
@@ -363,7 +387,12 @@ function InventoryPage() {
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
-						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
+						sx={{
+							fontSize: 40,
+							marginLeft: 70,
+							marginBottom: 1,
+							color: "white",
+						}}>
 						INVENTORY
 					</Typography>
 					<FormControl variant="standard">
@@ -401,6 +430,7 @@ function InventoryPage() {
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -582,7 +612,15 @@ function InventoryPage() {
 							handleDataOpen(e);
 							localStorage.setItem("id", e.row.id);
 						}}
-						sx={{ marginTop: 2, fontSize: 20 }}
+						sx={{
+							marginTop: 2,
+							fontSize: 20,
+							"& .MuiDataGrid-cell": {
+								color: "white",
+								backgroundColor: "#29292b",
+							},
+							color: "white",
+						}}
 						columns={columns}
 						pageSize={7}
 						rowsPerPageOptions={[7]}
@@ -734,7 +772,7 @@ function InventoryPage() {
 							<Divider />
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={handleEditClose}>Close</Button>
+							<Button onClick={handleDataClose}>Close</Button>
 						</DialogActions>
 					</Dialog>
 					<Dialog

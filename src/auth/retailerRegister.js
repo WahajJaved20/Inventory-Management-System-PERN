@@ -144,18 +144,21 @@ function RetailerRegister({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<AccountCircle />
+										<AccountCircle
+											sx={{ color: "white" }}
+										/>
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -191,18 +194,19 @@ function RetailerRegister({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<EmailIcon />
+										<EmailIcon sx={{ color: "white" }} />
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -244,7 +248,7 @@ function RetailerRegister({ setAuth }) {
 								value={password}
 								startAdornment={
 									<InputAdornment position="start">
-										<PasswordIcon />
+										<PasswordIcon sx={{ color: "white" }} />
 									</InputAdornment>
 								}
 								endAdornment={
@@ -260,9 +264,13 @@ function RetailerRegister({ setAuth }) {
 											onClick={handleClickShowPassword}
 											edge="end">
 											{showPassword ? (
-												<VisibilityOff />
+												<VisibilityOff
+													sx={{ color: "white" }}
+												/>
 											) : (
-												<Visibility />
+												<Visibility
+													sx={{ color: "white" }}
+												/>
 											)}
 										</IconButton>
 									</InputAdornment>
@@ -271,11 +279,12 @@ function RetailerRegister({ setAuth }) {
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -315,18 +324,19 @@ function RetailerRegister({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<BusinessIcon />
+										<BusinessIcon sx={{ color: "white" }} />
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -362,18 +372,21 @@ function RetailerRegister({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<ContactPhoneIcon />
+										<ContactPhoneIcon
+											sx={{ color: "white" }}
+										/>
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -411,18 +424,19 @@ function RetailerRegister({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<HomeIcon />
+										<HomeIcon sx={{ color: "white" }} />
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel

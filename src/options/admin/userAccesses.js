@@ -58,8 +58,7 @@ function AdminHistoryPage() {
 				tempRows.push({
 					id: pr.history_id,
 					ID: pr.inbound_id ? pr.inbound_id : pr.outbound_id,
-					Transaction_Status:
-						pr.approval_status === "True" ? "Approved" : "Declined",
+					Transaction_Status: "Approved",
 					Timestamp: pr.entry_time,
 					Product_Name: pr.product_name,
 					Product_Count: pr.product_count,
@@ -104,7 +103,7 @@ function AdminHistoryPage() {
 		{
 			field: "ID",
 			headerName: "ID",
-			width: 300,
+			width: 200,
 		},
 		{
 			field: "Product_Name",
@@ -136,7 +135,12 @@ function AdminHistoryPage() {
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
-						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
+						sx={{
+							fontSize: 40,
+							marginLeft: 70,
+							marginBottom: 1,
+							color: "white",
+						}}>
 						HISTORY
 					</Typography>
 					<FormControl variant="standard">
@@ -167,6 +171,7 @@ function AdminHistoryPage() {
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -191,7 +196,17 @@ function AdminHistoryPage() {
 							handleDataOpen();
 							handleQueriedRetailer();
 						}}
-						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
+						sx={{
+							marginTop: 2,
+							fontSize: 20,
+							width: 1200,
+							color: "white",
+
+							"& .MuiDataGrid-cell": {
+								color: "white",
+								backgroundColor: "#29292b",
+							},
+						}}
 						columns={columns}
 						pageSize={7}
 						rowsPerPageOptions={[7]}

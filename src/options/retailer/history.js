@@ -31,13 +31,13 @@ function HistoryPage() {
 				}
 			);
 			const parseRes = await response.json();
+			console.log(parseRes);
 			let tempRows = [];
 			parseRes.map((pr) => {
 				tempRows.push({
 					id: pr.history_id,
 					ID: pr.inbound_id ? pr.inbound_id : pr.outbound_id,
-					Transaction_Status:
-						pr.approval_status === "True" ? "Approved" : "Declined",
+					Transaction_Status: "Approved",
 					Timestamp: pr.entry_time,
 					Product_Name: pr.product_name,
 					Product_Count: pr.product_count,
@@ -84,7 +84,12 @@ function HistoryPage() {
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
-						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
+						sx={{
+							fontSize: 40,
+							marginLeft: 70,
+							marginBottom: 1,
+							color: "white",
+						}}>
 						HISTORY
 					</Typography>
 					<FormControl variant="standard">
@@ -115,6 +120,7 @@ function HistoryPage() {
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -131,7 +137,16 @@ function HistoryPage() {
 						</Stack>
 					</FormControl>
 					<DataGrid
-						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
+						sx={{
+							marginTop: 2,
+							fontSize: 20,
+							width: 1200,
+							"& .MuiDataGrid-cell": {
+								color: "white",
+								backgroundColor: "#29292b",
+							},
+							color: "white",
+						}}
 						columns={columns}
 						pageSize={5}
 						rowsPerPageOptions={[5]}

@@ -207,7 +207,12 @@ function OutboundPage() {
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
-						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
+						sx={{
+							fontSize: 40,
+							marginLeft: 70,
+							marginBottom: 1,
+							color: "white",
+						}}>
 						OUTBOUND
 					</Typography>
 					<CustomizedSnackbars
@@ -244,6 +249,7 @@ function OutboundPage() {
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -276,8 +282,16 @@ function OutboundPage() {
 						</Grid>
 					</Grid>
 					<DataGrid
-						onRowDoubleClick={handleDataOpen}
-						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
+						sx={{
+							marginTop: 2,
+							fontSize: 20,
+							width: 1200,
+							"& .MuiDataGrid-cell": {
+								color: "white",
+								backgroundColor: "#29292b",
+							},
+							color: "white",
+						}}
 						columns={columns}
 						pageSize={5}
 						rowsPerPageOptions={[5]}
@@ -360,7 +374,13 @@ function OutboundPage() {
 							<Button onClick={handleDataClose}>Close</Button>
 						</DialogActions>
 						<DialogActions>
-							<Button onClick={handleAddApproval}>Approve</Button>
+							<Button
+								onClick={() => {
+									handleAddApproval();
+									handleDataClose();
+								}}>
+								Approve
+							</Button>
 						</DialogActions>
 					</Dialog>
 				</Stack>
