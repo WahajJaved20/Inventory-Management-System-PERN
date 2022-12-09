@@ -24,6 +24,7 @@ import {
 } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
 import SearchIcon from "@mui/icons-material/Search";
+import CustomizedSnackbars from "../../components/alerts/authAlerts";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -36,16 +37,9 @@ function InboundPage() {
 		{ field: "Sender_Name", headerName: "Sender_Name", width: 300 },
 		{ field: "Approval_Status", headerName: "Approval_Status", width: 300 },
 	];
-	const [rows, setRows] = React.useState([
-		{
-			id: 1,
-			Product_Name: "nigga",
-			Product_Count: "haha",
-			Sender_Name: "me",
-			Approval_Status: "false",
-		},
-	]);
-
+	const [rows, setRows] = React.useState([]);
+	const [errOpen, setErrOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
 	const [dataOpen, setDataOpen] = React.useState(false);
 	const [searchQuery, setSearchQuery] = React.useState("");
 	const [productName, setProductName] = React.useState("");
@@ -53,11 +47,11 @@ function InboundPage() {
 	const [productType, setProductType] = React.useState("");
 	const [productDescription, setProductDescription] = React.useState("");
 	const [existOpen, setExistOpen] = React.useState(false);
-	const [sender, setSender] = React.useState("dummy");
+	const [sender, setSender] = React.useState("");
 	const [senders, setSenders] = React.useState([]);
 	const [app, setApp] = React.useState(false);
 	const [products, setProducts] = React.useState([]);
-	const [product, setProduct] = React.useState("dummy");
+	const [product, setProduct] = React.useState("");
 	const [productOpen, setProductOpen] = React.useState(false);
 	const [confirmation, setConfirmationOpen] = React.useState(false);
 	const handleDataOpen = () => {
@@ -148,7 +142,11 @@ function InboundPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "exceeded") {
+				setMessage("Inventory Count will be exceeded, cannot continue");
+				setErrOpen(true);
+				return;
+			}
 			localStorage.removeItem("id");
 			getInboundList();
 		} catch (err) {
@@ -181,6 +179,35 @@ function InboundPage() {
 	}
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
+		if (!productName) {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productType) {
+			setMessage("Product Type is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productDescription) {
+			setMessage("Product Description is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (
+			parseInt(productCount) <= 0 ||
+			!productCount ||
+			!parseInt(productCount)
+		) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
+		if (sender === "") {
+			setMessage("Please Select a sender");
+			setErrOpen(true);
+			return;
+		}
 		try {
 			const inputs = {
 				name: productName,
@@ -210,15 +237,22 @@ function InboundPage() {
 		}
 	}
 	async function handleExistingAdd() {
-		console.log("Here1");
 		const token = localStorage.getItem("token");
+		if (product === "") {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (parseInt(productCount) <= 0 || !productCount) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		try {
-			console.log("Here2");
 			const inputs = {
 				name: product,
 				count: productCount,
 			};
-			console.log("Here3");
 			const response = await fetch(
 				"http://localhost:5000/dashboard/addInboundExisting",
 				{
@@ -230,10 +264,13 @@ function InboundPage() {
 					body: JSON.stringify(inputs),
 				}
 			);
-			console.log("Here4");
+
 			const parseRes = await response.json();
-			console.log(parseRes);
-			console.log("Here5");
+			if (parseRes === "exceeded") {
+				setMessage("Inventory Count will be exceeded, cannot continue");
+				setErrOpen(true);
+				return;
+			}
 			setProductName("");
 			setProductType("");
 			setProductCount("");
@@ -292,6 +329,12 @@ function InboundPage() {
 				<Stack
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
+					<CustomizedSnackbars
+						open={errOpen}
+						setOpen={setErrOpen}
+						message={message}
+						type={"error"}
+					/>
 					<Typography
 						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
 						INBOUND
@@ -388,6 +431,7 @@ function InboundPage() {
 								<DialogContent>
 									<DialogContentText>Name:</DialogContentText>
 									<TextField
+										error={productName.length === 0}
 										value={productName}
 										variant="standard"
 										onChange={(e) => {
@@ -397,6 +441,7 @@ function InboundPage() {
 									<Divider />
 									<DialogContentText>Type:</DialogContentText>
 									<TextField
+										error={productType.length === 0}
 										value={productType}
 										variant="standard"
 										onChange={(e) => {
@@ -408,6 +453,7 @@ function InboundPage() {
 										Description:
 									</DialogContentText>
 									<TextField
+										error={productDescription.length === 0}
 										value={productDescription}
 										variant="standard"
 										onChange={(e) => {
@@ -421,6 +467,7 @@ function InboundPage() {
 										Count :
 									</DialogContentText>
 									<TextField
+										error={productCount <= 0}
 										value={productCount}
 										variant="standard"
 										onChange={(e) => {
@@ -435,6 +482,7 @@ function InboundPage() {
 											Sender
 										</InputLabel>
 										<Select
+											error={sender === ""}
 											labelId="demo-simple-select-standard-label"
 											id="demo-simple-select-standard"
 											value={sender}
@@ -527,6 +575,7 @@ function InboundPage() {
 									labelId="demo-simple-select-standard-label"
 									id="demo-simple-select-standard"
 									value={product}
+									error={product === ""}
 									onChange={(e) => {
 										setProduct(e.target.value);
 									}}
@@ -544,6 +593,7 @@ function InboundPage() {
 							</FormControl>
 							<DialogContentText>Count:</DialogContentText>
 							<TextField
+								error={productCount <= 0}
 								value={productCount}
 								variant="standard"
 								onChange={(e) => {

@@ -1,6 +1,8 @@
 import React, { useEffect } from "react";
 import RetailerSidebar from "../../components/sidebars/retailerSidebar";
 import "../background.css";
+import CustomizedSnackbars from "../../components/alerts/authAlerts";
+
 import {
 	Stack,
 	Button,
@@ -44,6 +46,8 @@ function OutboundPage() {
 	const [reciever, setReciever] = React.useState("");
 	const [product, setProduct] = React.useState("");
 	const [productCount, setProductCount] = React.useState();
+	const [message, setMessage] = React.useState("");
+	const [errOpen, setErrOpen] = React.useState(false);
 	const handleDataOpen = () => {
 		setDataOpen(true);
 	};
@@ -53,6 +57,21 @@ function OutboundPage() {
 	};
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
+		if (!productCount || !parseInt(productCount) || productCount <= 0) {
+			setMessage("Count should be positive");
+			setErrOpen(true);
+			return;
+		}
+		if (!reciever) {
+			setMessage("Reciever Name is mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!product) {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
 		try {
 			const inputs = {
 				count: productCount,
@@ -72,7 +91,11 @@ function OutboundPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "exceeded") {
+				setMessage("Cannot send more products than currently existing");
+				setErrOpen(true);
+				return;
+			}
 			const history = {
 				id: parseRes.outbound_id,
 			};
@@ -187,6 +210,12 @@ function OutboundPage() {
 						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
 						OUTBOUND
 					</Typography>
+					<CustomizedSnackbars
+						open={errOpen}
+						setOpen={setErrOpen}
+						message={message}
+						type={"error"}
+					/>
 					<FormControl variant="standard">
 						<Stack direction={"column"}>
 							<OutlinedInput
@@ -264,6 +293,7 @@ function OutboundPage() {
 						<DialogContent>
 							<DialogContentText>Count :</DialogContentText>
 							<TextField
+								error={!productCount || productCount <= 0}
 								value={productCount}
 								variant="standard"
 								onChange={(e) => {
@@ -278,6 +308,7 @@ function OutboundPage() {
 									Reciever
 								</InputLabel>
 								<Select
+									error={reciever === ""}
 									labelId="demo-simple-select-standard-label"
 									id="demo-simple-select-standard"
 									value={reciever}
@@ -305,6 +336,7 @@ function OutboundPage() {
 									Product
 								</InputLabel>
 								<Select
+									error={product === ""}
 									labelId="demo-simple-select-standard-label"
 									id="demo-simple-select-standard"
 									value={product}

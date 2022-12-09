@@ -129,7 +129,7 @@ function Login({ setAuth }) {
 								}}>
 								<Typography
 									sx={{ fontSize: 25, fontWeight: "bold" }}>
-									Username
+									Email
 								</Typography>
 							</InputLabel>
 						</Stack>

@@ -186,29 +186,38 @@ router.post("/getQueriedRetailer", authorize, async (req, res) => {
 router.post("/addInboundExisting", authorize, async (req, res) => {
 	try {
 		const { count, name } = req.body;
-		console.log(count);
-		console.log(name);
 		let inventID = await pool.query(
 			"SELECT * FROM INVENTORY WHERE R_ID=$1 ",
 			[req.user.id]
 		);
-		console.log(count);
-		console.log(name);
-		let product_count = await pool.query(
-			"SELECT * FROM PRODUCT WHERE PRODUCT_NAME=$1 AND INVENTORY_ID=$2",
-			[name, inventID.rows[0].inventory_id]
-		);
-		console.log(count);
-		console.log(name);
-		let updateProduct = await pool.query(
-			"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE PRODUCT_NAME=$2",
-			[
-				parseInt(product_count.rows[0].product_count) + parseInt(count),
-				name,
-			]
-		);
-		console.log("done oz");
-		res.json("success");
+		if (
+			inventID.rows[0].inventory_max_count <
+			parseInt(inventID.rows[0].inventory_count) + parseInt(count)
+		) {
+			res.json("exceeded");
+		} else {
+			let product_count = await pool.query(
+				"SELECT * FROM PRODUCT WHERE PRODUCT_NAME=$1 AND INVENTORY_ID=$2",
+				[name, inventID.rows[0].inventory_id]
+			);
+			let updateProduct = await pool.query(
+				"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE PRODUCT_NAME=$2",
+				[
+					parseInt(product_count.rows[0].product_count) +
+						parseInt(count),
+					name,
+				]
+			);
+			let inventoryUpdate = await pool.query(
+				"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
+				[
+					parseInt(inventID.rows[0].inventory_count) +
+						parseInt(count),
+					inventID.rows[0].inventory_id,
+				]
+			);
+			res.json("success");
+		}
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -286,20 +295,43 @@ router.post("/addOutbound", authorize, async (req, res) => {
 			"SELECT * FROM INVENTORY WHERE R_ID = $1",
 			[req.user.id]
 		);
-		let getreciever = await pool.query(
-			"SELECT R_ID FROM RECIEVER WHERE R_NAME = $1",
-			[recv_name]
+		let updateProduct = await pool.query(
+			"SELECT * FROM PRODUCT WHERE PRODUCT_ID=$1",
+			[id]
 		);
-		let getOutbound = await pool.query(
-			"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT,RECIEVER_ID) VALUES ($1,$2,$3,$4) RETURNING *",
-			[
-				getInventory.rows[0].inventory_id,
-				id,
-				count,
-				getreciever.rows[0].r_id,
-			]
-		);
-		res.json(getOutbound.rows[0]);
+		if (updateProduct.rows[0].product_count < count) {
+			res.json("exceeded");
+		} else {
+			let getreciever = await pool.query(
+				"SELECT R_ID FROM RECIEVER WHERE R_NAME = $1",
+				[recv_name]
+			);
+			let getOutbound = await pool.query(
+				"INSERT INTO OUTBOUND (INVENTORY_ID, PRODUCT_ID, PRODUCT_COUNT,RECIEVER_ID) VALUES ($1,$2,$3,$4) RETURNING *",
+				[
+					getInventory.rows[0].inventory_id,
+					id,
+					count,
+					getreciever.rows[0].r_id,
+				]
+			);
+
+			let updation = await pool.query(
+				"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE PRODUCT_ID=$2",
+				[
+					updateProduct.rows[0].product_count - count,
+					updateProduct.rows[0].product_id,
+				]
+			);
+			let inventoryUpdate = await pool.query(
+				"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
+				[
+					parseInt(getInventory.rows[0].inventory_count) - count,
+					getInventory.rows[0].inventory_id,
+				]
+			);
+			res.json(getOutbound.rows[0]);
+		}
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -337,23 +369,27 @@ router.post("/decreaseProduct", authorize, async (req, res) => {
 			"SELECT * FROM PRODUCT JOIN INVENTORY ON PRODUCT.INVENTORY_ID = INVENTORY.INVENTORY_ID WHERE INVENTORY.R_ID = $1 AND PRODUCT_ID = $2 ",
 			[req.user.id, id]
 		);
-		let insertion = await pool.query(
-			"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE INVENTORY_ID=$2 AND PRODUCT_ID=$3",
-			[
-				parseInt(product.rows[0].product_count) - parseInt(count),
-				getinventory.rows[0].inventory_id,
-				id,
-			]
-		);
-		let updateInventory = await pool.query(
-			"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
-			[
-				parseInt(getinventory.rows[0].inventory_count) -
-					parseInt(count),
-				getinventory.rows[0].inventory_id,
-			]
-		);
-		res.json("success");
+		if (parseInt(product.rows[0].product_count) < parseInt(count)) {
+			res.json("decrement error");
+		} else {
+			let insertion = await pool.query(
+				"UPDATE PRODUCT SET PRODUCT_COUNT=$1 WHERE INVENTORY_ID=$2 AND PRODUCT_ID=$3",
+				[
+					parseInt(product.rows[0].product_count) - parseInt(count),
+					getinventory.rows[0].inventory_id,
+					id,
+				]
+			);
+			let updateInventory = await pool.query(
+				"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
+				[
+					parseInt(getinventory.rows[0].inventory_count) -
+						parseInt(count),
+					getinventory.rows[0].inventory_id,
+				]
+			);
+			res.json("success");
+		}
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -520,30 +556,42 @@ router.post("/sendInboundHistory", authorize, async (req, res) => {
 			"SELECT * FROM INBOUND WHERE INBOUND_ID=$1",
 			[id]
 		);
-		const assignProduct = await pool.query(
-			"UPDATE PRODUCT SET INVENTORY_ID=$1 WHERE PRODUCT_NAME=$2 AND PRODUCT_COUNT=$3",
-			[
-				inventoryID.rows[0].inventory_id,
-				inventoryID.rows[0].product_name,
-				inventoryID.rows[0].product_count,
-			]
+		const invent = await pool.query(
+			"SELECT * FROM INVENTORY WHERE INVENTORY_ID=$1",
+			[inventoryID.rows[0].inventory_id]
 		);
-		let updateinvent = await pool.query(
-			"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT+$1 WHERE INVENTORY_ID = $2",
-			[
-				inventoryID.rows[0].product_count,
-				inventoryID.rows[0].inventory_id,
-			]
-		);
-		const change = await pool.query(
-			"UPDATE INBOUND SET APPROVAL_STATUS = $2 WHERE INBOUND_ID = $1",
-			[id, "True"]
-		);
-		let createHistory = await pool.query(
-			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
-			[id]
-		);
-		res.json("success");
+		if (
+			invent.rows[0].inventory_max_count <
+			parseInt(invent.rows[0].inventory_count) +
+				parseInt(inventoryID.rows[0].product_count)
+		) {
+			res.json("exceeded");
+		} else {
+			const assignProduct = await pool.query(
+				"UPDATE PRODUCT SET INVENTORY_ID=$1 WHERE PRODUCT_NAME=$2 AND PRODUCT_COUNT=$3",
+				[
+					inventoryID.rows[0].inventory_id,
+					inventoryID.rows[0].product_name,
+					inventoryID.rows[0].product_count,
+				]
+			);
+			let updateinvent = await pool.query(
+				"UPDATE INVENTORY SET INVENTORY_COUNT = INVENTORY_COUNT+$1 WHERE INVENTORY_ID = $2",
+				[
+					inventoryID.rows[0].product_count,
+					inventoryID.rows[0].inventory_id,
+				]
+			);
+			const change = await pool.query(
+				"UPDATE INBOUND SET APPROVAL_STATUS = $2 WHERE INBOUND_ID = $1",
+				[id, "True"]
+			);
+			let createHistory = await pool.query(
+				"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
+				[id]
+			);
+			res.json("success");
+		}
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
