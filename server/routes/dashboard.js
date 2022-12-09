@@ -468,23 +468,32 @@ router.post("/editProduct", authorize, async (req, res) => {
 			"SELECT * FROM PRODUCT WHERE PRODUCT_ID=$1",
 			[id]
 		);
-		console.log(product.rows[0]);
-		let editProduct = await pool.query(
-			"UPDATE PRODUCT SET PRODUCT_NAME = $1, PRODUCT_COUNT = $2, PRODUCT_DESCRIPTION = $3, PRODUCT_TYPE = $4 where PRODUCT_ID=$5",
-			[name, count, description, type, id]
-		);
-		console.log(getinventory.rows[0]);
 		let newCount =
 			parseInt(count) - parseInt(product.rows[0].product_count);
-		let updateInventory = await pool.query(
-			"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
-			[
-				parseInt(getinventory.rows[0].inventory_count) +
-					parseInt(newCount),
-				getinventory.rows[0].inventory_id,
-			]
-		);
-		res.json("success");
+		if (
+			parseInt(getinventory.rows[0].inventory_count) +
+				parseInt(newCount) >
+			getinventory.rows[0].inventory_max_count
+		) {
+			res.json("exceeded");
+		} else {
+			console.log(product.rows[0]);
+			let editProduct = await pool.query(
+				"UPDATE PRODUCT SET PRODUCT_NAME = $1, PRODUCT_COUNT = $2, PRODUCT_DESCRIPTION = $3, PRODUCT_TYPE = $4 where PRODUCT_ID=$5",
+				[name, count, description, type, id]
+			);
+			console.log(getinventory.rows[0]);
+
+			let updateInventory = await pool.query(
+				"UPDATE INVENTORY SET INVENTORY_COUNT=$1 WHERE INVENTORY_ID=$2",
+				[
+					parseInt(getinventory.rows[0].inventory_count) +
+						parseInt(newCount),
+					getinventory.rows[0].inventory_id,
+				]
+			);
+			res.json("success");
+		}
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -604,6 +613,7 @@ router.post("/sendOutboundHistory", authorize, async (req, res) => {
 			"INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES ($1, CURRENT_TIMESTAMP)",
 			[id]
 		);
+		res.json("success");
 	} catch (err) {
 		console.error(err.message);
 		res.status(500).send("Server error");
@@ -619,12 +629,13 @@ router.post("/getHistory", authorize, async (req, res) => {
 		let history;
 		if (!name) {
 			history = await pool.query(
-				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID AND INBOUND.INVENTORY_ID=$1",
+				"SELECT * FROM HISTORY FULL OUTER JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID FULL OUTER JOIN OUTBOUND ON HISTORY.ID=OUTBOUND.OUTBOUND_ID JOIN PRODUCT ON (OUTBOUND.PRODUCT_ID=PRODUCT.PRODUCT_ID OR INBOUND.PRODUCT_NAME=PRODUCT.PRODUCT_NAME) WHERE INBOUND.INVENTORY_ID=$1 OR OUTBOUND.INVENTORY_ID=$1 ",
 				[inventID.rows[0].inventory_id]
 			);
 		} else {
+			console.log(name);
 			history = await pool.query(
-				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID AND INBOUND.INVENTORY_ID=$1 WHERE PRODUCT_NAME LIKE $2",
+				"SELECT * FROM HISTORY FULL OUTER JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID FULL OUTER JOIN OUTBOUND ON HISTORY.ID=OUTBOUND.OUTBOUND_ID JOIN PRODUCT ON (OUTBOUND.PRODUCT_ID=PRODUCT.PRODUCT_ID OR INBOUND.PRODUCT_NAME=PRODUCT.PRODUCT_NAME) WHERE (INBOUND.INVENTORY_ID=$1 OR OUTBOUND.INVENTORY_ID=$1) AND (INBOUND.PRODUCT_NAME LIKE $2 OR PRODUCT.PRODUCT_NAME LIKE $2)",
 				[inventID.rows[0].inventory_id, "%" + name + "%"]
 			);
 		}
@@ -641,11 +652,11 @@ router.post("/getAdminHistory", authorize, async (req, res) => {
 		let history;
 		if (!name) {
 			history = await pool.query(
-				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID"
+				"SELECT * FROM HISTORY FULL OUTER JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID FULL OUTER JOIN OUTBOUND ON HISTORY.ID=OUTBOUND.OUTBOUND_ID JOIN PRODUCT ON (OUTBOUND.PRODUCT_ID=PRODUCT.PRODUCT_ID OR INBOUND.PRODUCT_NAME=PRODUCT.PRODUCT_NAME)"
 			);
 		} else {
 			history = await pool.query(
-				"SELECT * FROM HISTORY JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID WHERE PRODUCT_NAME LIKE $1",
+				"SELECT * FROM HISTORY FULL OUTER JOIN INBOUND ON HISTORY.ID=INBOUND.INBOUND_ID FULL OUTER JOIN OUTBOUND ON HISTORY.ID=OUTBOUND.OUTBOUND_ID JOIN PRODUCT ON (OUTBOUND.PRODUCT_ID=PRODUCT.PRODUCT_ID OR INBOUND.PRODUCT_NAME=PRODUCT.PRODUCT_NAME) WHERE (INBOUND.PRODUCT_NAME LIKE $1 OR PRODUCT.PRODUCT_NAME LIKE $1)",
 				["%" + name + "%"]
 			);
 		}

@@ -31,13 +31,13 @@ function HistoryPage() {
 				}
 			);
 			const parseRes = await response.json();
+			console.log(parseRes);
 			let tempRows = [];
 			parseRes.map((pr) => {
 				tempRows.push({
 					id: pr.history_id,
 					ID: pr.inbound_id ? pr.inbound_id : pr.outbound_id,
-					Transaction_Status:
-						pr.approval_status === "True" ? "Approved" : "Declined",
+					Transaction_Status: "Approved",
 					Timestamp: pr.entry_time,
 					Product_Name: pr.product_name,
 					Product_Count: pr.product_count,

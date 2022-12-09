@@ -83,34 +83,7 @@ router.post("/register/retailer", async (req, res) => {
 		res.status(500).send("Server error");
 	}
 });
-router.post("/register/customer", async (req, res) => {
-	const { username, email, password, mobile, address } = req.body;
 
-	try {
-		const user = await pool.query(
-			"SELECT * FROM customer WHERE c_username = $1",
-			[username]
-		);
-
-		if (user.rows.length > 0) {
-			return res.status(401).json("customer already exists!");
-		}
-		const salt = await bcrypt.genSalt(10);
-		const bcryptPassword = await bcrypt.hash(password, salt);
-
-		let newUser = await pool.query(
-			"INSERT INTO customer (c_username, c_password,c_address,c_mobile_num,c_email) VALUES ($1, $2, $3, $4,$5) RETURNING *",
-			[username, bcryptPassword, address, mobile, email]
-		);
-		console.log("lmao");
-		const jwtToken = jwtGenerator(newUser.rows[0].c_id);
-		return res.json({ jwtToken });
-	} catch (err) {
-		console.log("lmao");
-		console.error(err.message);
-		res.status(500).send({ status: "Server error" });
-	}
-});
 router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
 	let type;
@@ -126,15 +99,7 @@ router.post("/login", async (req, res) => {
 				[email]
 			);
 			if (user.rows.length === 0) {
-				user = await pool.query(
-					"SELECT * FROM customer WHERE c_email = $1",
-					[email]
-				);
-				if (user.rows.length === 0) {
-					return res.status(401).json("Invalid Credential");
-				} else {
-					type = "customer";
-				}
+				return res.status(401).json("Invalid Credential");
 			} else {
 				type = "retailer";
 			}
@@ -145,9 +110,7 @@ router.post("/login", async (req, res) => {
 			password,
 			type === "admin"
 				? user.rows[0].admin_password
-				: type === "retailer"
-				? user.rows[0].r_password
-				: user.rows[0].c_password
+				: user.rows[0].r_password
 		);
 		if (!validPassword) {
 			return res.status(401).json("Invalid Credential");
@@ -160,11 +123,7 @@ router.post("/login", async (req, res) => {
 			}
 		}
 		const jwtToken = jwtGenerator(
-			type === "admin"
-				? user.rows[0].admin_id
-				: type === "retailer"
-				? user.rows[0].r_id
-				: user.rows[0].c_id
+			type === "admin" ? user.rows[0].admin_id : user.rows[0].r_id
 		);
 		return res.json({ jwtToken, type });
 	} catch (err) {

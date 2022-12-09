@@ -130,6 +130,26 @@ function InventoryPage() {
 		setDataOpen(false);
 	};
 	async function editProductData() {
+		if (!productName) {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productType) {
+			setMessage("Product Type is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productDescription) {
+			setMessage("Product Description is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (parseInt(productCount) <= 0 || !productCount) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		const token = localStorage.getItem("token");
 		const id = localStorage.getItem("id");
 		try {
@@ -152,7 +172,11 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "exceeded") {
+				setMessage("Cannot exceed maximum inventory count limit");
+				setErrOpen(true);
+				return;
+			}
 			setProductCount("");
 			setProductType("");
 			setProductDescription("");
@@ -734,7 +758,7 @@ function InventoryPage() {
 							<Divider />
 						</DialogContent>
 						<DialogActions>
-							<Button onClick={handleEditClose}>Close</Button>
+							<Button onClick={handleDataClose}>Close</Button>
 						</DialogActions>
 					</Dialog>
 					<Dialog
