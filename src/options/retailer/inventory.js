@@ -387,7 +387,12 @@ function InventoryPage() {
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
-						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
+						sx={{
+							fontSize: 40,
+							marginLeft: 70,
+							marginBottom: 1,
+							color: "white",
+						}}>
 						INVENTORY
 					</Typography>
 					<FormControl variant="standard">
@@ -425,6 +430,7 @@ function InventoryPage() {
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -606,7 +612,15 @@ function InventoryPage() {
 							handleDataOpen(e);
 							localStorage.setItem("id", e.row.id);
 						}}
-						sx={{ marginTop: 2, fontSize: 20 }}
+						sx={{
+							marginTop: 2,
+							fontSize: 20,
+							"& .MuiDataGrid-cell": {
+								color: "white",
+								backgroundColor: "#29292b",
+							},
+							color: "white",
+						}}
 						columns={columns}
 						pageSize={7}
 						rowsPerPageOptions={[7]}

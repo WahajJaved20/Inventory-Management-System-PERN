@@ -107,18 +107,21 @@ function Login({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<AccountCircle />
+										<AccountCircle
+											sx={{ color: "white" }}
+										/>
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#FFFFFF",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -146,7 +149,7 @@ function Login({ setAuth }) {
 								value={password}
 								startAdornment={
 									<InputAdornment position="start">
-										<PasswordIcon />
+										<PasswordIcon sx={{ color: "white" }} />
 									</InputAdornment>
 								}
 								endAdornment={
@@ -162,9 +165,13 @@ function Login({ setAuth }) {
 											onClick={handleClickShowPassword}
 											edge="end">
 											{showPassword ? (
-												<VisibilityOff />
+												<VisibilityOff
+													sx={{ color: "white" }}
+												/>
 											) : (
-												<Visibility />
+												<Visibility
+													sx={{ color: "white" }}
+												/>
 											)}
 										</IconButton>
 									</InputAdornment>
@@ -173,11 +180,12 @@ function Login({ setAuth }) {
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "white",
+									backgroundColor: "#252525",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel

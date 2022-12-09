@@ -69,7 +69,7 @@ function RetailerSidebar() {
 						marginTop: 25,
 						padding: 1,
 					}}>
-					<HistoryIcon sx={{ fontSize: 40, color: "white" }} />
+					<HistoryIcon sx={{ fontSize: 40, color: "black" }} />
 				</Button>
 			</Link>
 			<Link

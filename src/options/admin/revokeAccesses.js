@@ -117,7 +117,12 @@ function RevokeAccessPage() {
 					direction={"column"}
 					sx={{ marginLeft: 5, marginTop: 4, height: 720 }}>
 					<Typography
-						sx={{ fontSize: 40, marginLeft: 70, marginBottom: 1 }}>
+						sx={{
+							fontSize: 40,
+							marginLeft: 70,
+							marginBottom: 1,
+							color: "white",
+						}}>
 						RETAILER ACCESSES
 					</Typography>
 					<FormControl variant="standard">
@@ -148,6 +153,7 @@ function RevokeAccessPage() {
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -164,7 +170,16 @@ function RevokeAccessPage() {
 						</Stack>
 					</FormControl>
 					<DataGrid
-						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
+						sx={{
+							marginTop: 2,
+							fontSize: 20,
+							width: 1200,
+							color: "white",
+							"& .MuiDataGrid-cell": {
+								color: "white",
+								backgroundColor: "#29292b",
+							},
+						}}
 						onRowDoubleClick={(e) => {
 							handleDataOpen();
 							localStorage.setItem("id", e.row.id);

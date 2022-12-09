@@ -73,7 +73,8 @@ function PendingApprovals() {
 				<Stack
 					direction={"column"}
 					sx={{ marginTop: 3, marginLeft: 3 }}>
-					<Typography sx={{ fontSize: 40, marginLeft: 70 }}>
+					<Typography
+						sx={{ fontSize: 40, marginLeft: 70, color: "white" }}>
 						PENDING APPROVALS
 					</Typography>
 					{notifications.length !== 0 ? (
@@ -143,6 +144,7 @@ function PendingApprovals() {
 								fontSize: 40,
 								marginLeft: 70,
 								marginTop: 40,
+								color: "white",
 							}}>
 							NOTHING TO SEE HERE
 						</Typography>

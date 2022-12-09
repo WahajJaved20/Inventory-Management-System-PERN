@@ -29,7 +29,7 @@ router.post("/handleRetailerDeletion", authorize, async (req, res) => {
 			[inventID.rows[0].inventory_id]
 		);
 		let deleteHistoryInbound = await pool.query(
-			"DELETE FROM INBOUND WHERE inventory_id=$1 AND INBOUND.INBOUND_ID=HISTORY.ID",
+			"DELETE FROM HISTORY WHERE inventory_id=$1 AND INBOUND.INBOUND_ID=HISTORY.ID",
 			[inventID.rows[0].inventory_id]
 		);
 		let deleteInbound = await pool.query(
@@ -37,7 +37,7 @@ router.post("/handleRetailerDeletion", authorize, async (req, res) => {
 			[inventID.rows[0].inventory_id]
 		);
 		let deleteHistoryOutbound = await pool.query(
-			"DELETE FROM OUTBOUND WHERE inventory_id=$1 AND OUTBOUND.OUTBOUND_ID=HISTORY.ID",
+			"DELETE FROM HISTORYS WHERE inventory_id=$1 AND OUTBOUND.OUTBOUND_ID=HISTORY.ID",
 			[inventID.rows[0].inventory_id]
 		);
 		let deleteOutbound = await pool.query(
