@@ -1,6 +1,9 @@
 CREATE DATABASE IVMS_DB;
 
 -- create extension if not exists "uuid-ossp"
+--=========================================================================================
+-- ADMIN
+--=========================================================================================
 CREATE TABLE ADMIN (
     ADMIN_ID uuid PRIMARY KEY DEFAULT
     uuid_generate_v4(),
@@ -9,8 +12,12 @@ CREATE TABLE ADMIN (
     ADMIN_EMAIL VARCHAR(255) not null,
     ADMIN_PASSWORD VARCHAR (255) not null
 );
+--=========================================================================================
+--=========================================================================================
 
-
+--=========================================================================================
+-- RETAILER
+--=========================================================================================
 CREATE TABLE RETAILER(
     R_ID uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     R_MOBILE_NUM VARCHAR(200),
@@ -21,23 +28,12 @@ CREATE TABLE RETAILER(
     R_EMAIL VARCHAR(500),
     R_APPROVAL_STATUS VARCHAR(20) DEFAULT 'FALSE'
 );
+--=========================================================================================
+--=========================================================================================
 
-
-
-CREATE VIEW RETAILER_ACCESSES AS
-SELECT RETAILER.R_ID,R_NAME,R_APPROVAL_STATUS,INVENTORY.INVENTORY_ID
-FROM RETAILER JOIN INVENTORY ON RETAILER.R_ID=INVENTORY.R_ID;
-
-CREATE TABLE NOTIFICATIONS(
-    N_ID uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
-    REFERRER_ID uuid  NOT NULL,
-    string VARCHAR(500) NOT NULL,
-    type INTEGER NOT NULL
-);
-------------------------
--- USE PL/SQL FOR IDS
-------------------------
--- LOGIC TO HANDLE COUNT 
+--=========================================================================================
+-- INVENTORY
+--=========================================================================================
 CREATE TABLE INVENTORY(
     INVENTORY_ID uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     R_ID uuid,
@@ -47,9 +43,34 @@ CREATE TABLE INVENTORY(
     INVENTORY_MAX_COUNT INTEGER
 );
 
+ALTER TABLE INVENTORY ADD CONSTRAINT retailerFK FOREIGN KEY(R_ID) REFERENCES RETAILER(R_ID);
+--=========================================================================================
+--=========================================================================================
 
-ALTER TABLE RETAILER ADD CONSTRAINT retailerFK FOREIGN KEY(INVENTORY_ID) REFERENCES INVENTORY(INVENTORY_ID);
+--=========================================================================================
+-- RETAILER_VIEW
+--=========================================================================================
+CREATE VIEW RETAILER_ACCESSES AS
+SELECT RETAILER.R_ID,R_NAME,R_APPROVAL_STATUS,INVENTORY.INVENTORY_ID
+FROM RETAILER JOIN INVENTORY ON RETAILER.R_ID=INVENTORY.R_ID;
+--=========================================================================================
+--=========================================================================================
 
+--=========================================================================================
+-- NOTIFICATIONS
+--=========================================================================================
+CREATE TABLE NOTIFICATIONS(
+    N_ID uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+    REFERRER_ID uuid  NOT NULL,
+    string VARCHAR(500) NOT NULL,
+    type INTEGER NOT NULL
+);
+--=========================================================================================
+--=========================================================================================
+
+--=========================================================================================
+-- PRODUCT
+--=========================================================================================
 CREATE TABLE PRODUCT(
     INVENTORY_ID uuid,
     PRODUCT_ID VARCHAR(200) NOT NULL DEFAULT 'P-',
@@ -62,47 +83,64 @@ CREATE TABLE PRODUCT(
 ALTER TABLE PRODUCT ADD CONSTRAINT PRODUCTPK PRIMARY KEY(INVENTORY_ID, PRODUCT_NAME);
 ALTER TABLE PRODUCT ADD CONSTRAINT PRODUCTFK FOREIGN KEY(INVENTORY_ID) REFERENCES INVENTORY(INVENTORY_ID);
 
+CREATE SEQUENCE PRODUCT_SEQUENCE
+START 10
+INCREMENT 1
+OWNED BY PRODUCT.PRODUCT_id;
 
-
-
-
-ALTER TABLE PRODUCT ADD CONSTRAINT productFK FOREIGN KEY(INVENTORY_ID) REFERENCES INVENTORY(INVENTORY_ID);
-CREATE FUNCTION product_function()
-    returns trigger language PLPGSQL
+CREATE OR REPLACE FUNCTION PRODUCT_NEW_ID()
+    RETURNS TRIGGER 
     AS $$
     BEGIN 
-        IF INVENTORY_COUNT<INVENTORY_MAX_COUNT THEN
-            INSERT INTO PRODUCT (INVENTORY_ID, PRODUCT_NAME, PRODUCT_COUNT)
-            VALUES (OLD.INVENTORY_ID, OLD.PRODUCT_NAME, OLD.PRODUCT_COUNT);
-        ELSE
-            RAISE NOTICE 'INVENTORY FULL';
-        end if;
+        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
+        NEW.PRODUCT_id := CONCAT(NEW.PRODUCT_id, NEXTVAL('PRODUCT_SEQUENCE'));
+        return NEW;
     END;
-    $$
-CREATE TRIGGER CHECKPRODUCT
-    BEFORE UPDATE 
-    ON PRODUCT
+    $$ LANGUAGE plpgsql;    
+CREATE TRIGGER PRODUCT_NEW
+    BEFORE INSERT ON PRODUCT
     FOR EACH ROW
-    EXECUTE PROCEDURE product_function();
+    EXECUTE PROCEDURE PRODUCT_NEW_ID();
+--=========================================================================================
+--=========================================================================================
 
-
+--=========================================================================================
+-- INBOUND
+--=========================================================================================
 CREATE TABLE INBOUND(
 	INBOUND_ID VARCHAR(200) PRIMARY KEY DEFAULT 'I-',
-	SENDER_ID INTEGER,
+	SENDER_ID VARCHAR(200),
 	Approval_Status VARCHAR(10) DEFAULT 'False',
 	Inventory_ID uuid,
 	PRODUCT_COUNT INTEGER,
 	PRODUCT_NAME VARCHAR(200)
 );
 ALTER TABLE INBOUND ADD CONSTRAINT inboundInvenFK FOREIGN KEY(Inventory_ID) REFERENCES INVENTORY(INVENTORY_ID);
-ALTER TABLE INBOUND ADD CONSTRAINT inboundSendFK FOREIGN KEY(SENDER_ID) REFERENCES SENDER(S_ID);
--- CREATE TABLE OUTBOUND(
--- 	OUTBOUND_ID VARCHAR(200) PRIMARY KEY DEFAULT 'O-',
--- 	Inventory_ID References FORIEGN KEY INVENTORY(INVENTORY_ID),
--- 	PRODUCT_ID REFERENCES FORIEGN KEY PRODUCT(PRODUCT_ID),
--- 	PRODUCT_COUNT NUMBER,
--- 	RECIEVER_ID REFERENCES FORIEGN KEY RECIEVER(R_ID)
--- );
+
+CREATE SEQUENCE INBOUND_SEQUENCE
+START 1
+INCREMENT 1
+OWNED BY INBOUND.INBOUND_id;
+
+CREATE OR REPLACE FUNCTION INBOUND_NEW_ID()
+    RETURNS TRIGGER 
+    AS $$
+    BEGIN 
+        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
+        NEW.INBOUND_id := CONCAT(NEW.INBOUND_id, NEXTVAL('INBOUND_SEQUENCE'));
+        return NEW;
+    END;
+    $$ LANGUAGE plpgsql;    
+CREATE TRIGGER INBOUND_NEW
+    BEFORE INSERT ON INBOUND
+    FOR EACH ROW
+    EXECUTE PROCEDURE INBOUND_NEW_ID();
+--=========================================================================================
+--=========================================================================================
+
+--=========================================================================================
+-- OUTBOUND
+--=========================================================================================
 CREATE TABLE OUTBOUND(
 	OUTBOUND_ID VARCHAR(200) PRIMARY KEY DEFAULT 'O-',
 	Inventory_ID uuid,
@@ -110,6 +148,31 @@ CREATE TABLE OUTBOUND(
 	PRODUCT_COUNT INTEGER,
 	RECIEVER_ID VARCHAR(200)
 );
+
+CREATE SEQUENCE OUTBOUND_SEQUENCE
+START 1
+INCREMENT 1
+OWNED BY OUTBOUND.OUTBOUND_id;
+
+CREATE OR REPLACE FUNCTION OUTBOUND_NEW_ID()
+    RETURNS TRIGGER 
+    AS $$
+    BEGIN 
+        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
+        NEW.OUTBOUND_id := CONCAT(NEW.OUTBOUND_id, NEXTVAL('OUTBOUND_SEQUENCE'));
+        return NEW;
+    END;
+    $$ LANGUAGE plpgsql;    
+CREATE TRIGGER OUTBOUND_NEW
+    BEFORE INSERT ON OUTBOUND
+    FOR EACH ROW
+    EXECUTE PROCEDURE OUTBOUND_NEW_ID();
+--=========================================================================================
+--=========================================================================================
+
+--=========================================================================================
+-- RECIEVER
+--=========================================================================================
 CREATE TABLE RECIEVER (
     R_ID VARCHAR(200) PRIMARY KEY DEFAULT 'R-',
     R_NAME VARCHAR(200) UNIQUE,
@@ -117,20 +180,78 @@ CREATE TABLE RECIEVER (
     R_ADDRESS VARCHAR(500),
     R_EMAIL VARCHAR(200)
 );
+
+CREATE SEQUENCE RECIEVER_SEQUENCE
+START 10
+INCREMENT 1
+OWNED BY RECIEVER.r_id;
+
+CREATE OR REPLACE FUNCTION R_ID()
+    RETURNS TRIGGER 
+    AS $$
+    BEGIN 
+        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
+        NEW.R_ID := CONCAT(NEW.R_ID, NEXTVAL('RECIEVER_SEQUENCE'));
+        return NEW;
+    END;
+    $$ LANGUAGE plpgsql;    
+CREATE TRIGGER RECIEVER_NEW
+    BEFORE INSERT ON RECIEVER
+    FOR EACH ROW
+    EXECUTE PROCEDURE R_ID();
+--=========================================================================================
+--=========================================================================================
+
+--=========================================================================================
+-- SENDER
+--=========================================================================================
 CREATE TABLE SENDER (
-    S_ID SERIAL PRIMARY KEY,
+    S_ID VARCHAR(200) PRIMARY KEY DEFAULT 'S-',
     S_NAME VARCHAR(50),
     S_MOBILE_NUM VARCHAR(200),
     S_ADDRESS VARCHAR(500),
     S_EMAIL VARCHAR(200)
 );
+
+CREATE SEQUENCE SENDER_SEQUENCE
+START 10
+INCREMENT 1
+OWNED BY SENDER.s_id;
+
+CREATE OR REPLACE FUNCTION S_ID()
+    RETURNS TRIGGER 
+    AS $$
+    BEGIN 
+        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
+        NEW.s_ID := CONCAT(NEW.S_ID, NEXTVAL('SENDER_SEQUENCE'));
+        return NEW;
+    END;
+    $$ LANGUAGE plpgsql;    
+CREATE TRIGGER SENDER_NEW
+    BEFORE INSERT ON SENDER
+    FOR EACH ROW
+    EXECUTE PROCEDURE S_ID();
+
+
+ALTER TABLE INBOUND ADD CONSTRAINT inboundSendFK FOREIGN KEY(SENDER_ID) REFERENCES SENDER(S_ID);
+--=========================================================================================
+--=========================================================================================
+
+--=========================================================================================
+-- HISTORY
+--=========================================================================================
 CREATE TABLE HISTORY (
     HISTORY_ID SERIAL PRIMARY KEY,
     ID VARCHAR(200) UNIQUE NOT NULL,
     ENTRY_TIME TIMESTAMP
 );
-ALTER TABLE HISTORY ALTER COLUMN ID TYPE INTEGER;
---triggers
+--=========================================================================================
+--=========================================================================================
+
+--=========================================================================================
+-- DATABASE TRIGGERS
+--=========================================================================================
+
 --============================
 --password check in retailer (DONE)
 --============================
@@ -195,6 +316,7 @@ CREATE OR REPLACE TRIGGER CHECKPRODUCT
     ON PRODUCT
     FOR EACH ROW
     EXECUTE PROCEDURE product_function();
+
 --=====================================
 --TRIGGER TO CHECK IF INVENTORY BECOMES NEGATIVE (DONE)
 --=====================================
@@ -215,103 +337,10 @@ CREATE OR REPLACE FUNCTION product_func()
         end if;
     END;
 $$ LANGUAGE plpgsql;
---============================
---TRIGGER FOR RECIEVER_ID (DONE)
---============================
-
-CREATE OR REPLACE FUNCTION R_ID()
-    RETURNS TRIGGER 
-    AS $$
-    BEGIN 
-        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
-        NEW.R_ID := CONCAT(NEW.R_ID, NEXTVAL('RECIEVER_SEQUENCE'));
-        return NEW;
-    END;
-    $$ LANGUAGE plpgsql;    
-CREATE OR REPLACE TRIGGER RECIEVER_NEW
-    BEFORE INSERT ON RECIEVER
-    FOR EACH ROW
-    EXECUTE PROCEDURE R_ID();
-
-
-CREATE SEQUENCE RECIEVER_SEQUENCE
-START 10
-INCREMENT 1
-OWNED BY RECIEVER.r_id;
---============================
---TRIGGER FOR PRODUCT_ID (DONE)
---============================
-
-CREATE OR REPLACE FUNCTION PRODUCT_NEW_ID()
-    RETURNS TRIGGER 
-    AS $$
-    BEGIN 
-        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
-        NEW.PRODUCT_id := CONCAT(NEW.PRODUCT_id, NEXTVAL('PRODUCT_SEQUENCE'));
-        return NEW;
-    END;
-    $$ LANGUAGE plpgsql;    
-CREATE OR REPLACE TRIGGER PRODUCT_NEW
-    BEFORE INSERT ON PRODUCT
-    FOR EACH ROW
-    EXECUTE PROCEDURE PRODUCT_NEW_ID();
-
-CREATE SEQUENCE PRODUCT_SEQUENCE
-START 10
-INCREMENT 1
-OWNED BY PRODUCT.PRODUCT_id;
-
---============================
---TRIGGER FOR INBOUND_ID (DONE)
---============================
-
-CREATE OR REPLACE FUNCTION INBOUND_NEW_ID()
-    RETURNS TRIGGER 
-    AS $$
-    BEGIN 
-        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
-        NEW.INBOUND_id := CONCAT(NEW.INBOUND_id, NEXTVAL('INBOUND_SEQUENCE'));
-        return NEW;
-    END;
-    $$ LANGUAGE plpgsql;    
-CREATE OR REPLACE TRIGGER INBOUND_NEW
-    BEFORE INSERT ON INBOUND
-    FOR EACH ROW
-    EXECUTE PROCEDURE INBOUND_NEW_ID();
-
-CREATE SEQUENCE INBOUND_SEQUENCE
-START 1
-INCREMENT 1
-OWNED BY INBOUND.INBOUND_id;
-
---============================
---TRIGGER FOR OUTBOUND_ID (DONE)
---============================
-
-CREATE OR REPLACE FUNCTION OUTBOUND_NEW_ID()
-    RETURNS TRIGGER 
-    AS $$
-    BEGIN 
-        -- RAISE NOTICE '%', CONCAT(NEW.R_ID, NEXTVAL('SMTH'));
-        NEW.OUTBOUND_id := CONCAT(NEW.OUTBOUND_id, NEXTVAL('OUTBOUND_SEQUENCE'));
-        return NEW;
-    END;
-    $$ LANGUAGE plpgsql;    
-CREATE OR REPLACE TRIGGER OUTBOUND_NEW
-    BEFORE INSERT ON OUTBOUND
-    FOR EACH ROW
-    EXECUTE PROCEDURE OUTBOUND_NEW_ID();
-
-CREATE SEQUENCE OUTBOUND_SEQUENCE
-START 1
-INCREMENT 1
-OWNED BY OUTBOUND.OUTBOUND_id;
-
 
 --============================
 --Trigger for inserting inventory count(DONE)
 --============================
-
 CREATE OR REPLACE FUNCTION NEW_INVENTORY_COUNT()
     RETURNS TRIGGER
     AS $$
@@ -332,46 +361,23 @@ CREATE OR REPLACE TRIGGER NEW_INVENTORY
     FOR EACH ROW 
     EXECUTE PROCEDURE NEW_INVENTORY_COUNT();
 --============================
---Trigger for updating inventory count(NOT DONE)
+--Trigger for updating inventory count(DONE)
 --============================
 
-CREATE OR REPLACE FUNCTION UPDATE_INVENTORY_COUNT()
+CREATE OR REPLACE FUNCTION ADD_INBOUND_HISTORY()
     RETURNS TRIGGER
     AS $$
-    DECLARE 
-        COUNT INTEGER;
-        new_COUNT INTEGER;
-        id uuid;
     BEGIN 
-        select inventory_count INTO COUNT from inventory where Inventory_ID= OLD.INVENTORY_ID;
-        select Inventory_ID INTO id from inventory where Inventory_ID= OLD.INVENTORY_ID;
-        IF COUNT = NEW.PRODUCT_COUNT THEN 
-            RETURN NULL;
-        ELSE
-            NEW_COUNT := NEW.PRODUCT_COUNT - COUNT;
-            RAISE NOTICE '%', NEW_COUNT;
-            RAISE NOTICE '%', id;
-            
-            UPDATE INVENTORY SET INVENTORY_COUNT = Inventory_count+NEW_COUNT WHERE INVENTORY_ID = id;  
-            RETURN NEW;
-        END IF;
+        IF NEW.Approval_Status = 'True' THEN
+            INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES (new.INBOUND_ID, CURRENT_TIMESTAMP);
+        END if;
     END;
     $$ LANGUAGE plpgsql;
-CREATE OR REPLACE TRIGGER UPDATE_INVENTORY
-    BEFORE UPDATE
-    ON PRODUCT 
+CREATE OR REPLACE TRIGGER ADD_HISTORY 
+    AFTER UPDATE 
+    ON INBOUND
     FOR EACH ROW 
-    EXECUTE PROCEDURE UPDATE_INVENTORY_COUNT();
+    EXECUTE PROCEDURE ADD_INBOUND_HISTORY();
 
-
---insert values 
-INSERT INTO RECIEVER (R_NAME,R_MOBILE_NUM, R_ADDRESS, R_EMAIL) VALUES ('haTa','030012345678', 'HAA', 'HATIF');
-INSERT INTO INVENTORY (r_id, INVENTORY_DESCRIPTION, INVENTORY_MAX_COUNT, INVENTORY_TYPE)VALUES ('0043d2b2-8eab-46cd-bc9c-5b467f04f461', 'HAAttat', 20, 'HAA');
-INSERT INTO PRODUCT (INVENTORY_ID,PRODUCT_NAME, PRODUCT_COUNT, PRODUCT_DESCRIPTION, PRODUCT_TYPE) VALUES('3fd4017a-3969-4bd4-8bdf-c034014315d4', 'adidas', 4,'haahshd', 'shoes');
-INSERT INTO RETAILER (R_MOBILE_NUM, R_NAME, R_USERNAME, R_ADDRESS,R_PASSWORD, R_EMAIL) VALUES ('03218745530', 'ha', 'ha', 'ha','hatif1234', 'ha');
-TRUNCATE TABLE PRODUCT;
-UPDATE INVENTORY SET INVENTORY_COUNT = 0;
-SELECT * FROM PRODUCT;
-SELECT * FROM INVENTORY;
-UPDATE PRODUCT SET PRODUCT_COUNT = 5 where Inventory_ID = '3fd4017a-3969-4bd4-8bdf-c034014315d4';
-
+--=========================================================================================
+--=========================================================================================
