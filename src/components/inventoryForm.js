@@ -88,18 +88,19 @@ function InventoryForm({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<CategoryIcon />
+										<CategoryIcon sx={{ color: "white" }} />
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#171718",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel
@@ -126,18 +127,21 @@ function InventoryForm({ setAuth }) {
 								}}
 								startAdornment={
 									<InputAdornment position="start">
-										<DescriptionIcon />
+										<DescriptionIcon
+											sx={{ color: "white" }}
+										/>
 									</InputAdornment>
 								}
 								inputProps={{
 									disableunderline: "true",
 								}}
 								sx={{
-									backgroundColor: "#f1f1f1",
+									backgroundColor: "#171718",
 									width: 550,
 									borderRadius: 4,
 									fontSize: 25,
 									height: 60,
+									color: "white",
 								}}
 							/>
 							<InputLabel

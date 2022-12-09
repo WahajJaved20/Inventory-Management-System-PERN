@@ -31,7 +31,8 @@ function RetailerNotifications() {
 				<Stack
 					direction={"column"}
 					sx={{ marginTop: 3, marginLeft: 3 }}>
-					<Typography sx={{ fontSize: 40, marginLeft: 70 }}>
+					<Typography
+						sx={{ fontSize: 40, marginLeft: 70, color: "white" }}>
 						NOTIFICATIONS
 					</Typography>
 					{notifications.length !== 0 ? (
@@ -55,6 +56,7 @@ function RetailerNotifications() {
 													fontSize: 25,
 													marginRight: 10,
 													marginTop: 1,
+													color: "white",
 												}}>
 												Message: {notif.string}
 											</Typography>
@@ -68,6 +70,7 @@ function RetailerNotifications() {
 							sx={{
 								fontSize: 40,
 								marginLeft: 70,
+								color: "white",
 								marginTop: 40,
 							}}>
 							NOTHING TO SEE HERE
