@@ -60,7 +60,7 @@ function RetailerRegister({ setAuth }) {
 			setOpen(true);
 			return;
 		}
-		if (!mobile || errors["phone"]) {
+		if (!mobile || errors["phone"] || mobile.includes("-")) {
 			setMessage("Please Enter the correct phone number");
 			setOpen(true);
 			return;

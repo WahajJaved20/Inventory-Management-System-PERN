@@ -50,7 +50,6 @@ function InventoryPage() {
 	const [decOpen, setDecOpen] = React.useState(false);
 	const [editOpen, setEditOpen] = React.useState(false);
 	const [countOpen, setCountOpen] = React.useState(false);
-	const [errors, setErrors] = React.useState(new Map());
 	const [data, setData] = React.useState({});
 	const [errOpen, setErrOpen] = React.useState(false);
 	const [message, setMessage] = React.useState("");
@@ -195,6 +194,11 @@ function InventoryPage() {
 	async function handleProductDecreaseCount() {
 		const token = localStorage.getItem("token");
 		const id = localStorage.getItem("id");
+		if (!productCount || productCount <= 0) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		try {
 			const inputs = {
 				id: id,
@@ -213,7 +217,11 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "decrement error") {
+				setMessage("Cannot decrement more than the original count");
+				setErrOpen(true);
+				return;
+			}
 			setProductCount("");
 			localStorage.removeItem("id");
 			handleDecClose();
@@ -224,7 +232,6 @@ function InventoryPage() {
 	}
 	async function handleProductRemoval() {
 		const token = localStorage.getItem("token");
-		console.log(errors);
 		try {
 			const inputs = {
 				id: productID,
@@ -258,6 +265,26 @@ function InventoryPage() {
 	}
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
+		if (!productName) {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productType) {
+			setMessage("Product Type is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productDescription) {
+			setMessage("Product Description is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (parseInt(productCount) <= 0 || !productCount) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		try {
 			const inputs = {
 				name: productName,
@@ -413,6 +440,7 @@ function InventoryPage() {
 								<DialogContent>
 									<DialogContentText>Name:</DialogContentText>
 									<TextField
+										error={productName.length === 0}
 										value={productName}
 										variant="standard"
 										onChange={(e) => {
@@ -422,6 +450,7 @@ function InventoryPage() {
 									<Divider />
 									<DialogContentText>Type:</DialogContentText>
 									<TextField
+										error={productType.length === 0}
 										value={productType}
 										variant="standard"
 										onChange={(e) => {
@@ -433,6 +462,7 @@ function InventoryPage() {
 										Description:
 									</DialogContentText>
 									<TextField
+										error={productDescription.length === 0}
 										value={productDescription}
 										variant="standard"
 										onChange={(e) => {
@@ -446,6 +476,7 @@ function InventoryPage() {
 										Count :
 									</DialogContentText>
 									<TextField
+										error={productCount <= 0}
 										value={productCount}
 										variant="standard"
 										onChange={(e) => {
@@ -595,6 +626,7 @@ function InventoryPage() {
 										Count :
 									</DialogContentText>
 									<TextField
+										error={productCount <= 0}
 										value={productCount}
 										variant="standard"
 										onChange={(e) => {
@@ -715,7 +747,7 @@ function InventoryPage() {
 						<DialogContent>
 							<DialogContentText>Count :</DialogContentText>
 							<TextField
-								error={productCount <= 0}
+								error={productCount.length === 0}
 								value={productCount}
 								variant="standard"
 								onChange={(e) => {
