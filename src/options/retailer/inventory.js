@@ -22,8 +22,8 @@ import {
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import { DataGrid } from "@mui/x-data-grid";
-import InventoryInformation from "./dialogs/inventoryInfo";
 import SearchIcon from "@mui/icons-material/Search";
+import CustomizedSnackbars from "../../components/alerts/authAlerts";
 
 const Transition = React.forwardRef(function Transition(props, ref) {
 	return <Slide direction="up" ref={ref} {...props} />;
@@ -36,16 +36,7 @@ function InventoryPage() {
 		{ field: "Count", headerName: "Count", width: 300 },
 		{ field: "Description", headerName: "Description", width: 300 },
 	];
-	const [rows, setRows] = React.useState([
-		{
-			id: 1,
-			Product_Name: "nigga",
-			Product_Type: "haha",
-			Count: 69,
-			Description: "lmfao gottem",
-		},
-	]);
-
+	const [rows, setRows] = React.useState([]);
 	const [open, setOpen] = React.useState(false);
 	const [dataOpen, setDataOpen] = React.useState(false);
 	const [addOpen, setAddOpen] = React.useState(false);
@@ -53,13 +44,15 @@ function InventoryPage() {
 	const [productCount, setProductCount] = React.useState("");
 	const [productType, setProductType] = React.useState("");
 	const [productDescription, setProductDescription] = React.useState("");
-	const [inventory, setInventory] = React.useState("");
 	const [searchQuery, setSearchQuery] = React.useState("");
 	const [productID, setProductID] = React.useState("");
 	const [idOpen, setIDOpen] = React.useState(false);
 	const [decOpen, setDecOpen] = React.useState(false);
 	const [editOpen, setEditOpen] = React.useState(false);
 	const [countOpen, setCountOpen] = React.useState(false);
+	const [data, setData] = React.useState({});
+	const [errOpen, setErrOpen] = React.useState(false);
+	const [message, setMessage] = React.useState("");
 	const handleEditOpen = () => {
 		setEditOpen(true);
 	};
@@ -90,8 +83,26 @@ function InventoryPage() {
 	const handleAddClose = () => {
 		setAddOpen(false);
 	};
+	async function getDetails() {
+		const token = localStorage.getItem("token");
+		try {
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getInventory",
+				{
+					method: "GET",
+					headers: { jwt_token: token },
+				}
+			);
+			const parseRes = await response.json();
+			setData(parseRes);
+		} catch (err) {
+			console.error(err);
+		}
+	}
+
 	useEffect(() => {
 		getProductList();
+		getDetails();
 	}, [
 		open,
 		searchQuery,
@@ -102,6 +113,7 @@ function InventoryPage() {
 		productDescription,
 		productType,
 		productID,
+		data,
 	]);
 	const handleClickOpen = () => {
 		setOpen(true);
@@ -170,7 +182,6 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
 			setProductID(id);
 			setProductCount(parseRes[0].product_count);
 			setProductType(parseRes[0].product_type);
@@ -183,6 +194,11 @@ function InventoryPage() {
 	async function handleProductDecreaseCount() {
 		const token = localStorage.getItem("token");
 		const id = localStorage.getItem("id");
+		if (!productCount || productCount <= 0) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		try {
 			const inputs = {
 				id: id,
@@ -201,7 +217,11 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "decrement error") {
+				setMessage("Cannot decrement more than the original count");
+				setErrOpen(true);
+				return;
+			}
 			setProductCount("");
 			localStorage.removeItem("id");
 			handleDecClose();
@@ -229,7 +249,12 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "non-existent") {
+				setMessage("Product Does Not Exist");
+				setErrOpen(true);
+				return;
+			}
+
 			setProductID("");
 			handleIDClose();
 
@@ -240,6 +265,26 @@ function InventoryPage() {
 	}
 	async function handleAddApproval() {
 		const token = localStorage.getItem("token");
+		if (!productName) {
+			setMessage("Product Name is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productType) {
+			setMessage("Product Type is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (!productDescription) {
+			setMessage("Product Description is Mandatory");
+			setErrOpen(true);
+			return;
+		}
+		if (parseInt(productCount) <= 0 || !productCount) {
+			setMessage("Product Count should be positive");
+			setErrOpen(true);
+			return;
+		}
 		try {
 			const inputs = {
 				name: productName,
@@ -260,7 +305,11 @@ function InventoryPage() {
 				}
 			);
 			const parseRes = await response.json();
-			console.log(parseRes);
+			if (parseRes === "count exceeded") {
+				setMessage("Cannot exceed maximum inventory count limit");
+				setErrOpen(true);
+				return;
+			}
 			setProductName("");
 			setProductType("");
 			setProductCount("");
@@ -318,6 +367,12 @@ function InventoryPage() {
 						INVENTORY
 					</Typography>
 					<FormControl variant="standard">
+						<CustomizedSnackbars
+							open={errOpen}
+							setOpen={setErrOpen}
+							message={message}
+							type={"error"}
+						/>
 						<Stack direction={"column"}>
 							<OutlinedInput
 								onChange={(e) => {
@@ -385,6 +440,7 @@ function InventoryPage() {
 								<DialogContent>
 									<DialogContentText>Name:</DialogContentText>
 									<TextField
+										error={productName.length === 0}
 										value={productName}
 										variant="standard"
 										onChange={(e) => {
@@ -394,6 +450,7 @@ function InventoryPage() {
 									<Divider />
 									<DialogContentText>Type:</DialogContentText>
 									<TextField
+										error={productType.length === 0}
 										value={productType}
 										variant="standard"
 										onChange={(e) => {
@@ -405,6 +462,7 @@ function InventoryPage() {
 										Description:
 									</DialogContentText>
 									<TextField
+										error={productDescription.length === 0}
 										value={productDescription}
 										variant="standard"
 										onChange={(e) => {
@@ -418,6 +476,7 @@ function InventoryPage() {
 										Count :
 									</DialogContentText>
 									<TextField
+										error={productCount <= 0}
 										value={productCount}
 										variant="standard"
 										onChange={(e) => {
@@ -461,10 +520,15 @@ function InventoryPage() {
 								<DialogContent>
 									<DialogContentText>ID :</DialogContentText>
 									<TextField
+										error={productID <= 0}
 										value={productID}
 										variant="standard"
 										onChange={(e) => {
 											setProductID(e.target.value);
+											localStorage.setItem(
+												"id",
+												e.target.value
+											);
 										}}
 									/>
 									<Divider />
@@ -511,11 +575,6 @@ function InventoryPage() {
 								}}>
 								Inventory Details
 							</Button>
-							<InventoryInformation
-								Transition={Transition}
-								handleClose={handleClose}
-								open={open}
-							/>
 						</Grid>
 					</Grid>
 					<DataGrid
@@ -567,6 +626,7 @@ function InventoryPage() {
 										Count :
 									</DialogContentText>
 									<TextField
+										error={productCount <= 0}
 										value={productCount}
 										variant="standard"
 										onChange={(e) => {
@@ -687,6 +747,7 @@ function InventoryPage() {
 						<DialogContent>
 							<DialogContentText>Count :</DialogContentText>
 							<TextField
+								error={productCount.length === 0}
 								value={productCount}
 								variant="standard"
 								onChange={(e) => {
@@ -700,6 +761,39 @@ function InventoryPage() {
 						</DialogActions>
 						<DialogActions>
 							<Button onClick={handleAddApproval}>Approve</Button>
+						</DialogActions>
+					</Dialog>
+					<Dialog
+						open={open}
+						TransitionComponent={Transition}
+						keepMounted
+						onClose={handleClose}
+						aria-describedby="alert-dialog-slide-description">
+						<DialogTitle>{"INVENTORY DETAILS"}</DialogTitle>
+						<DialogContent>
+							<DialogContentText>
+								ID: {data["inventory_id"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								TYPE: {data["inventory_type"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Count: {data["inventory_count"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Max Count: {data["inventory_max_count"]}
+							</DialogContentText>
+							<Divider />
+							<DialogContentText>
+								Description: {data["inventory_description"]}
+							</DialogContentText>
+							<Divider />
+						</DialogContent>
+						<DialogActions>
+							<Button onClick={handleClose}>Close</Button>
 						</DialogActions>
 					</Dialog>
 				</Stack>

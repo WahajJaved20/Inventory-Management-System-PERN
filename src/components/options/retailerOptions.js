@@ -33,7 +33,11 @@ function RetailerOptions() {
 		<>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Link
-					to="/dashboard/retailer/history"
+					to={
+						approved
+							? "/dashboard/retailer/history"
+							: "/dashboard/retailer"
+					}
 					style={{ textDecoration: "none" }}>
 					<Button
 						disabled={!approved}
@@ -69,7 +73,11 @@ function RetailerOptions() {
 					</Button>
 				</Link>
 				<Link
-					to="/dashboard/retailer/outbound"
+					to={
+						approved
+							? "/dashboard/retailer/outbound"
+							: "/dashboard/retailer"
+					}
 					style={{ textDecoration: "none" }}>
 					<Button
 						disabled={!approved}
@@ -114,7 +122,11 @@ function RetailerOptions() {
 			</Stack>
 			<Stack direction={"row"} sx={{ marginTop: 3 }}>
 				<Link
-					to="/dashboard/retailer/inventory"
+					to={
+						approved
+							? "/dashboard/retailer/inventory"
+							: "/dashboard/retailer"
+					}
 					style={{ textDecoration: "none" }}>
 					<Button
 						disabled={!approved}
@@ -148,7 +160,11 @@ function RetailerOptions() {
 					</Button>
 				</Link>
 				<Link
-					to="/dashboard/retailer/inbound"
+					to={
+						approved
+							? "/dashboard/retailer/inbound"
+							: "/dashboard/retailer"
+					}
 					style={{ textDecoration: "none" }}>
 					<Button
 						disabled={!approved}

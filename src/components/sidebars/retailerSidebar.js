@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Box, Typography, Button } from "@mui/material";
 import HistoryIcon from "@mui/icons-material/History";
 import PhoneForwardedIcon from "@mui/icons-material/PhoneForwarded";
@@ -6,6 +6,29 @@ import PhoneCallbackIcon from "@mui/icons-material/PhoneCallback";
 import StorageIcon from "@mui/icons-material/Storage";
 import { Link } from "react-router-dom";
 function RetailerSidebar() {
+	const [approved, setApproved] = useState(false);
+	async function getApprovalStatus() {
+		try {
+			const token = localStorage.getItem("token");
+			const response = await fetch(
+				"http://localhost:5000/dashboard/getRetailerStatus",
+				{
+					method: "POST",
+					headers: { jwt_token: token },
+				}
+			);
+			const parseRes = await response.json();
+			console.log(parseRes);
+			if (parseRes === "TRUE") {
+				setApproved(true);
+			}
+		} catch (err) {
+			console.error(err);
+		}
+	}
+	useEffect(() => {
+		getApprovalStatus();
+	}, []);
 	return (
 		<Box
 			className="sidebar"
@@ -33,7 +56,11 @@ function RetailerSidebar() {
 				</Typography>
 			</Link>
 			<Link
-				to="/dashboard/retailer/history"
+				to={
+					approved
+						? "/dashboard/retailer/history"
+						: "/dashboard/retailer"
+				}
 				style={{ textDecoration: "none" }}>
 				<Button
 					sx={{
@@ -46,7 +73,11 @@ function RetailerSidebar() {
 				</Button>
 			</Link>
 			<Link
-				to="/dashboard/retailer/outbound"
+				to={
+					approved
+						? "/dashboard/retailer/outbound"
+						: "/dashboard/retailer"
+				}
 				style={{ textDecoration: "none" }}>
 				<Button
 					sx={{
@@ -59,7 +90,11 @@ function RetailerSidebar() {
 				</Button>
 			</Link>
 			<Link
-				to="/dashboard/retailer/inventory"
+				to={
+					approved
+						? "/dashboard/retailer/inventory"
+						: "/dashboard/retailer"
+				}
 				style={{ textDecoration: "none" }}>
 				<Button
 					sx={{
@@ -72,7 +107,11 @@ function RetailerSidebar() {
 				</Button>
 			</Link>
 			<Link
-				to="/dashboard/retailer/inbound"
+				to={
+					approved
+						? "/dashboard/retailer/inbound"
+						: "/dashboard/retailer"
+				}
 				style={{ textDecoration: "none" }}>
 				<Button
 					sx={{
