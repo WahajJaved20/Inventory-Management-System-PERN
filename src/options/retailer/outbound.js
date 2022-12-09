@@ -276,7 +276,6 @@ function OutboundPage() {
 						</Grid>
 					</Grid>
 					<DataGrid
-						onRowDoubleClick={handleDataOpen}
 						sx={{ marginTop: 2, fontSize: 20, width: 1200 }}
 						columns={columns}
 						pageSize={5}
@@ -360,7 +359,13 @@ function OutboundPage() {
 							<Button onClick={handleDataClose}>Close</Button>
 						</DialogActions>
 						<DialogActions>
-							<Button onClick={handleAddApproval}>Approve</Button>
+							<Button
+								onClick={() => {
+									handleAddApproval();
+									handleDataClose();
+								}}>
+								Approve
+							</Button>
 						</DialogActions>
 					</Dialog>
 				</Stack>
