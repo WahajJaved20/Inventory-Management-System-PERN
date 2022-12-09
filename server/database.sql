@@ -1,6 +1,7 @@
 CREATE DATABASE IVMS_DB;
 
--- create extension if not exists "uuid-ossp"
+create extension if not exists "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
 --=========================================================================================
 -- ADMIN
 --=========================================================================================
@@ -115,8 +116,7 @@ CREATE TABLE INBOUND(
 	PRODUCT_COUNT INTEGER,
 	PRODUCT_NAME VARCHAR(200)
 );
-INSERT INTO INBOUND (SENDER_ID, INVENTORY_ID, PRODUCT_COUNT, PRODUCT_NAME) VALUES (1,'f6531b2d-14c8-4062-ac3b-74651470016d', 2,'SHOES');
-UPDATE INBOUND SET Approval_Status = 'True';
+
 ALTER TABLE INBOUND ADD CONSTRAINT inboundInvenFK FOREIGN KEY(Inventory_ID) REFERENCES INVENTORY(INVENTORY_ID);
 
 CREATE SEQUENCE INBOUND_SEQUENCE
@@ -299,48 +299,6 @@ CREATE OR REPLACE TRIGGER check_num
     FOR EACH ROW
     EXECUTE FUNCTION CHECK_PHONE();
 
---=====================================
---TRIGGER TO CHECK IF INVENTORY FULL 
---=====================================
-CREATE OR REPLACE FUNCTION product_function()
-    returns trigger
-    AS $$
-    BEGIN 
-        IF NEW.INVENTORY_COUNT<NEW.INVENTORY_MAX_COUNT THEN
-            RETURN NEW;
-        ELSE
-            RAISE NOTICE 'INVENTORY FULL';
-            RETURN NULL;
-        end if;
-    END;
-$$ LANGUAGE plpgsql;
-CREATE OR REPLACE TRIGGER CHECKPRODUCT
-    BEFORE INSERT OR UPDATE 
-    ON PRODUCT
-    FOR EACH ROW
-    EXECUTE PROCEDURE product_function();
-
---=====================================
---TRIGGER TO CHECK IF INVENTORY BECOMES NEGATIVE (DONE)
---=====================================
-CREATE OR REPLACE TRIGGER CHECKPRODUCT1
-    BEFORE INSERT OR UPDATE 
-    ON INVENTORY
-    FOR EACH ROW
-    EXECUTE PROCEDURE product_func();
-CREATE OR REPLACE FUNCTION product_func()
-    returns trigger
-    AS $$
-    BEGIN 
-        IF NEW.INVENTORY_COUNT > 0 THEN
-            RETURN NEW;
-        ELSE
-            RAISE NOTICE "INVENTORY COUNT CAN'T BE NEGATIVE";
-            RETURN NULL;
-        end if;
-    END;
-$$ LANGUAGE plpgsql;
-
 --============================
 --Trigger for inserting inventory count(DONE)
 --============================
@@ -390,6 +348,87 @@ CREATE OR REPLACE TRIGGER ADD_HISTORY
     ON INBOUND
     FOR EACH ROW 
     EXECUTE PROCEDURE ADD_INBOUND_HISTORY();
+
+--============================
+--Trigger for deleting inventory count(DONE)
+--============================
+
+CREATE OR REPLACE FUNCTION DELETE_INVENTORY_COUNT()
+    RETURNS TRIGGER
+    AS $$
+    DECLARE 
+        COUNT INTEGER;
+        new_COUNT INTEGER;
+        id uuid;
+    BEGIN 
+        select inventory_count INTO COUNT from inventory where Inventory_ID= OLD.INVENTORY_ID;
+        select Inventory_ID INTO id from inventory where Inventory_ID= OLD.INVENTORY_ID; 
+        UPDATE inventory set inventory_count = inventory_count - old.PRODUCT_COUNT where Inventory_ID = id;
+        return null;
+    END;
+    $$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER DELETE_INVENTORY
+    AFTER DELETE
+    ON PRODUCT 
+    FOR EACH ROW 
+    EXECUTE PROCEDURE DELETE_INVENTORY_COUNT();
+--============================================================
+CREATE OR REPLACE FUNCTION NEW_INVENTORY_COUNT_DIRECT()
+    RETURNS TRIGGER
+    AS $$
+    DECLARE 
+        PREV_COUNT INTEGER;
+        COUNT INTEGER;
+        id uuid;
+        MAX_COUNT INTEGER;
+    BEGIN 
+        select inventory_count INTO COUNT from inventory where Inventory_ID= NEW.INVENTORY_ID;
+        select INVENTORY_MAX_COUNT INTO MAX_COUNT from inventory where Inventory_ID= NEW.INVENTORY_ID;
+        RAISE NOTICE '%', new.INVENTORY_COUNT;
+        IF NEW.INVENTORY_COUNT = 0 THEN
+            RETURN NEW;
+        ELSE
+            RAISE NOTICE 'NOT POSSIBLE';
+        END IF;
+        RETURN NULL;
+    END;
+    $$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER NEW_INVENTORY_DIRECT
+    BEFORE INSERT
+    ON PRODUCT 
+    FOR EACH ROW 
+    EXECUTE PROCEDURE NEW_INVENTORY_COUNT();
+
+--=======================================================
+CREATE OR REPLACE FUNCTION ADD_INBOUND_HISTORY()
+    RETURNS TRIGGER
+    AS $$
+    BEGIN 
+        IF NEW.Approval_Status = 'True' THEN
+            INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES (new.INBOUND_ID, CURRENT_TIMESTAMP);
+        END if;
+    END;
+    $$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER ADD_HISTORY 
+    AFTER UPDATE 
+    ON INBOUND
+    FOR EACH ROW 
+    EXECUTE PROCEDURE ADD_INBOUND_HISTORY();
+--=======================================================
+CREATE OR REPLACE FUNCTION ADD_outbound_HISTORY()
+    RETURNS TRIGGER
+    AS $$
+    BEGIN 
+        IF NEW.Approval_Status = 'True' THEN
+            INSERT INTO HISTORY (ID, ENTRY_TIME) VALUES (new.OUTBOUND_ID, CURRENT_TIMESTAMP);
+        END if;
+    END;
+    $$ LANGUAGE plpgsql;
+CREATE OR REPLACE TRIGGER ADD_HISTORY 
+    AFTER UPDATE 
+    ON outbound
+    FOR EACH ROW 
+    EXECUTE PROCEDURE ADD_outbound_HISTORY();
 --============================
 --Trigger for ADDING HASHED PASSWORD TO ADMIN
 --============================
@@ -430,3 +469,15 @@ INSERT INTO RETAILER(R_MOBILE_NUM, R_NAME,R_USERNAME, R_PASSWORD, R_ADDRESS, R_E
 VALUES ('HA','HA','HA','HA','HAA','HAA');
 --=========================================================================================
 --=========================================================================================
+INSERT INTO INBOUND (SENDER_ID, INVENTORY_ID, PRODUCT_COUNT, PRODUCT_NAME) VALUES (1,'f6531b2d-14c8-4062-ac3b-74651470016d', 2,'SHOES');
+UPDATE INBOUND SET Approval_Status = 'True';
+
+
+-- insert commands
+INSERT INTO ADMIN (ADMIN_USERNAME, ADMIN_NAME, ADMIN_EMAIL, ADMIN_PASSWORD) VALUES ('ha','ha','ha','ha');
+INSERT INTO INBOUND (SENDER_ID, INVENTORY_ID, PRODUCT_COUNT, PRODUCT_NAME) VALUES (1,'f6531b2d-14c8-4062-ac3b-74651470016d', 2,'SHOES');
+INSERT INTO RETAILER(R_MOBILE_NUM, R_NAME,R_USERNAME, R_PASSWORD, R_ADDRESS, R_EMAIL)
+VALUES ('03341338830','HA','HA','HATIF1234','HAA','HAA');
+INSERT INTO 
+
+
