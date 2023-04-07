@@ -27,7 +27,7 @@ router.post("/register/admin", async (req, res) => {
 
 		const salt = await bcrypt.genSalt(10);
 		const bcryptPassword = await bcrypt.hash(password, salt);
-
+		console.log(bcryptPassword)
 		let newUser = await pool.query(
 			"INSERT INTO admin (admin_username, admin_email, admin_name, admin_password) VALUES ($1, $2, $3, $4) RETURNING *",
 			[username, email, name, bcryptPassword]
@@ -92,7 +92,6 @@ router.post("/login", async (req, res) => {
 			"SELECT * FROM admin WHERE admin_email = $1",
 			[email]
 		);
-
 		if (user.rows.length === 0) {
 			user = await pool.query(
 				"SELECT * FROM retailer WHERE r_email= $1",
@@ -112,6 +111,11 @@ router.post("/login", async (req, res) => {
 				? user.rows[0].admin_password
 				: user.rows[0].r_password
 		);
+		const salt = await bcrypt.genSalt(10);
+		const bcryptPassword = await bcrypt.hash(password, salt);
+		console.log(password)
+		console.log(bcryptPassword)
+		console.log(user.rows[0])
 		if (!validPassword) {
 			return res.status(401).json("Invalid Credential");
 		}
